@@ -309,7 +309,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='0.8.0';
+const VERSION='0.8.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -982,7 +982,7 @@ const MENU_TABS={
       return `<div class="tierhead"><b style="color:${TIERS[t].color}">${TIERS[t].name} 장비</b><span>${cost}</span></div><div class="forge">${GEAR_SLOTS.map(sl=>`<button data-act="craft" data-k="${sl}:${t}" ${ok?'':'disabled'}><b>${TIERS[t].name} ${SLOTS[sl].noun}</b><small>${statLine(itemStats(sl,t,0)).replace(/ · /g,'<br>')}</small></button>`).join('')}</div>`}).join('');
   },
   skill(cls,h,C){
-    return `<h2>${C.name} 스킬 <span class="sub" style="font-family:var(--body)">· 남은 포인트 ${h.sp}</span></h2><p class="note" style="margin:0 0 8px">레벨업마다 스킬포인트 1개. 스킬 레벨 3·6·10에서 부가효과가 열려요.</p><div class="list">${skillRows(cls,h)}</div>`+(FORMS[cls]?`<h3>폼 체인지 · ${FORMS[cls].name}</h3><p class="note" style="margin:0 0 8px">전투 중 왼쪽의 폼 버튼으로 모습과 스킬셋을 바꿔요. 스킬 레벨은 같은 칸의 기본 스킬과 함께 올라가요. 폼 상태에서는 모든 공격이 ${EL[FORMS[cls].el][0]} 속성이 돼요.</p><div class="list">${FORMS[cls].skills.map((sk,i)=>{const lv=h.skills[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><span></span></div>`}).join('')}</div>`:'');
+    return `<h2>${C.name} 스킬 <span class="sub" style="font-family:var(--body)">· 남은 포인트 ${h.sp}</span></h2><p class="note" style="margin:0 0 8px">레벨업마다 스킬포인트 1개. 스킬 레벨 3·6·10에서 부가효과가 열려요.</p><div class="list">${skillRows(cls,h)}</div>`+(FORMS[cls]?`<h3>폼 체인지 · ${FORMS[cls].name}</h3><p class="note" style="margin:0 0 8px">전투 중 왼쪽의 폼 버튼으로 30초 동안 모습과 스킬셋을 바꿔요(쿨타임 60초, 다시 누르면 먼저 해제). 스킬 레벨은 같은 칸의 기본 스킬과 함께 올라가요. 폼 상태에서는 모든 공격이 ${EL[FORMS[cls].el][0]} 속성이 돼요.</p><div class="list">${FORMS[cls].skills.map((sk,i)=>{const lv=h.skills[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><span></span></div>`}).join('')}</div>`:'');
   }
 };
 function skillRows(cls,h){const C=CLASSES[cls];return C.skills.map((sk,i)=>{const lv=h.skills[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><button class="btn gold" data-act="sup" data-k="${i}" ${h.sp<1||lv>=10?'disabled':''}>+1</button></div>`}).join('')}
@@ -1528,7 +1528,7 @@ function update(dt){
   G.time+=dt;const p=G.p,b=G.buffs;
   for(const k in b)if(b[k]>0)b[k]=Math.max(0,b[k]-dt);
   if(G.shield&&G.shield.t>0){G.shield.t-=dt;if(G.shield.t<=0||G.shield.amt<=0)G.shield=null}
-  const cdr=b.mageUlt>0?3:1;for(const arr of G.cdF)for(let i=0;i<4;i++)arr[i]=Math.max(0,arr[i]-dt*cdr);if(G.formCd>0)G.formCd-=dt;
+  const cdr=b.mageUlt>0?3:1;for(const arr of G.cdF)for(let i=0;i<4;i++)arr[i]=Math.max(0,arr[i]-dt*cdr);if(G.formCd>0)G.formCd-=dt;if(G.form&&!G.dying){G.formT-=dt;if(G.formT<=0)endForm()}
   if(G.s1Second>0){G.s1Second-=dt;if(G.s1Second<=0){G.s1Second=0;G.cd[0]=Math.max(G.cd[0],curSkills()[0].cd)}}
   if(G.ult5){G.ult5.t-=dt;if(G.ult5.t<=0){G.ult5=null;G.cd[3]=curSkills()[3].cd}}
   if(!G.dying){p.hp=Math.min(G.stats.hp,p.hp+eff('hpRegen')*dt);p.mp=Math.min(G.stats.mp,p.mp+eff('mpRegen')*dt)}
@@ -1847,8 +1847,8 @@ function updateHud(){
   set('mpI',(p.mp/s.mp).toFixed(3),'tf');set('mpT',`${Math.floor(p.mp)} / ${Math.round(s.mp)}`);
   set('xpI',(h.level>=100?1:h.xp/xpNeed(h.level)).toFixed(3),'tf');
   set('flr',`${G.dg.name} ${G.floor}F<small>${fmt(G.loot.gold)} G · 처치 ${G.kills}</small>`,'innerHTML');
-  const b=G.buffs,names={formBuff:'폼 강화',warUlt:'사기 증진',rapid:'연속화살',mageUlt:'마력 해방',stealth:'은신',frenzy:'광분',banner:'깃발',bbar:'마력 방벽',thunder:'천둥 강림',hunt:'사냥꾼의 힘',plunder:'약탈',reapRun:'낫긁어달리기'};let bh='';for(const k in names)if(b[k]>0)bh+=`<span>${names[k]} ${b[k].toFixed(1)}</span>`;if(G.shield)bh+=`<span>보호막 ${Math.round(G.shield.amt)}</span>`;if(G.ult5)bh+=`<span>질풍난무 ×${G.ult5.left}</span>`;set('buffs',bh,'innerHTML');
-  set('potN',String(save.potions||0));{const fc=Math.max(0,(G.formCd||0)/1.5);if(formBtn._c!==fc.toFixed(2)){formBtn._c=fc.toFixed(2);formBtn.style.setProperty('--cd',fc)}}{const pc=Math.max(0,(G.potCd||0)/POTION.cd);if(potEl._c!==pc.toFixed(2)){potEl._c=pc.toFixed(2);potEl.style.setProperty('--cd',pc)}potEl.classList.toggle('nomp',!(save.potions>0))}
+  const b=G.buffs,names={formBuff:'폼 강화',warUlt:'사기 증진',rapid:'연속화살',mageUlt:'마력 해방',stealth:'은신',frenzy:'광분',banner:'깃발',bbar:'마력 방벽',thunder:'천둥 강림',hunt:'사냥꾼의 힘',plunder:'약탈',reapRun:'낫긁어달리기'};let bh='';for(const k in names)if(b[k]>0)bh+=`<span>${names[k]} ${b[k].toFixed(1)}</span>`;if(G.form&&FORMS[G.cls])bh+=`<span>${FORMS[G.cls].name} ${Math.ceil(G.formT)}초</span>`;if(G.shield)bh+=`<span>보호막 ${Math.round(G.shield.amt)}</span>`;if(G.ult5)bh+=`<span>질풍난무 ×${G.ult5.left}</span>`;set('buffs',bh,'innerHTML');
+  set('potN',String(save.potions||0));{const act=!!G.form,fc=act?1-Math.max(0,G.formT)/FORM_DUR:Math.max(0,(G.formCd||0)/FORM_CD),txt=act?String(Math.ceil(G.formT)):G.formCd>0?String(Math.ceil(G.formCd)):'',k=fc.toFixed(3)+txt;if(formBtn._k!==k){formBtn._k=k;formBtn.style.setProperty('--cd',fc);if(formBtn._ct)formBtn._ct.textContent=txt}}{const pc=Math.max(0,(G.potCd||0)/POTION.cd);if(potEl._c!==pc.toFixed(2)){potEl._c=pc.toFixed(2);potEl.style.setProperty('--cd',pc)}potEl.classList.toggle('nomp',!(save.potions>0))}
   for(let i=0;i<4;i++){const sk=curSkills()[i],el=btnEls[i];let cdv=G.cd[i]/sk.cd,ct=G.cd[i]>0?(G.cd[i]>=10?Math.ceil(G.cd[i]):G.cd[i].toFixed(1)):'';
     if(G.cls==='assassin'&&i===2&&G.cd[i]>sk.cd)cdv=G.cd[i]/18;
     if(G.cls==='assassin'&&i===3&&G.ult5){cdv=0;ct='×'+G.ult5.left}
@@ -1872,7 +1872,7 @@ function setupButtons(){
   curSkills().forEach((sk,i)=>{const el=btnEls[i];el.innerHTML=`${svgI(sk.ico||sk.key)}<span class="nm">${sk.short||sk.name.replace(' 마법','')}</span><div class="cd"></div><div class="ct"></div><span class="mana">${sk.mana}</span><span class="lvb">${G.hero.skills[i]}</span>`;el._ct=el.querySelector('.ct');el._k=null;el._nomp=null;el._rd=null});
   $('#btnAtk').innerHTML=`${svgI('atk')}<span class="nm">공격</span>`;
   potEl.innerHTML=`${svgI('pot')}<div class="cd"></div><span class="lvb" id="potN"></span>`;G.potCd=0;
-  const pc=$('#portraitCv').getContext('2d');pc.setTransform(1,0,0,1,0,0);pc.clearRect(0,0,108,108);pc.save();pc.translate(54,62);pc.scale(2.6,2.6);drawHero(pc,G.cls,0,0,Math.PI/2,0,{form:G.form});formBtn.innerHTML=`${svgI('form')}<span class="nm">폼</span><div class="cd"></div>`;formBtn.classList.toggle('on',!!G.form);formBtn.hidden=!FORMS[G.cls];pc.restore();
+  const pc=$('#portraitCv').getContext('2d');pc.setTransform(1,0,0,1,0,0);pc.clearRect(0,0,108,108);pc.save();pc.translate(54,62);pc.scale(2.6,2.6);drawHero(pc,G.cls,0,0,Math.PI/2,0,{form:G.form});formBtn.innerHTML=`${svgI('form')}<span class="nm">폼</span><div class="cd"></div><div class="ct"></div>`;formBtn._ct=formBtn.querySelector('.ct');formBtn._k=null;formBtn.classList.toggle('on',!!G.form);formBtn.hidden=!FORMS[G.cls];pc.restore();
   hudCache={};joyRest();
 }
 function refreshBtnLevels(){if(!G)return;curSkills().forEach((sk,i)=>{const lb=btnEls[i].querySelector('.lvb');if(lb)lb.textContent=G.hero.skills[i]})}
@@ -1888,9 +1888,14 @@ function bindBtn(el,idx){
 }
 bindBtn($('#btnAtk'),-1);btnEls.forEach((el,i)=>bindBtn(el,i));
 const formBtn=$('#btnForm');formBtn.addEventListener('pointerdown',e=>{e.preventDefault();toggleForm()});
-function toggleForm(){if(!G||G.over||paused||G.dying||!FORMS[G.cls])return;if((G.formCd||0)>0||G.ult5||G.p.dash)return;
-  G.form^=1;G.cd=G.cdF[G.form];G.formCd=1.5;G.buffs.formBuff=0;setupButtons();const F=FORMS[G.cls],p=G.p;sfx('rally');
-  G.fx.push({k:'ring',x:p.x,y:p.y,r0:46,r1:6,t:0,dur:.35,color:G.form?F.aura:'#ffffff',w:6});burst(p.x,p.y,G.form?F.aura:'#e8eef5',30,200,4);showBanner(G.form?F.name:G.def.name,G.form?'폼 체인지':'기본 폼')}
+const FORM_DUR=30,FORM_CD=60;
+function formFx(){const F=FORMS[G.cls],p=G.p;sfx('rally');G.fx.push({k:'ring',x:p.x,y:p.y,r0:46,r1:6,t:0,dur:.35,color:G.form?F.aura:'#ffffff',w:6});burst(p.x,p.y,G.form?F.aura:'#e8eef5',30,200,4)}
+// 폼 체인지: 30초 유지, 끝나면(또는 직접 해제하면) 60초 쿨타임
+function toggleForm(){if(!G||G.over||paused||G.dying||!FORMS[G.cls]||G.ult5||G.p.dash)return;
+  if(G.form){endForm();return}
+  if((G.formCd||0)>0){addText(G.p.x,G.p.y-28,`폼 체인지 ${Math.ceil(G.formCd)}초`,'#c9b4ff');return}
+  G.form=1;G.formT=FORM_DUR;G.cd=G.cdF[1];G.buffs.formBuff=0;setupButtons();formFx();showBanner(FORMS[G.cls].name,`폼 체인지 · ${FORM_DUR}초`)}
+function endForm(){if(!G||!G.form)return;G.form=0;G.formT=0;G.cd=G.cdF[0];G.formCd=FORM_CD;G.buffs.formBuff=0;setupButtons();formFx();showBanner(G.def.name,'기본 폼으로 돌아왔어요')}
 const potEl=$('#btnPot');potEl.addEventListener('pointerdown',e=>{e.preventDefault();usePotion()});
 function usePotion(){if(!G||G.over||paused||G.dying)return;if((G.potCd||0)>0)return;if(!(save.potions>0)){addText(G.p.x,G.p.y-28,'물약 없음','#ccc');sfx('nomana',.3);return}
   if(G.p.hp>=G.stats.hp){addText(G.p.x,G.p.y-28,'체력 가득','#ccc');return}save.potions--;persist();G.potCd=POTION.cd;healP(G.stats.hp*POTION.heal);sfx('item');burst(G.p.x,G.p.y,'#ff8a8a',16,140,3)}
