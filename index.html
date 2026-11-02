@@ -295,7 +295,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='0.1.0';
+const VERSION='0.1.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -319,18 +319,18 @@ function fmtStatShort(k,v){if(k==='armorPen'||k==='magicPen'||k==='crit')return 
 
 const CLASSES={
   warrior:{name:'전사',tag:'체력 · 공격력 · 방어력',strong:['hp','atk','def'],
-    base:{hp:220,mp:80,atk:18,def:12,ap:4,mr:8,spd:150,hpRegen:2,mpRegen:3,armorPen:0,magicPen:0,atkSpd:1,crit:.05},
-    grow:{hp:22,mp:4,atk:2.2,def:1.4,ap:.4,mr:.9,hpRegen:.15,mpRegen:.05},
+    base:{hp:220,mp:80,atk:18,def:12,ap:4,mr:8,spd:150,hpRegen:2,mpRegen:7,armorPen:0,magicPen:0,atkSpd:1,crit:.05},
+    grow:{hp:22,mp:4,atk:2.2,def:1.4,ap:.4,mr:.9,hpRegen:.15,mpRegen:.12},
     basic:'근접 단일 대상 3연타 · 내려베기 → 올려베기 → 찌르기(치명타율 +30%, 35% 확률 출혈). 사기 증진 중에는 1·2타에 스플래시',interval:.5,
     skills:[
       {key:'w1',name:'횡베기',mana:14,cd:4,aim:'cone',range:100,angle:150,desc:l=>`전방 넓은 부채꼴로 검을 휘둘러 공격력의 ${Math.round(160*sm(l))}% 피해`,bonus:['방어관통 +10%','피흡 8%','적중 시 이동속도 30% 감소']},
       {key:'w2',name:'내려찍기',mana:18,cd:7,aim:'single',range:85,desc:l=>`전방 적 1명을 내려찍어 공격력의 ${Math.round(260*sm(l))}% 피해, 기절`,bonus:['기절 0.8초 → 1.2초','착지 충격파(주변 50%)','기절한 적 받는 피해 +20%']},
-      {key:'w3',name:'검기',mana:20,cd:5,aim:'line',range:380,width:40,desc:l=>`반월 검기를 날려 (공격력+주문력)의 ${Math.round(140*sm(l))}% 피해, 치명타율 +25%. 레벨마다 크기·속도 증가`,bonus:['관통','마법관통 +15%','적중 시 30% 출혈']},
+      {key:'w3',name:'검기',mana:20,cd:5,aim:'line',range:380,width:40,desc:l=>`전방 일직선으로 관통하는 반월 검기를 날려 경로의 모든 적에게 (공격력+주문력)의 ${Math.round(140*sm(l))}% 피해, 치명타율 +25%. 레벨마다 크기·속도 증가`,bonus:['사거리 +30%','마법관통 +15%','적중 시 30% 출혈']},
       {key:'w4',name:'사기 증진',mana:40,cd:30,aim:'buff',ult:true,desc:l=>`8초간 공격속도 +${60+4*(l-1)}%, 치명타율 +30%, 평타 1·2타에 스플래시`,bonus:['지속 중 피흡 10%','지속시간 +3초','받는 피해 -15%, 이동속도 +20%']}
     ]},
   mage:{name:'마법사',tag:'마나 · 주문력',strong:['mp','ap'],
-    base:{hp:130,mp:180,atk:6,def:5,ap:24,mr:10,spd:150,hpRegen:1.2,mpRegen:6,armorPen:0,magicPen:.05,atkSpd:1,crit:.05},
-    grow:{hp:13,mp:12,atk:.5,def:.6,ap:3,mr:1,hpRegen:.08,mpRegen:.15},
+    base:{hp:130,mp:180,atk:6,def:5,ap:24,mr:10,spd:150,hpRegen:1.2,mpRegen:13,armorPen:0,magicPen:.05,atkSpd:1,crit:.05},
+    grow:{hp:13,mp:12,atk:.5,def:.6,ap:3,mr:1,hpRegen:.08,mpRegen:.3},
     basic:'원거리 3연타 · 마법 에너지 → 더 큰 에너지 → 폭발 에너지',interval:.6,
     skills:[
       {key:'m1',name:'전격 마법',mana:18,cd:4,aim:'line',range:330,width:28,el:'elec',desc:l=>`직선 번개로 주문력의 ${Math.round(150*sm(l))}% 전기 피해, 25% 확률로 마비`,bonus:['마비 확률 40%','주변 적 2명에게 연쇄','마비된 적 받는 피해 +20%']},
@@ -339,8 +339,8 @@ const CLASSES={
       {key:'m4',name:'마력 해방',mana:60,cd:35,aim:'self',radius:210,ult:true,desc:l=>`주변에 주문력의 ${Math.round(300*sm(l))}% 피해, 6초간 쿨타임 3배속 · 마나재생 4배`,bonus:['범위 +20%','지속 중 마법관통 +15%','지속 중 모든 평타 폭발']}
     ]},
   archer:{name:'궁수',tag:'공격력 · 이동속도',strong:['atk','spd'],
-    base:{hp:150,mp:90,atk:20,def:6,ap:4,mr:6,spd:178,hpRegen:1.4,mpRegen:3.5,armorPen:.05,magicPen:0,atkSpd:1.1,crit:.1},
-    grow:{hp:15,mp:5,atk:2.5,def:.8,ap:.3,mr:.7,hpRegen:.1,mpRegen:.06},
+    base:{hp:150,mp:90,atk:20,def:6,ap:4,mr:6,spd:178,hpRegen:1.4,mpRegen:8,armorPen:.05,magicPen:0,atkSpd:1.1,crit:.1},
+    grow:{hp:15,mp:5,atk:2.5,def:.8,ap:.3,mr:.7,hpRegen:.1,mpRegen:.14},
     basic:'원거리 화살 1발 · 탭하면 자동조준, 드래그하면 수동조준',interval:.55,
     skills:[
       {key:'a1',name:'관통화살',mana:16,cd:5,aim:'line',range:460,width:18,desc:l=>`빠르고 강한 관통 화살로 공격력의 ${Math.round(220*sm(l))}% 피해. 방어관통 +30%, 치명타율 +30%`,bonus:['관통할 때마다 피해 +10%','치명타 시 쿨타임 30% 감소','적중한 적 방어력 -20%']},
@@ -349,8 +349,8 @@ const CLASSES={
       {key:'a4',name:'화살세례',mana:45,cd:28,aim:'ground',range:380,radius:100,ult:true,desc:l=>`4초간 지정 범위에 화살비, 0.2초마다 공격력의 ${Math.round(35*sm(l))}% 피해`,bonus:['범위 +20%','범위 안 적 둔화 30%','범위 안 적 출혈']}
     ]},
   assassin:{name:'암살자',tag:'공격력 · 이동속도',strong:['atk','spd'],
-    base:{hp:150,mp:100,atk:21,def:7,ap:4,mr:6,spd:186,hpRegen:1.5,mpRegen:4,armorPen:.08,magicPen:0,atkSpd:1.15,crit:.15},
-    grow:{hp:15,mp:5,atk:2.6,def:.8,ap:.3,mr:.7,hpRegen:.1,mpRegen:.06},
+    base:{hp:150,mp:100,atk:21,def:7,ap:4,mr:6,spd:186,hpRegen:1.5,mpRegen:9,armorPen:.08,magicPen:0,atkSpd:1.15,crit:.15},
+    grow:{hp:15,mp:5,atk:2.6,def:.8,ap:.3,mr:.7,hpRegen:.1,mpRegen:.14},
     basic:'근접 3연타 · 베기 → 출혈 베기(출혈 확률 높음) → X자 2연속 베기',interval:.38,
     skills:[
       {key:'s1',name:'돌진베기',mana:15,cd:5,aim:'dash',range:170,desc:l=>`빠르게 돌진하며 경로의 모든 적에게 공격력의 ${Math.round(150*sm(l))}% 피해. 방어관통 +30%`,bonus:['적중한 적 출혈','처치 시 쿨타임 50% 감소','2회 연속 사용']},
@@ -719,7 +719,7 @@ function enterFloor(f){
   showBanner(`슬라임 동굴 ${f}층`,f===10?'킹 슬라임의 방':'포탈룸을 찾으세요');
   $('#bossbar').hidden=true;
 }
-function rollType(f){const pool=['green','green','water'];if(f>=2)pool.push('fire');if(f>=3)pool.push('poison');if(f>=4)pool.push('big');if(f>=5)pool.push('elec','green');if(f>=6)pool.push('ice','water');if(f>=8)pool.push('big','fire');return pick(pool)}
+function rollType(f){if(Math.random()<.06)return f>=6&&Math.random()<.5?'ice':'water';const pool=['green','green'];if(f>=2)pool.push('fire');if(f>=3)pool.push('poison');if(f>=4)pool.push('big');if(f>=5)pool.push('elec','green');if(f>=8)pool.push('big','fire');return pick(pool)}
 const ETYPES={
   green:{name:'초록 슬라임',el:'grass',hp:40,atk:8,def:3,mr:3,spd:70,r:13,ai:'hop',xp:6,gold:[3,6]},
   water:{name:'물 슬라임',el:'water',hp:32,atk:9,def:2,mr:6,spd:60,r:12,ai:'shoot',xp:7,gold:[3,7]},
@@ -858,7 +858,7 @@ const SK={
     if(t){hit(t,{phys:atk()*2.6*sm(lv)});if(!t.dead){stunE(t,lv>=3?1.2:.8,'stun');if(lv>=10)t.st.vuln={amt:.2,t:3}}}
     if(lv>=6)for(const e of inCircle(cx,cy,70))if(e!==t)hit(e,{phys:atk()*1.3*sm(lv)})},
   w3(lv,a){const i=aimInfo(a,380);G.p.face=i.dir;swing();const sp=520+35*(lv-1),r=16+2.5*(lv-1);
-    proj({x:G.p.x,y:G.p.y,vx:Math.cos(i.dir)*sp,vy:Math.sin(i.dir)*sp,r,life:380/sp,kind:'crescent',pierce:lv>=3,color:'#cfe8ff',
+    proj({x:G.p.x,y:G.p.y,vx:Math.cos(i.dir)*sp,vy:Math.sin(i.dir)*sp,r,life:(lv>=3?494:380)/sp,kind:'crescent',pierce:true,color:'#cfe8ff',
       onHit:e=>hit(e,{phys:atk()*1.4*sm(lv),magic:ap()*1.4*sm(lv),critBonus:.25,magicPen:lv>=6?.15:0,bleed:lv>=10?.3:0})})},
   w4(lv){G.buffs.warUlt=8+(lv>=6?3:0);G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:10,r1:90,t:0,dur:.5,color:'#ff9a4a'});burst(G.p.x,G.p.y,'#ffb36b',22,180);G.shake+=4},
 
@@ -1045,7 +1045,7 @@ function updEnemy(e,dt){
     let vx=0,vy=0;if(chase){if(d>250){vx=ux;vy=uy}else if(d<150){vx=-ux;vy=-uy}else{vx=-uy*.5;vy=ux*.5}}
     else{e.wander+=rand(-.5,.5)*dt*4;vx=Math.cos(e.wander)*.4;vy=Math.sin(e.wander)*.4}
     moveEnt(e,vx*e.spd*sm_*dt,vy*e.spd*sm_*dt);e.hop=(G.time*1.5+e.x*.01)%1*.3;
-    e.shootCd-=dt;if(chase&&d<400&&e.shootCd<=0){e.shootCd=rand(1.3,2);if(d<420)sfx('eshot',.08);const ice=e.type==='ice';const n=(G.floor>=5||e.elite)?3:1,a0=Math.atan2(uy,ux);for(let k=0;k<n;k++){const a=a0+(k-(n-1)/2)*.22;G.projs.push({x:e.x,y:e.y,vx:Math.cos(a)*260,vy:Math.sin(a)*260,r:ice?6:7,life:2,t:0,hostile:true,dmg:e.atk,el:e.el,slow:ice,kind:ice?'shard':'bubble',color:ice?'#c9f2ff':'#6fc2ff',hitSet:new Set()})}}
+    e.shootCd-=dt;if(chase&&d<400&&e.shootCd<=0){e.shootCd=rand(1.3,2);if(d<420)sfx('eshot',.08);const ice=e.type==='ice';const n=e.elite?3:1,a0=Math.atan2(uy,ux);for(let k=0;k<n;k++){const a=a0+(k-(n-1)/2)*.22;G.projs.push({x:e.x,y:e.y,vx:Math.cos(a)*260,vy:Math.sin(a)*260,r:ice?6:7,life:2,t:0,hostile:true,dmg:e.atk,el:e.el,slow:ice,kind:ice?'shard':'bubble',color:ice?'#c9f2ff':'#6fc2ff',hitSet:new Set()})}}
     touch()}
 }
 function updBoss(e,dt,d,ux,uy,sm_){
