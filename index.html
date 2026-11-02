@@ -417,7 +417,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='1.2.0';
+const VERSION='1.2.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -895,6 +895,7 @@ const P2={
     mkS('psn4','궤도 포격',55,30,{t:'barrage',range:420,n:6,spreadR:200,r:75,m:2,iv:.25,delay:.9,seek:true,nm:'궤도 포격',col:'#ff6a5a'},{ult:true,short:'궤도포격'})]}
 };
 for(const k in P2)P2[k].skills.forEach(s=>s._cls=k);
+const SPK=['sp','sp1','sp2'];const spOf=(h,i)=>h[SPK[i]]||0;const spTotal=h=>spOf(h,0)+spOf(h,1)+spOf(h,2);
 function presetOf(cls,i){return i===1?FORMS[cls]:i===2?P2[cls]:null}
 
 // ================= 확장 템플릿 엔진 (프리셋 2 전용 기술) =================
@@ -1018,9 +1019,9 @@ for(const k of ['samurai','gunblade','gunner','lancer','sniper'])CLASSES[k].skil
 
 // ================= SAVE =================
 const SAVE_KEY='dungeon-slayer-save-v1';
-const newHero=()=>({level:1,xp:0,sp:0,preset:0,skills:[1,1,1,1],fskills:[1,1,1,1],pskills:[1,1,1,1],equip:{head:null,arm:null,leg:null,shoe:null,acc:null}});
+const newHero=()=>({level:1,xp:0,sp:0,sp1:0,sp2:0,spv:2,preset:0,skills:[1,1,1,1],fskills:[1,1,1,1],pskills:[1,1,1,1],equip:{head:null,arm:null,leg:null,shoe:null,acc:null}});
 const defaultSave=()=>({potions:3,gold:300,mats:{jelly:0,core:0,crystal:0,crown:0},stash:[],selected:'warrior',heroes:Object.fromEntries(CLASS_ORDER.map(k=>[k,newHero()])),nextId:1,best:0,clears:0});
-function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.heroes){const d=defaultSave();const r=Object.assign(d,s,{mats:Object.assign(d.mats,s.mats),heroes:Object.assign(d.heroes,s.heroes)});for(const k in r.heroes){if(!r.heroes[k].fskills)r.heroes[k].fskills=[1,1,1,1];if(!r.heroes[k].pskills)r.heroes[k].pskills=[1,1,1,1]}return r}}catch(e){}return defaultSave()}
+function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.heroes){const d=defaultSave();const r=Object.assign(d,s,{mats:Object.assign(d.mats,s.mats),heroes:Object.assign(d.heroes,s.heroes)});for(const k in r.heroes){const h=r.heroes[k];if(!h.fskills)h.fskills=[1,1,1,1];if(!h.pskills)h.pskills=[1,1,1,1];if(h.spv!==2){const used=a=>a.reduce((x,y)=>x+y,0)-4,L=h.level-1;h.sp=Math.max(0,L-used(h.skills));h.sp1=Math.max(0,L-used(h.fskills));h.sp2=Math.max(0,L-used(h.pskills));h.spv=2}}return r}}catch(e){}return defaultSave()}
 function persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
 let save=loadSave();
 const xpNeed=l=>Math.round(40+l*18+l*l*2.2);
@@ -1358,7 +1359,7 @@ function renderMenu(){
   $('#res').innerHTML=resChips();
   document.querySelectorAll('#nav button').forEach(b=>{b.setAttribute('aria-selected',b.dataset.tab===tab);if(b.dataset.tab==='ach')b.classList.toggle('ndot',hasClaimable())});
   const cls=save.selected,h=save.heroes[cls],C=CLASSES[cls];
-  $('#sideName').innerHTML=`${C.name}<span>Lv ${h.level}${h.sp?` · 스킬포인트 ${h.sp}`:''}</span>`;
+  $('#sideName').innerHTML=`${C.name}<span>Lv ${h.level}${spTotal(h)?` · 스킬포인트 ${spTotal(h)}`:''}</span>`;
   $('#sideXp').style.width=(h.level>=100?100:h.xp/xpNeed(h.level)*100)+'%';
   const dk=DUNGEONS[save.dg]?save.dg:'slime',DG=DUNGEONS[dk],bests=save.bests||{},bst=Math.max(bests[dk]||0,dk==='slime'?save.best||0:0),clr=((save.clearsBy||{})[dk]||0)+(dk==='slime'&&!(save.clearsBy||{}).slime?save.clears||0:0);
   $('#sideSub').textContent=`${DG.floors}층 · 권장 Lv ${DG.rec}`+(bst?` · 최고 ${bst}층`:'')+(clr?` · 클리어 ${clr}회`:'');
@@ -1412,9 +1413,9 @@ const MENU_TABS={
   },
   skill(cls,h,C){
     const cur=h.preset||0,names=['기본','프리셋 1','프리셋 2'];
-    const card=i=>{const F=presetOf(cls,i),sk=F?F.skills:C.skills,el=F&&F.el?EL[F.el]:null;return `<button class="pset" data-act="preset" data-k="${i}" aria-pressed="${cur===i}"><span class="pl">${names[i]}${cur===i?' · 사용 중':''}</span><b style="color:${F?F.aura:'var(--gold-hi)'}">${F?F.name:C.name}</b><small>${F?(F.desc||'')+(el?` · <span style="color:${el[1]}">${el[0]} 속성</span>`:''):'기본 스킬셋'}</small><span class="picos">${sk.map(x=>`<i class="${x.ult?'u':''}">${svgI(x.ico||x.key)}</i>`).join('')}</span></button>`};
+    const card=i=>{const F=presetOf(cls,i),sk=F?F.skills:C.skills,el=F&&F.el?EL[F.el]:null;return `<button class="pset" data-act="preset" data-k="${i}" aria-pressed="${cur===i}"><span class="pl">${names[i]}${cur===i?' · 사용 중':''}${spOf(h,i)?` · 포인트 ${spOf(h,i)}`:''}</span><b style="color:${F?F.aura:'var(--gold-hi)'}">${F?F.name:C.name}</b><small>${F?(F.desc||'')+(el?` · <span style="color:${el[1]}">${el[0]} 속성</span>`:''):'기본 스킬셋'}</small><span class="picos">${sk.map(x=>`<i class="${x.ult?'u':''}">${svgI(x.ico||x.key)}</i>`).join('')}</span></button>`};
     const rows=cur===0?skillRows(cls,h):presetRows(cls,h,cur);
-    return `<h2>${C.name} 스킬 <span class="sub" style="font-family:var(--body)">· 남은 포인트 ${h.sp}</span></h2><p class="note" style="margin:0 0 8px">던전에 들고 갈 스킬 프리셋을 골라요. 프리셋마다 스킬 레벨은 따로 오르고 스킬포인트는 함께 써요. 원정 중에는 바꿀 수 없어요.</p>
+    return `<h2>${C.name} 스킬 <span class="sub" style="font-family:var(--body)">· 남은 포인트 ${spOf(h,h.preset||0)}</span></h2><p class="note" style="margin:0 0 8px">던전에 들고 갈 스킬 프리셋을 골라요. 레벨업할 때마다 세트별로 스킬포인트가 1개씩 들어와서 세 세트 모두 만렙까지 올릴 수 있어요. 원정 중에는 바꿀 수 없어요.</p>
     <div class="presets">${[0,1,2].map(card).join('')}</div>
     <div class="tierhead"><b>${names[cur]} · ${cur?presetOf(cls,cur).name:C.name}</b><span>스킬 레벨 3·6·10에서 부가효과가 열려요${cur&&presetOf(cls,cur).el?` · 모든 공격이 ${EL[presetOf(cls,cur).el][0]} 속성`:''}</span></div><div class="list">${rows}</div>`;
   }
@@ -1435,8 +1436,8 @@ function enhSection(cls,h){
   return `<h3>장비 강화</h3><p class="note" style="margin:0 0 6px">골드를 들여 모든 장비를 최대 +20까지 강화할 수 있어요. 강화한 장비는 팔 때 들인 비용 일부를 돌려받아요.</p>${panel}
     <div class="tierhead"><b>강화할 장비 선택</b><span>장착 중인 장비가 먼저 나와요</span></div>${filterChips(pool,flt,'fltenh')}<div class="pick">${vis.map(x=>`<button data-act="enhsel" data-k="${x.id}" aria-pressed="${it&&x.id===it.id}" style="color:${itemColor(x)}">${x.up?`+${x.up} `:''}${itemBase(x)}<small>${SLOTS[x.slot].name}${eq.includes(x)?' · 장착 중':''}</small></button>`).join('')||'<p class="note">해당 부위 장비가 없어요.</p>'}</div>`;
 }
-function skillRows(cls,h){const C=CLASSES[cls];return C.skills.map((sk,i)=>{const lv=h.skills[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><button class="btn gold" data-act="sup" data-k="${i}" ${h.sp<1||lv>=10?'disabled':''}>+1</button></div>`}).join('')}
-function presetRows(cls,h,idx){const F=presetOf(cls,idx);if(!F)return '';const key=idx===1?'fskills':'pskills';if(!h[key])h[key]=[1,1,1,1];const arr=h[key];return F.skills.map((sk,i)=>{const lv=arr[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><button class="btn gold" data-act="psup" data-k="${idx}:${i}" ${h.sp<1||lv>=10?'disabled':''}>+1</button></div>`}).join('')}
+function skillRows(cls,h){const C=CLASSES[cls];return C.skills.map((sk,i)=>{const lv=h.skills[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><button class="btn gold" data-act="sup" data-k="${i}" ${spOf(h,0)<1||lv>=10?'disabled':''}>+1</button></div>`}).join('')}
+function presetRows(cls,h,idx){const F=presetOf(cls,idx);if(!F)return '';const key=idx===1?'fskills':'pskills';if(!h[key])h[key]=[1,1,1,1];const arr=h[key];return F.skills.map((sk,i)=>{const lv=arr[i];return `<div class="skill"><div class="sico ${sk.ult?'ult':''}">${svgI(sk.ico||sk.key)}</div><div style="min-width:0"><div class="nm">${sk.name}<em>Lv ${lv}/10</em></div><p>${sk.desc(lv)} · 마나 ${sk.mana} · 쿨 ${sk.cd}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}</div></div><button class="btn gold" data-act="psup" data-k="${idx}:${i}" ${spOf(h,idx)<1||lv>=10?'disabled':''}>+1</button></div>`}).join('')}
 function canAfford(R){if(save.gold<R.gold)return false;for(const m in R.mats)if(save.mats[m]<R.mats[m])return false;return true}
 function toastMenu(msg){document.querySelectorAll('.mtoast').forEach(x=>x.remove());const t=document.createElement('div');t.className='mtoast';t.textContent=msg;Object.assign(t.style,{position:'fixed',left:'50%',bottom:'calc(env(safe-area-inset-bottom,0px) + 18px)',transform:'translateX(-50%)',background:'var(--panel-solid)',border:'1px solid var(--line)',borderRadius:'999px',padding:'6px 14px',fontSize:'13px',zIndex:40});app.appendChild(t);setTimeout(()=>t.remove(),1800)}
 $('#dgSel').addEventListener('click',e=>{const b=e.target.closest('[data-dgstep]');if(!b)return;const n=DG_ORDER.length,i=Math.max(0,DG_ORDER.indexOf(DUNGEONS[save.dg]?save.dg:'slime'));save.dg=DG_ORDER[(i+(+b.dataset.dgstep)+n)%n];sfx('click');persist();renderMenu()});
@@ -1469,7 +1470,7 @@ function menuAction(e){
   else if(act==='craftw'){const w=+k,R=W_RECIPE[w];if(canAfford(R)){save.gold-=R.gold;for(const m in R.mats)save.mats[m]-=R.mats[m];const r=Math.random(),rar=r<.1?2:r<.4?1:0;const it=makeWeapon(cls,w,rar);save.stash.push(it);toastMenu(`${RARITY[rar].name} ${itemName(it)} 제작 완료`)}}
   else if(act==='craftu'){const R=U_RECIPE;if(canAfford(R)){save.gold-=R.gold;for(const m in R.mats)save.mats[m]-=R.mats[m];const it=makeUnique(cls,+k);save.stash.push(it);toastMenu(`고유 장비 ${it.name} 제작 완료`)}}
   else if(act==='elem'){const ER={gold:500,mats:{crystal:5}},ew=h.equip.weapon;if(ew&&canAfford(ER)){save.gold-=ER.gold;save.mats.crystal-=5;ew.el=k;toastMenu(`${itemName(ew)} 완성`)}}
-  else if(act==='psup'){const [pi,i]=k.split(':').map(Number),key=pi===1?'fskills':'pskills';if(!h[key])h[key]=[1,1,1,1];if(h.sp>0&&h[key][i]<10){h.sp--;h[key][i]++;if(G&&!G.over)renderPauseSkills()}}
+  else if(act==='psup'){const [pi,i]=k.split(':').map(Number),key=pi===1?'fskills':'pskills';if(!h[key])h[key]=[1,1,1,1];if(spOf(h,pi)>0&&h[key][i]<10){h[SPK[pi]]--;h[key][i]++;if(G&&!G.over)renderPauseSkills()}}
   else if(act==='preset'){h.preset=+k;const F=presetOf(cls,+k);toastMenu(`${['기본','프리셋 1','프리셋 2'][+k]} · ${F?F.name:CLASSES[cls].name} 스킬셋으로 원정을 떠나요`)}
   else if(act==='sup'){const i=+k;if(h.sp>0&&h.skills[i]<10){h.sp--;h.skills[i]++;if(G&&!G.over)renderPauseSkills()}}
   persist();renderMenu();
@@ -1816,7 +1817,7 @@ function killEnemy(e){
 function dropAt(x,y,kind,val){G.drops.push({x,y,kind,val,vx:rand(-90,90),vy:rand(-90,90),t:0})}
 function gainXp(n){
   const h=G.hero;G.xpGained+=n;if(h.level>=100)return;h.xp+=n;let up=false;
-  while(h.level<100&&h.xp>=xpNeed(h.level)){h.xp-=xpNeed(h.level);h.level++;h.sp++;up=true;G.levels++}
+  while(h.level<100&&h.xp>=xpNeed(h.level)){h.xp-=xpNeed(h.level);h.level++;h.sp=(h.sp||0)+1;h.sp1=(h.sp1||0)+1;h.sp2=(h.sp2||0)+1;up=true;G.levels++}
   if(up){sfx('levelup');const r=G.p.hp/G.stats.hp,rm=G.p.mp/G.stats.mp;G.stats=calcStats(G.cls,h);G.p.hp=Math.min(G.stats.hp,G.stats.hp*r+G.stats.hp*.2);G.p.mp=Math.min(G.stats.mp,G.stats.mp*rm+G.stats.mp*.3);
     showBanner(`레벨 ${h.level}!`,'일시정지에서 스킬을 올릴 수 있어요');G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:10,r1:70,t:0,dur:.6,color:'#ffd34d'});persist()}
 }
@@ -2521,7 +2522,7 @@ $('#pauseBtn').addEventListener('click',()=>togglePause());
 $('#resumeBtn').addEventListener('click',()=>togglePause(false));
 $('#giveupBtn').addEventListener('click',()=>{$('#giveupNote').hidden=false});
 $('#giveupYes').addEventListener('click',()=>{$('#pause').hidden=true;paused=false;endRun(false);$('#rTitle').textContent='원정 포기';});
-function renderPauseSkills(){if(!G)return;$('#pauseSp').textContent=`${G.def.name} Lv ${G.hero.level} · 남은 스킬포인트 ${G.hero.sp}`;$('#pauseSkills').innerHTML=G.form?presetRows(G.cls,G.hero,G.form):skillRows(G.cls,G.hero);refreshBtnLevels()}
+function renderPauseSkills(){if(!G)return;$('#pauseSp').textContent=`${G.def.name} Lv ${G.hero.level} · 남은 스킬포인트 ${spOf(G.hero,G.form||0)}`;$('#pauseSkills').innerHTML=G.form?presetRows(G.cls,G.hero,G.form):skillRows(G.cls,G.hero);refreshBtnLevels()}
 function togglePause(v){if(state!=='game'||!G||G.over)return;paused=v==null?!paused:v;$('#pause').hidden=!paused;$('#giveupNote').hidden=true;if(paused){renderPauseSkills();G.atkHold=null;G.aimSkill=null;joy.active=false;joyRest()}}
 
 // ================= MENU BACKDROP =================
@@ -2543,7 +2544,7 @@ const TIPS=[
  ['체력 관리','물약이 없으니 체력 재생과 피흡, 보호막을 잘 챙겨야 해요. 위험하면 잠시 물러나 체력을 회복하세요.'],
  ['프리셋','스킬 탭에서 기본 · 프리셋 1 · 프리셋 2 중 하나를 골라 던전에 들고 가요. 프리셋마다 스킬 레벨은 따로 올려요.'],
  ['신의 탑','천공신의 회전 광선은 빛줄기 사이 빈틈으로 피하세요. 심판의 빛기둥은 바닥 표시를 보고 미리 빠지세요.'],
- ['스킬 포인트','레벨업으로 얻은 스킬 포인트는 기본 폼과 폼 기술에 함께 써요.'],
+ ['스킬 포인트','레벨업할 때마다 기본 · 프리셋 1 · 프리셋 2에 스킬 포인트가 1개씩 따로 들어와요. 세 세트 모두 만렙까지 올릴 수 있어요.'],
  ['보스 패턴','바닥에 붉은 표시가 뜨면 곧 공격이 떨어진다는 뜻이에요. 표시 밖으로 피하세요.'],
  ['격노','보스는 체력이 절반 아래로 떨어지면 더 빠르고 거칠어져요.'],
  ['포탈','층마다 포탈 방을 찾아 들어가면 다음 층으로 넘어가요. 미니맵을 확인하세요.'],
