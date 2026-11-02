@@ -295,7 +295,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='0.3.2';
+const VERSION='0.3.3';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -364,7 +364,7 @@ const CLASSES={
     basic:'톱날대검 3연타 · 베기 → 2번 베기 → 3번 베기. 패시브: 공격·스킬마다 체력 소모, 모든 공격 피흡 3%',interval:.42,
     skills:[
       {key:'b1',name:'난타베기',mana:14,cd:4.5,aim:'cone',range:85,angle:110,desc:l=>`전방 짧은 부채꼴을 빠르게 3번 넓게 베어 각각 공격력의 ${Math.round(60*sm(l))}% 피해, 출혈`,bonus:['출혈 피해 +50%','4연속 베기','적중 시 이동속도 +20%']},
-      {key:'b2',name:'광분',mana:25,cd:16,aim:'buff',desc:l=>`6초간 공격속도 +${70+6*(l-1)}%, 모든 공격 피흡 15%`,bonus:['지속시간 +2초','받는 피해 -15%','이동속도 +25%']},
+      {key:'b2',name:'광분',mana:25,cd:16,aim:'buff',desc:l=>`6초간 공격속도 +${70+6*(l-1)}%, 모든 공격 피흡 15%, 지속 중 체력 소모 없음`,bonus:['지속시간 +2초','받는 피해 -15%','이동속도 +25%']},
       {key:'b3',name:'출혈',mana:20,cd:10,aim:'self',radius:95,desc:l=>`4초간 주변으로 피를 뿜어 0.25초마다 공격력의 ${Math.round(22*sm(l))}% 마법 피해와 광역 출혈. 자신의 체력이 서서히 줄어듦`,bonus:['범위 +25%','자해량 절반','범위 안 적 둔화 30%']},
       {key:'b4',name:'무아지경',mana:50,cd:35,aim:'self',radius:170,ult:true,desc:l=>`근처 모든 적을 1마리당 10번씩 매우 빠르게 베어 각각 공격력의 ${Math.round(30*sm(l))}% 피해. 시전 중 무적`,bonus:['범위 +25%','베기 12회','처치할 때마다 체력 2% 회복']}
     ]},
@@ -373,9 +373,9 @@ const CLASSES={
     grow:{hp:19,mp:5,atk:1.4,def:1.1,ap:1,mr:1,hpRegen:.08,mpRegen:.14},
     basic:'성검 2연타 · 베기 → 성검찌르기(방어관통, 입힌 피해의 20% 회복). 패시브: 공격·스킬마다 마나를 조금 쓰고 체력을 아주 조금 회복',interval:.55,
     skills:[
-      {key:'p1',name:'성검돌격',mana:16,cd:6,aim:'dash',range:180,desc:l=>`전방으로 돌격하며 경로의 적에게 공격력 ${Math.round(90*sm(l))}% + 주문력 ${Math.round(40*sm(l))}% 관통 피해, 입힌 피해의 20% 회복`,bonus:['돌격 거리 +30%','적중한 적 기절 0.5초','처치 시 쿨타임 50% 감소']},
+      {key:'p1',name:'성검돌격',mana:16,cd:6,aim:'dash',range:180,desc:l=>`전방으로 돌격하며 경로의 적에게 공격력 ${Math.round(90*sm(l))}% + 주문력 ${Math.round(40*sm(l))}% 관통 피해, 입힌 피해의 8% 회복`,bonus:['돌격 거리 +30%','적중한 적 기절 0.5초','처치 시 쿨타임 50% 감소']},
       {key:'p2',name:'성기사의 깃발',short:'깃발',mana:22,cd:18,aim:'buff',desc:l=>`깃발을 치켜올려 6초간 방어력·마법저항력 +${30+2*(l-1)}%`,bonus:['지속시간 +3초','체력재생 3배','받는 피해 -10%']},
-      {key:'p3',name:'휘돌려베기',mana:20,cd:8,aim:'self',radius:85,desc:l=>`주변을 5바퀴 휘돌려 베어 회전마다 공격력의 ${Math.round(35*sm(l))}% 광역 피해, 입힌 피해의 10% 회복`,bonus:['범위 +20%','회전 7바퀴','적 넉백']},
+      {key:'p3',name:'휘돌려베기',mana:20,cd:8,aim:'self',radius:85,desc:l=>`주변을 5바퀴 휘돌려 베어 회전마다 공격력의 ${Math.round(35*sm(l))}% 광역 피해, 입힌 피해의 3% 회복`,bonus:['범위 +20%','회전 7바퀴','적 넉백']},
       {key:'p4',name:'성스러운 일격',short:'성스러운일격',mana:45,cd:28,aim:'single',range:90,ult:true,desc:l=>`근접 단일 대상에게 공격력 ${Math.round(250*sm(l))}% + 주문력 ${Math.round(250*sm(l))}% 피해, 입힌 피해의 30% 회복`,bonus:['대상 기절 1.5초','주변 적에게 50% 신성 폭발','체력 30% 이하 대상 피해 2배']}
     ]},
   ranger:{name:'레인저',tag:'공격력 · 이동속도',strong:['atk','spd'],comboLen:2,range:320,
@@ -970,11 +970,11 @@ const SK={
     G.p.inv=n*.08+.3;G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:20,r1:R,t:0,dur:.4,color:'#ff4a4a',w:6});
     for(let k=0;k<n;k++)G.timers.push({t:k*.08,fn:()=>{if(!G||G.over)return;sfx('swing',.02);G.shake=Math.min(6,G.shake+1);for(const e of targets){if(e.dead)continue;G.fx.push({k:'xslash',x:e.x+rand(-6,6),y:e.y+rand(-6,6),t:0,dur:.15,color:k%2?'#ff7a7a':'#fff'});const r=hit(e,{phys:atk()*.3*sm(lv)});if(r.killed&&lv>=10)healP(G.stats.hp*.02)}}})},
   p1(lv,a){const len=180*(lv>=3?1.3:1),i=aimInfo(a,len,'melee');let killed=false;
-    startDash(i.dir,len,520,e=>{const r=hit(e,{phys:atk()*.9*sm(lv),magic:ap()*.4*sm(lv),lifesteal:.2});if(r.killed)killed=true;else if(lv>=6)stunE(e,.5,'stun')},()=>{if(lv>=10&&killed)G.cd[0]*=.5});
+    startDash(i.dir,len,520,e=>{const r=hit(e,{phys:atk()*.9*sm(lv),magic:ap()*.4*sm(lv),lifesteal:.08});if(r.killed)killed=true;else if(lv>=6)stunE(e,.5,'stun')},()=>{if(lv>=10&&killed)G.cd[0]*=.5});
     G.fx.push({k:'trail',x:G.p.x,y:G.p.y,dir:i.dir,len,t:0,dur:.45,color:'#fff3c4'})},
   p2(lv){G.buffs.banner=6+(lv>=3?3:0);G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:10,r1:70,t:0,dur:.5,color:'#e3b04b'});burst(G.p.x,G.p.y-20,'#fff3c4',18,140,3)},
   p3(lv){const R=85*(lv>=3?1.2:1),n=lv>=6?7:5;
-    for(let k=0;k<n;k++)G.timers.push({t:k*.22,fn:()=>{if(!G||G.over)return;sfx('wide',.05);G.fx.push({k:'spin',x:G.p.x,y:G.p.y,r:R,t:0,dur:.22});for(const e of inCircle(G.p.x,G.p.y,R))hit(e,{phys:atk()*.35*sm(lv),lifesteal:.1,knock:lv>=10?16:0})}})},
+    for(let k=0;k<n;k++)G.timers.push({t:k*.22,fn:()=>{if(!G||G.over)return;sfx('wide',.05);G.fx.push({k:'spin',x:G.p.x,y:G.p.y,r:R,t:0,dur:.22});for(const e of inCircle(G.p.x,G.p.y,R))hit(e,{phys:atk()*.35*sm(lv),lifesteal:.03,knock:lv>=10?16:0})}})},
   p4(lv,a){const p=G.p;let c=G.enemies.filter(e=>!e.dead&&Math.hypot(e.x-p.x,e.y-p.y)<90+e.r);
     if(a&&a.manual){const d=Math.atan2(a.dy,a.dx);c=c.filter(e=>angDiff(Math.atan2(e.y-p.y,e.x-p.x),d)<60*DEG)}
     if(!c.length){addText(p.x,p.y-28,'대상 없음','#ccc');return false}
@@ -1011,7 +1011,7 @@ function dart(d,mult,o){const p=G.p;
 function swing(){G.p.swingT=.18;G.p.swingDir*=-1}
 // 광전사: 공격·스킬마다 체력 소모 / 성기사: 마나를 조금 쓰고 체력 회복
 function classPassive(skill){const p=G.p,mh=G.stats.hp;
-  if(G.cls==='berserker'){const c=mh*(skill?.025:.008);p.hp=Math.max(1,p.hp-c)}
+  if(G.cls==='berserker'){if(G.buffs.frenzy>0)return;const c=mh*(skill?.025:.008);p.hp=Math.max(1,p.hp-c)}
   else if(G.cls==='paladin'){const m=skill?3:1.5;if(p.mp>=m){p.mp-=m;healP(mh*(skill?.01:.004),true)}}}
 function castSkill(i,a){
   if(!G||G.over||paused||G.dying)return;const p=G.p,sk=G.def.skills[i],lv=G.hero.skills[i];
@@ -1084,7 +1084,7 @@ function update(dt){
   if(p.atk){p.atk.t+=dt;if(p.atk.t>=p.atk.dur)p.atk=null}
   p.inv=Math.max(0,p.inv-dt);if(G.stepT>0)G.stepT-=dt;p.stun=Math.max(0,p.stun-dt);p.slowT=Math.max(0,p.slowT-dt);p.swingT=Math.max(0,p.swingT-dt);
   for(let i=G.timers.length-1;i>=0;i--){const tm=G.timers[i];tm.t-=dt;if(tm.t<=0){G.timers.splice(i,1);tm.fn()}}
-  if(G.bloodAura){const ba=G.bloodAura,lv=ba.lv,R=95*(lv>=3?1.25:1);ba.t+=dt;ba.tt-=dt;p.hp=Math.max(1,p.hp-G.stats.hp*(lv>=6?.0075:.015)*dt);
+  if(G.bloodAura){const ba=G.bloodAura,lv=ba.lv,R=95*(lv>=3?1.25:1);ba.t+=dt;ba.tt-=dt;if(!(G.buffs.frenzy>0))p.hp=Math.max(1,p.hp-G.stats.hp*(lv>=6?.0075:.015)*dt);
     for(let k=0;k<3;k++){const a=rand(0,TAU),v=rand(80,220);G.parts.push({x:p.x,y:p.y-6,vx:Math.cos(a)*v,vy:Math.sin(a)*v,t:0,dur:.35,color:Math.random()<.5?'#b3121c':'#e0303a',size:rand(2,4)})}
     if(ba.tt<=0){ba.tt=.25;sfx('fire',.6);for(const e of inCircle(p.x,p.y,R)){hit(e,{magic:atk()*.22*sm(lv),noCrit:true});if(!e.dead){addBleed(e,atk()*.15);if(lv>=10)slowE(e,.3,.4)}}}
     if(ba.t>=ba.dur)G.bloodAura=null}
