@@ -295,7 +295,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='0.3.1';
+const VERSION='0.3.2';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -353,9 +353,9 @@ const CLASSES={
     grow:{hp:15,mp:5,atk:2.6,def:.8,ap:.3,mr:.7,hpRegen:.1,mpRegen:.14},
     basic:'근접 3연타 · 베기 → 출혈 베기(출혈 확률 높음) → X자 2연속 베기',interval:.38,
     skills:[
-      {key:'s1',name:'돌진베기',mana:15,cd:5,aim:'dash',range:170,desc:l=>`빠르게 돌진하며 경로의 모든 적에게 공격력의 ${Math.round(150*sm(l))}% 피해. 방어관통 +30%`,bonus:['적중한 적 출혈','처치 시 쿨타임 50% 감소','2회 연속 사용']},
+      {key:'s1',name:'돌진베기',mana:15,cd:1.2,aim:'dash',range:170,desc:l=>`빠르게 돌진하며 경로의 모든 적에게 공격력의 ${Math.round(150*sm(l))}% 피해. 방어관통 +30%`,bonus:['적중한 적 출혈','처치 시 쿨타임 50% 감소','2회 연속 사용']},
       {key:'s2',name:'은신',mana:25,cd:16,aim:'buff',desc:l=>`3초간 적에게 들키지 않고 이동속도 +50%, 마나재생 3배`,bonus:['지속시간 +1.5초','은신 중 첫 공격 치명타 확정','은신 해제 공격 피해 +50%']},
-      {key:'s3',name:'암살',mana:12,cd:6,aim:'single',range:75,desc:l=>`체력 15% 이하인 적을 즉시 처치하고 쿨타임 초기화. 그 외 대상은 공격력의 ${Math.round(120*sm(l))}% 피해, 못 죽이면 쿨타임 18초`,bonus:['처형 기준 18%','성공 시 체력 10% 회복','기준 20%, 성공 시 1초 은신']},
+      {key:'s3',name:'암살',mana:12,cd:6,aim:'single',range:75,desc:l=>`체력 15% 이하인 적을 즉시 처치하고 쿨타임 초기화, 준 피해만큼 체력 회복. 그 외 대상은 공격력의 ${Math.round(120*sm(l))}% 피해, 못 죽이면 쿨타임 18초`,bonus:['처형 기준 18%','성공 시 체력 10% 회복','기준 20%, 성공 시 1초 은신']},
       {key:'s4',name:'질풍난무',mana:50,cd:32,aim:'dash',range:150,ult:true,desc:l=>`최대 5번 고속 관통 돌진, 각각 공격력의 ${Math.round(140*sm(l))}% 피해. 방어관통 +45%`,bonus:['입력 여유 +1.5초','피흡 10%','5번째 돌진 2배 피해 + 출혈']}
     ]},
   berserker:{name:'광전사',tag:'체력 · 공격력 · 공격속도',strong:['hp','atk','atkSpd'],
@@ -957,9 +957,9 @@ const SK={
     if(!cand.length){addText(p.x,p.y-28,'대상 없음','#ccc');return false}
     cand.sort((x,y)=>(x.hp/x.maxHp<=L?0:1)-(y.hp/y.maxHp<=L?0:1)||(x.hp/x.maxHp)-(y.hp/y.maxHp));
     const t=cand[0];p.face=Math.atan2(t.y-p.y,t.x-p.x);swing();G.fx.push({k:'xslash',x:t.x,y:t.y,t:0,dur:.35,color:'#ff5a5a'});
-    let ok;if(t.hp<=t.maxHp*L&&t.type!=='king'||(t.type==='king'&&t.hp<=t.maxHp*L*.5)){hit(t,{true:Math.ceil(t.hp)+1,noCrit:true});ok=true;addText(t.x,t.y-t.r-24,'암살!','#ff5a5a',true)}
-    else{const r=hit(t,{phys:atk()*1.2*sm(lv)});ok=r.killed}
-    G.timers.push({t:0,fn:()=>{if(ok){sfx('assassin');G.cd[2]=0;if(lv>=6)healP(G.stats.hp*.1);if(lv>=10)G.stealthGrant=1}else{sfx('fail');G.cd[2]=18;addText(p.x,p.y-30,'암살 실패','#aaa')}}});
+    let ok,dealt=0;if(t.hp<=t.maxHp*L&&t.type!=='king'||(t.type==='king'&&t.hp<=t.maxHp*L*.5)){dealt=hit(t,{true:Math.ceil(t.hp)+1,noCrit:true}).dmg;ok=true;addText(t.x,t.y-t.r-24,'암살!','#ff5a5a',true)}
+    else{const r=hit(t,{phys:atk()*1.2*sm(lv)});ok=r.killed;dealt=r.dmg}
+    G.timers.push({t:0,fn:()=>{if(ok){sfx('assassin');G.cd[2]=0;healP(dealt);if(lv>=6)healP(G.stats.hp*.1);if(lv>=10)G.stealthGrant=1}else{sfx('fail');G.cd[2]=18;addText(p.x,p.y-30,'암살 실패','#aaa')}}});
     G.shake+=3},
   b1(lv,a){const i=aimInfo(a,85,'melee');G.p.face=i.dir;const n=lv>=6?4:3;
     for(let k=0;k<n;k++)G.timers.push({t:k*.1,fn:()=>{if(!G||G.over)return;const d=i.dir+(k%2?.3:-.3);swing();slashFx(d,90,110*DEG,'#ff8a8a',1.6);sfx('swing',.02);
