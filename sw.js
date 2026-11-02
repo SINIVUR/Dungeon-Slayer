@@ -1,5 +1,5 @@
-// 던전 슬레이어 서비스 워커 v0.0.5: 오프라인 실행용 캐시
-const CACHE='dungeon-slayer-v0.0.5';
+// 던전 슬레이어 서비스 워커 v0.0.6: 오프라인 실행용 캐시
+const CACHE='dungeon-slayer-v0.0.6';
 const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./maskable-512.png'];
 // 파일 하나가 없어도 설치가 깨지지 않도록 하나씩 캐시
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});

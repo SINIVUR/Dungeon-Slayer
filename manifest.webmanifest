@@ -1,8 +1,8 @@
 {
   "name": "던전 슬레이어",
   "short_name": "던전 슬레이어",
-  "id": "dungeon-slayer-app",
-  "start_url": "./?app=dungeon-slayer",
+  "id": "dungeon-slayer-game",
+  "start_url": "./index.html?source=pwa",
   "scope": "./",
   "display": "fullscreen",
   "display_override": [
@@ -16,7 +16,7 @@
   "categories": [
     "games"
   ],
-  "description": "판타지 탑뷰 핵앤슬래시 로그라이크 던전 RPG v0.0.5",
+  "description": "판타지 탑뷰 핵앤슬래시 로그라이크 던전 RPG v0.0.6",
   "icons": [
     {
       "src": "icon-192.png",
