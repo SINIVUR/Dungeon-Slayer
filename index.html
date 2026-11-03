@@ -211,8 +211,8 @@ h3:first-child{margin-top:0}
 #btn3.ready{animation:ultglow 1.6s ease-in-out infinite}
 .xbtn{width:calc(var(--u)*48);height:calc(var(--u)*48);font-size:calc(var(--u)*8.5)}
 .xbtn svg{width:calc(var(--u)*18);height:calc(var(--u)*18)}
-#btnAwk{right:calc(env(safe-area-inset-right,0px) + var(--u)*204);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*108);color:#c8ffb8;box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #39ff14,0 0 0 5px rgba(10,16,17,.85),inset 0 -5px 9px rgba(0,0,0,.55);background:radial-gradient(circle at 35% 28%,#1f5a2a,#061a0a 70%)}
-#btnSup{right:calc(env(safe-area-inset-right,0px) + var(--u)*108);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*204);color:#ffd0d6;box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #ff1744,0 0 0 5px rgba(10,16,17,.85),inset 0 -5px 9px rgba(0,0,0,.55);background:radial-gradient(circle at 35% 28%,#6a1220,#1a0408 70%)}
+#btnAwk{right:calc(env(safe-area-inset-right,0px) + var(--u)*178);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*76);color:#c8ffb8;box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #39ff14,0 0 0 5px rgba(10,16,17,.85),inset 0 -5px 9px rgba(0,0,0,.55);background:radial-gradient(circle at 35% 28%,#1f5a2a,#061a0a 70%)}
+#btnSup{right:calc(env(safe-area-inset-right,0px) + var(--u)*76);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*178);color:#ffd0d6;box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #ff1744,0 0 0 5px rgba(10,16,17,.85),inset 0 -5px 9px rgba(0,0,0,.55);background:radial-gradient(circle at 35% 28%,#6a1220,#1a0408 70%)}
 #btnAwk.on{animation:glitchbtn .25s steps(2) infinite}
 #btnAwk.ready{box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #39ff14,0 0 14px 3px rgba(57,255,20,.7),inset 0 -5px 9px rgba(0,0,0,.55)}
 #btnSup.ready{box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #ff1744,0 0 14px 3px rgba(255,23,68,.75),inset 0 -5px 9px rgba(0,0,0,.55)}
@@ -432,7 +432,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='1.3.1';
+const VERSION='1.3.2';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -2807,8 +2807,10 @@ function render(){
   if(p.hp<G.stats.hp*.25){c.fillStyle=`rgba(200,30,30,${.12+Math.sin(t*6)*.06})`;c.fillRect(0,0,VW,VH)}
   drawGlitchScreen(c);
 }
+const AIM_CANCEL=24;
 function drawAim(c){
-  const st=G.aimSkill||(G.atkHold&&G.atkHold.aiming?G.atkHold:null);if(!st||!st.aiming)return;const p=G.p;const l=Math.hypot(st.dx,st.dy)||1;const dir=Math.atan2(st.dy,st.dx),mag=clamp(l/100,0,1);
+  const st=G.aimSkill||(G.atkHold&&G.atkHold.aiming?G.atkHold:null);if(!st||!st.aiming)return;const p=G.p;const l=Math.hypot(st.dx,st.dy)||1;
+  if(st.idx>=0&&l<AIM_CANCEL){c.save();c.strokeStyle='rgba(255,110,110,.9)';c.fillStyle='rgba(255,80,80,.15)';c.lineWidth=2.5;c.beginPath();c.arc(p.x,p.y,26,0,TAU);c.fill();c.stroke();c.beginPath();c.moveTo(p.x-9,p.y-9);c.lineTo(p.x+9,p.y+9);c.moveTo(p.x+9,p.y-9);c.lineTo(p.x-9,p.y+9);c.stroke();c.fillStyle='#ffb0b0';c.font='700 11px sans-serif';c.textAlign='center';c.fillText('놓으면 취소',p.x,p.y-34);c.restore();return}const dir=Math.atan2(st.dy,st.dx),mag=clamp(l/100,0,1);
   c.save();c.fillStyle='rgba(227,176,75,.16)';c.strokeStyle='rgba(227,176,75,.75)';c.lineWidth=2;
   if(st.idx<0){c.beginPath();c.moveTo(p.x,p.y);c.lineTo(p.x+Math.cos(dir)*90,p.y+Math.sin(dir)*90);c.stroke()}
   else{const sk=curSkills()[st.idx];
@@ -2873,7 +2875,7 @@ function bindBtn(el,idx){
     if(idx<0){G.atkHold=st;G.atkTap=true}else G.aimSkill=st});
   el.addEventListener('pointermove',e=>{const st=aimStates[e.pointerId];if(!st)return;const d=dLocal(e.clientX-st.sx,e.clientY-st.sy);st.dx=d.x;st.dy=d.y;if(Math.hypot(st.dx,st.dy)>16)st.aiming=true});
   const end=(e,cancel)=>{const st=aimStates[e.pointerId];if(!st)return;delete aimStates[e.pointerId];el.classList.remove('press');if(!G)return;
-    if(idx<0){if(G.atkHold===st)G.atkHold=null}else{if(G.aimSkill===st)G.aimSkill=null;if(!cancel){const l=Math.hypot(st.dx,st.dy);castSkill(idx,st.aiming?{manual:true,dx:st.dx/l,dy:st.dy/l,mag:clamp(l/100,.15,1)}:null)}}};
+    if(idx<0){if(G.atkHold===st)G.atkHold=null}else{if(G.aimSkill===st)G.aimSkill=null;if(!cancel&&st.aiming&&Math.hypot(st.dx,st.dy)<AIM_CANCEL){cancel=true;addText(G.p.x,G.p.y-30,'취소','#ff8a8a');sfx('click')}if(!cancel){const l=Math.hypot(st.dx,st.dy);castSkill(idx,st.aiming?{manual:true,dx:st.dx/l,dy:st.dy/l,mag:clamp(l/100,.15,1)}:null)}}};
   el.addEventListener('pointerup',e=>end(e,false));el.addEventListener('pointercancel',e=>end(e,true));
   el.addEventListener('contextmenu',e=>e.preventDefault());
 }
