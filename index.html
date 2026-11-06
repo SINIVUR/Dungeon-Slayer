@@ -12,7 +12,7 @@
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>던전 슬레이어즈</title>
+<title>던전 슬레이어</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;700;900&family=Gowun+Dodum&display=swap">
@@ -171,7 +171,7 @@ h3:first-child{margin-top:0}
 #btnCarn,#btnCoop{display:none!important}
 #vig{position:absolute;inset:0;pointer-events:none}
 .hstat{position:absolute;left:calc(env(safe-area-inset-left,0px) + var(--u)*10);top:calc(env(safe-area-inset-top,0px) + var(--u)*8);width:calc(var(--u)*228);display:grid;grid-template-columns:calc(var(--u)*46) minmax(0,1fr);gap:calc(var(--u)*3) calc(var(--u)*8);align-items:center}
-.portrait{grid-row:span 4;width:calc(var(--u)*46);height:calc(var(--u)*46);border-radius:50%;background:radial-gradient(circle at 50% 35%,#2c4140,#0b1213);box-shadow:0 0 0 2px #0a1011,0 0 0 3px var(--gold),0 0 0 4.5px rgba(10,16,17,.9),0 4px 14px rgba(0,0,0,.6);position:relative}
+.portrait{grid-row:span 5;width:calc(var(--u)*46);height:calc(var(--u)*46);border-radius:50%;background:radial-gradient(circle at 50% 35%,#2c4140,#0b1213);box-shadow:0 0 0 2px #0a1011,0 0 0 3px var(--gold),0 0 0 4.5px rgba(10,16,17,.9),0 4px 14px rgba(0,0,0,.6);position:relative}
 .portrait canvas{width:100%;height:100%;border-radius:50%;display:block}
 .portrait b{position:absolute;bottom:calc(var(--u)*-6);left:50%;transform:translateX(-50%);font-family:var(--display);font-size:calc(var(--u)*9);background:linear-gradient(180deg,#4a3d22,#1e180c);border:1px solid var(--gold);color:var(--gold-hi);border-radius:8px;padding:0 calc(var(--u)*5);line-height:calc(var(--u)*13);white-space:nowrap}
 .hstat .buffs{grid-column:1/-1;margin-top:calc(var(--u)*4)}
@@ -337,7 +337,7 @@ h3:first-child{margin-top:0}
 @keyframes carnpulse{50%{filter:brightness(1.4) hue-rotate(-10deg)}}
 #btnCoop{right:calc(env(safe-area-inset-right,0px) + var(--u)*250);bottom:calc(env(safe-area-inset-bottom,0px) + var(--u)*140);color:#ffe9c0;box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #ffb04a,0 0 0 5px rgba(10,16,17,.85),inset 0 -5px 9px rgba(0,0,0,.55);background:radial-gradient(circle at 35% 28%,#5a3a10,#1a1004 70%)}
 #btnCoop.ready{box-shadow:0 0 0 2px #0a1011,0 0 0 3.5px #ffd34d,0 0 14px 4px rgba(255,190,80,.7),inset 0 -5px 9px rgba(0,0,0,.55)}
-#orderBar{pointer-events:auto;position:absolute;left:calc(env(safe-area-inset-left,0px) + var(--u)*122);top:calc(env(safe-area-inset-top,0px) + var(--u)*96);display:flex;gap:calc(var(--u)*4)}
+#orderBar{display:none!important;pointer-events:auto;position:absolute;left:calc(env(safe-area-inset-left,0px) + var(--u)*122);top:calc(env(safe-area-inset-top,0px) + var(--u)*96);display:flex;gap:calc(var(--u)*4)}
 #orderBar button{min-width:calc(var(--u)*38);height:calc(var(--u)*24);border-radius:calc(var(--u)*7);border:1px solid rgba(255,217,160,.5);background:rgba(10,16,17,.72);color:#ffe9c0;font-size:calc(var(--u)*10);font-weight:800;padding:0 calc(var(--u)*5)}
 #orderBar button[aria-pressed="true"]{background:linear-gradient(180deg,#ffb04a,#a8641a);color:#1a1004;border-color:#ffe0a0;box-shadow:0 0 10px rgba(255,176,74,.7)}
 #controls.lefty #btnCarn{right:auto;left:calc(env(safe-area-inset-left,0px) + var(--u)*150)}
@@ -502,8 +502,8 @@ h3:first-child{margin-top:0}
         <path d="M14 50 L46 12 L52 10 L50 16 L18 54" stroke="#f7dc95" stroke-width="3"/><path d="M50 50 L18 12 L12 10 L14 16 L46 54" stroke="#f7dc95" stroke-width="3"/>
         <path d="M10 44 L20 54 M44 54 L54 44" stroke="#e3b04b" stroke-width="4"/><circle cx="32" cy="32" r="4" fill="#e3b04b" stroke="none"/></g></svg>
     </div>
-    <h1 class="lt" id="ldTitle">던전 슬레이어즈</h1>
-    <div class="ls" id="ldSub2">DUNGEON SLAYERS</div>
+    <h1 class="lt" id="ldTitle">던전 슬레이어</h1>
+    <div class="ls" id="ldSub2">DUNGEON SLAYER</div>
     <div class="lsub" id="ldInfo"></div>
     <div class="bar"><i id="ldBar"></i></div>
     <div class="ldrow"><span id="ldStep">불러오는 중…</span><span id="ldPct">0%</span></div>
@@ -515,7 +515,7 @@ h3:first-child{margin-top:0}
 
 <div id="menu">
   <div class="top">
-    <div class="logo"><b>던전 슬레이어즈</b><span class="ver" id="verTag"></span><small>DUNGEON SLAYERS</small></div>
+    <div class="logo"><b>던전 슬레이어</b><span class="ver" id="verTag"></span><small>DUNGEON SLAYER</small></div>
     <div class="res" id="res"></div>
     <div class="aud"><button class="abtn" data-aud="bgm"></button><button class="abtn" data-aud="sfx"></button><button class="abtn" data-open-settings="1" aria-label="설정">⚙ 설정</button><button class="abtn inst" id="installBtn" hidden>앱 설치</button></div>
   </div>
@@ -550,6 +550,7 @@ h3:first-child{margin-top:0}
     <div class="bar"><i id="hpI"></i><span id="hpT"></span></div>
     <div class="bar mp"><i id="mpI"></i><span id="mpT"></span></div>
     <div class="bar xp"><i id="xpI"></i></div>
+    <div class="bar cn" id="cnB"><i id="cnI"></i><span id="cnT"></span></div>
     <div class="buffs" id="buffs"></div>
   </div>
   <div id="bossbar" hidden><span id="bossName">킹 슬라임</span><div class="bar"><i id="bossI"></i></div></div>
@@ -611,7 +612,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.7.2';
+const VERSION='2.8.0';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1346,7 +1347,7 @@ const RANGED_CLS=new Set(['mage','archer','ranger','gungsu','archmage','gunner',
 const CTX=['dying','p','cls','def','hero','stats','form','cd','cdF','buffs','combo','lastAtk','atkTimer','awk','awkCd','supCd','supFx','glitch','aimSkill','shield','parry','fbStats','beast','bstCd','s1Second','ult5','bloodAura','formCd','stepT','lsCap','petBuff','petWall','pet','nir','nirCd','atkHold','atkTap','autoAtk','soulN'];
 function eqTarget(){const L=[save.selected,...partyList()];return L.includes(save.eqFor)?save.eqFor:save.selected}
 function partyMul(hero){if(typeof state==='undefined'||state!=='game'||!G||G.over||(G.PS||1)<2)return 1;if(hero===G.hero||(G.allies||[]).some(A=>A.hero===hero))return 1-.1*G.PS;return 1}
-function partyList(){if(!Array.isArray(save.party))save.party=[];save.party=save.party.filter(k=>k!==save.selected&&CLASSES[k]&&save.heroes[k]).slice(0,4);return save.party}
+function partyList(){save.party=[];return save.party;if(!Array.isArray(save.party))save.party=[];save.party=save.party.filter(k=>k!==save.selected&&CLASSES[k]&&save.heroes[k]).slice(0,4);return save.party}
 function mkCtx(cls){const hero=save.heroes[cls];plvInit(hero);if(!hero.pskills)hero.pskills=[1,1,1,1];const st=calcStats(cls,hero),cdF=[[0,0,0,0],[0,0,0,0]];
   return{p:{x:0,y:0,r:13,hp:st.hp,mp:st.mp,face:0,moving:false,swingT:0,swingDir:1,stun:0,slowT:0,slowAmt:0,inv:0,dash:null,poison:0,poisonDps:0},cls,def:CLASSES[cls],hero,stats:st,form:presetOf(cls,hero.preset||0)?(hero.preset||0):0,cd:cdF[0],cdF,buffs:{},combo:0,lastAtk:-9,atkTimer:0,awk:null,awkCd:15,supCd:25,supFx:null,glitch:0,aimSkill:null,shield:null,parry:null,fbStats:null,beast:false,bstCd:0,s1Second:0,ult5:null,bloodAura:null,formCd:0,stepT:0,lsCap:null,petBuff:null,petWall:0,pet:null,nir:null,nirCd:0,atkHold:null,atkTap:false,autoAtk:false,soulN:0}}
 function allySetup(){G.allies=(G.dg.duel?[]:partyList()).map((cls,i)=>{const A={cls,slot:i,down:0,think:0,ctx:mkCtx(cls)};A.hero=A.ctx.hero;A.ctx.p.allyRef=A;return A});G.PS=1+G.allies.length;if(OPT.res==='auto'&&G.PS>=3){const base=Math.min(window.devicePixelRatio||1,2),tgt=G.PS>=4?1.2:1.4;if(base*DQ>tgt){DQ=tgt/base;resize()}}recSet('party',G.PS);if(G.PS>1){G.stats=calcStats(G.cls,G.hero);G.p.hp=G.stats.hp;G.p.mp=G.stats.mp;for(const A of G.allies){const C=A.ctx;C.stats=calcStats(A.cls,A.hero);C.p.hp=C.stats.hp;C.p.mp=C.stats.mp}}}
@@ -1569,8 +1570,8 @@ function coopWave(C,i){const A=C.A,as=A.ctx.stats,pw=Math.max(atk(),ap()),aw=Mat
 
 // ---------- 도륙 게이지 ----------
 const CARN_DUR=7;
-function carnGain(e){return;if(!G||G.carnT>0)return;const v=e.boss?30:e.guard?15:(e.elite||e.var)?3:e.horde?.35:.8,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100){toast('도륙 게이지 가득! (G)','#ff5a4a');sfx('levelup',.5)}}
-function useCarnage(){return;if(!G||G.over||G.dying||paused)return;if(G.carnT>0)return;if((G.carn||0)<100){toast(`도륙 게이지 ${Math.floor(G.carn||0)}%`);return}
+function carnGain(e){if(!G||G.carnT>0)return;const v=e.boss?30:e.guard?15:(e.elite||e.var)?3:e.horde?.35:.8,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100&&!G.over&&!G.dying)useCarnage()}
+function useCarnage(){if(!G||G.over||G.dying||paused)return;if(G.carnT>0)return;if((G.carn||0)<100){toast(`도륙 게이지 ${Math.floor(G.carn||0)}%`);return}
   G.carn=0;G.carnT=CARN_DUR;G.carnN=0;c26().carn++;showBanner('도 륙','평타가 화면 전체를 베어요');G.shake+=12;sfx('boom');G.glitch=Math.max(G.glitch||0,.6);G.cflash=.45;vib([40,30,80]);
   for(let i=0;i<6;i++)G.cslash.push({a:i*Math.PI/6+rand(-.1,.1),o:rand(-.2,.2),t:0,d:.4,w:rand(4,8),col:i%2?'#ff3a4a':'#ffffff'})}
 function carnSlash(){const now=G.time;if(now-(G.carnLast||-9)<.1)return;G.carnLast=now;G.carnN=(G.carnN||0)+1;
@@ -1619,8 +1620,7 @@ const TITLES0=[
   {k:'codex100',n:'만물의 기록자',col:'#5ad08a',d:'몬스터 도감 100% 완성',ok:()=>cdxPct()>=1,b:{dr:.05,dm:.03}},
   {k:'lv100',n:'초월자',col:'#ff5a8a',d:'영웅 하나를 Lv 100으로',ok:()=>anyHero(h=>h.level>=100),b:{dm:.02}},
   {k:'abyss50',n:'심연을 걷는 자',col:'#a070ff',d:'심연 레벨 50 달성',ok:()=>anyHero(h=>h.abyss&&h.abyss.lv>=50),b:{dm:.04}},
-  {k:'party5',n:'원정대장',col:'#ffd9a0',d:'5인 원정을 떠나기',ok:()=>(recs().party||0)>=5,b:{dr:.03}},
-  {k:'soul5',n:'신살자',col:'#ff2a3a',d:'영혼 무기 「신살」 달성',ok:()=>anyHero(h=>soulSt(h)>=5),b:{dm:.04}},
+    {k:'soul5',n:'신살자',col:'#ff2a3a',d:'영혼 무기 「신살」 달성',ok:()=>anyHero(h=>soulSt(h)>=5),b:{dm:.04}},
   {k:'pet2',n:'신수의 주인',col:'#9ae0ff',d:'펫을 2단계까지 진화',ok:()=>PET_KEYS.some(k=>petEvo(k)>=2),b:{dr:.03}},
   {k:'settr',n:'완전무결',col:'#ff2a3a',d:'초월 세트 완성',ok:()=>anyHero((h,k)=>{const S=heroSet(h,k);return S&&S.g>=3}),b:{dm:.05}},
 ];let TITLES_=null;const titlesAll=()=>TITLES_||(TITLES_=[...TITLES0,...KILL_TITLES.map(([n,t],i)=>({k:'kill'+i,n:t,col:'#ffcf9a',d:`누적 처치 ${fmt(n)}`,ok:()=>titleIdx(REC().kills||0)>=i,b:null}))]);
@@ -1716,7 +1716,7 @@ function end26(success){if(G.dg.duel)recSet('duel',duelSt().rank);if(G.allies)fo
 
 // ---------- 매 프레임 ----------
 function init26(){G.carn=0;G.carnT=0;G.cslash=[];G.coopFx=[];G.cflash=0;G.coop=null;G.coopCd=8;G.order=null;G.rivalAwk=0}
-function setup26(){  const cb=$('#btnCarn'),co=$('#btnCoop');cb.innerHTML=`<i class="fl"></i>${svgI('carn')}<span class="nm">도륙</span><div class="ct"></div>`;cb._ct=cb.querySelector('.ct');cb._k=null;co.innerHTML=`${svgI('coop')}<span class="nm">협동기</span><div class="cd"></div><div class="ct"></div>`;co._ct=co.querySelector('.ct');co._k=null;$('#orderBar')._k=null}
+function setup26(){hud26.k=null;  const cb=$('#btnCarn'),co=$('#btnCoop');cb.innerHTML=`<i class="fl"></i>${svgI('carn')}<span class="nm">도륙</span><div class="ct"></div>`;cb._ct=cb.querySelector('.ct');cb._k=null;co.innerHTML=`${svgI('coop')}<span class="nm">협동기</span><div class="cd"></div><div class="ct"></div>`;co._ct=co.querySelector('.ct');co._k=null;$('#orderBar')._k=null}
 function upd26(dt){if(G.carnT>0){G.carnT-=dt;if(G.carnT<=0){G.carnT=0;carnFinale()}}
   if(G.coopCd>0)G.coopCd-=dt;if(G.order&&G.order.t>0){G.order.t-=dt;if(G.order.t<=0)G.order=null}
   if(G.coop){const C=G.coop,W=[.35,.95,1.6];C.t+=dt;while(C.w<3&&C.t>=W[C.w]){coopWave(C,C.w);C.w++}if(C.t>2.1)G.coop=null}
@@ -1727,19 +1727,15 @@ function draw26Screen(c){if(!G)return;const M=Math.hypot(VW,VH);
       c.globalAlpha=a;c.strokeStyle=s.col;c.shadowColor=s.col;c.shadowBlur=16;c.lineWidth=s.w*(1-k*.6);c.beginPath();c.moveTo(x0,y0);c.lineTo(x0+dx*ext,y0+dy*ext);c.stroke();c.shadowBlur=0;c.lineWidth=Math.max(1,s.w*.3);c.strokeStyle='#fff';c.stroke()}c.restore()}
   if(G.coopFx&&G.coopFx.length){c.save();c.globalCompositeOperation='lighter';for(const s of G.coopFx){const k=s.t/s.d,a=k<.2?k/.2:1-(k-.2)/.8,w=VH*.16*(1-k*.5);c.save();c.translate(VW/2,VH/2);c.rotate(s.a);const g=c.createLinearGradient(0,-w,0,w);g.addColorStop(0,hexA(s.col,0));g.addColorStop(.5,hexA(s.col,.85*a));g.addColorStop(1,hexA(s.col,0));c.fillStyle=g;c.fillRect(-M,-w,M*2,w*2);c.fillStyle=`rgba(255,255,255,${.8*a})`;c.fillRect(-M,-w*.12,M*2,w*.24);c.restore()}c.restore()}
   if(G.cflash>0){c.save();c.globalAlpha=Math.min(.75,G.cflash);c.fillStyle='#fff';c.fillRect(0,0,VW,VH);c.restore()}}
-function hud26(){const cb=$('#btnCarn'),co=$('#btnCoop'),ob=$('#orderBar');if(!cb._ct)return;
-  if(false){const on=0,full=0,ck=(on?'on'+Math.ceil(G.carnT):Math.floor(G.carn||0))+'';if(cb._k!==ck){cb._k=ck;{const B=$('#cnB'),v=on?G.carnT/CARN_DUR:(G.carn||0)/100;$('#cnI').style.transform=`scaleX(${v})`;B.classList.toggle('full',full);B.classList.toggle('on',on);$('#cnT').textContent=on?`도륙 ${Math.ceil(G.carnT)}초`:full?'도륙 가능!':''}cb.style.setProperty('--fill',on?G.carnT/CARN_DUR:(G.carn||0)/100);cb.classList.toggle('ready',full);cb.classList.toggle('on',on);cb._ct.textContent=''}}
-  const has=!!(G.allies&&G.allies.length);if(ob.hidden===has)ob.hidden=!has;
-  if(has){
-    const ok=G.order&&G.order.t>0?G.order.k:'';if(ob._k!==ok){ob._k=ok;ob.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ord===ok))}}}
+function hud26(){const on=G.carnT>0,v=on?G.carnT/CARN_DUR:(G.carn||0)/100,k=(on?'o':'')+Math.round(v*100);if(hud26.k===k)return;hud26.k=k;const B=$('#cnB');$('#cnI').style.transform=`scaleX(${v})`;B.classList.toggle('on',on);B.classList.toggle('full',!on&&v>=.9);$('#cnT').textContent=on?`도륙 ${Math.ceil(G.carnT)}초`:''}
 
 // ---------- 메뉴 UI ----------
 function party26(cls){const pl=partyList();const fk=save.form||'free';
   return `<div class="pset2"><span class="sub">진형 · 원정 중 동료의 자리와 원정대 보너스가 바뀌어요</span><div class="pr">${Object.keys(FMN26).map(k=>`<button data-act="form26" data-k="${k}" aria-pressed="${k===fk}" class="${k===fk?'on':''}">${FMN26[k].n}</button>`).join('')}</div><span class="note" style="margin:0">${FMN26[fk].d}</span>
   ${pl.length?`<span class="sub">호감도 · 함께 원정할수록 올라요. 레벨마다 동료 능력치 +2%</span><div class="pr">${pl.map(k=>{const v=(save.bond&&save.bond[k])||0,L=bondLv(k),nx=L<10?12*(L+1)*(L+1):null;return `<span class="bond"><b>${CLASSES[k].name}</b> 호감 ${L}${nx?` <small>${Math.floor(v)}/${nx}</small>`:' <small>MAX</small>'}</span>`}).join('')}</div>`:''}
   <span class="note" style="margin:0">전투 중 왼쪽 위 지시 버튼으로 동료에게 <b>집결 · 돌격 · 집중</b>을 명령해요 (키보드 Z · X · C).</span></div>`}
-function modeCards26(cur,h){const D=duelSt(),k=duelOpp();return `<button class="dgc endc" data-act="dgsel" data-k="rush" aria-pressed="${cur==='rush'}" style="--tc:255,176,74">${cur==='rush'?'<span class="sel">선택됨</span>':''}<span class="tag">도전</span><h4>보스 러시</h4><div class="meta"><span>최고 ${save.rushBest||0}단계</span></div><p>모든 던전의 보스가 차례로 나타나요. 한 마리를 쓰러뜨릴 때마다 다음 보스가 등장하고, 11마리를 다 잡으면 더 강해져서 다시 시작돼요. 단계마다 보상이 커져요.</p><dl><dt>권장</dt><dd>Lv 60+ · 원정대 가능</dd><dt>보상</dt><dd>단계별 골드·결정·영혼·왕관 · 던전 장비 · 전설~초월 · 각인석</dd></dl></button>
-  <button class="dgc endc" data-act="dgsel" data-k="duel" aria-pressed="${cur==='duel'}" style="--tc:110,170,255">${cur==='duel'?'<span class="sel">선택됨</span>':''}<span class="tag">결투장 ${D.rank+1}등급</span><h4>결투장</h4><div class="meta"><span>상대 ${CLASSES[k].name}</span><span>승리 ${D.wins||0}회</span></div><p>키운 다른 영웅과 1대1로 붙어요. 상대는 그 영웅의 스킬셋과 장비 외형으로 싸우고, 체력이 절반이 되면 각성, 25%에서 초필살기를 써요. 이길수록 등급이 오르고 상대가 강해져요.</p><dl><dt>규칙</dt><dd>1대1 · 원정대와 펫은 함께하지 않아요</dd><dt>보상</dt><dd>골드 · 결정 · 영혼 · 각인석 · 결투 칭호</dd></dl></button>`}
+function modeCards26(cur,h){const D=duelSt(),k=duelOpp();return `<button class="dgc endc" data-act="dgsel" data-k="rush" aria-pressed="${cur==='rush'}" style="--tc:255,176,74">${cur==='rush'?'<span class="sel">선택됨</span>':''}<span class="tag">도전</span><h4>보스 러시</h4><div class="meta"><span>최고 ${save.rushBest||0}단계</span></div><p>모든 던전의 보스가 차례로 나타나요. 한 마리를 쓰러뜨릴 때마다 다음 보스가 등장하고, 11마리를 다 잡으면 더 강해져서 다시 시작돼요. 단계마다 보상이 커져요.</p><dl><dt>권장</dt><dd>Lv 60+</dd><dt>보상</dt><dd>단계별 골드·결정·영혼·왕관 · 던전 장비 · 전설~초월 · 각인석</dd></dl></button>
+  <button class="dgc endc" data-act="dgsel" data-k="duel" aria-pressed="${cur==='duel'}" style="--tc:110,170,255">${cur==='duel'?'<span class="sel">선택됨</span>':''}<span class="tag">결투장 ${D.rank+1}등급</span><h4>결투장</h4><div class="meta"><span>상대 ${CLASSES[k].name}</span><span>승리 ${D.wins||0}회</span></div><p>키운 다른 영웅과 1대1로 붙어요. 상대는 그 영웅의 스킬셋과 장비 외형으로 싸우고, 체력이 절반이 되면 각성, 25%에서 초필살기를 써요. 이길수록 등급이 오르고 상대가 강해져요.</p><dl><dt>규칙</dt><dd>1대1 · 펫은 함께하지 않아요</dd><dt>보상</dt><dd>골드 · 결정 · 영혼 · 각인석 · 결투 칭호</dd></dl></button>`}
 function duelPick26(cls){const k=duelOpp();return `<div class="pset2"><span class="sub">결투 상대 고르기 · 상대는 그 영웅의 프리셋 모습으로 나와요</span><div class="pr">${CLASS_ORDER.filter(x=>x!==cls).map(x=>`<button data-act="duelopp" data-k="${x}" aria-pressed="${x===k}" class="${x===k?'on':''}">${CLASSES[x].name}<small>Lv ${save.heroes[x].level}</small></button>`).join('')}</div></div>`}
 function setBox26(cls,h){const S=heroSet(h,cls),G0=setProg(h),R=gemRes(h);
   return `<div class="set26" style="--sc:${S?S.col:G0.col||'#9bb0a7'}"><b>${S?`✦ ${S.n} 완성`:`세트 ${G0.n||0}/5`}</b><span>${S?`외형 변화 · 전용 오라 · 피해 +${Math.round(S.dm*100)}% · 체력 +${Math.round(S.hp*100)}%`:`방어구 5부위(머리·팔·다리·신발·장신구)를 같은 던전 세트나 고유 장비로 맞추면 외형이 바뀌고 전용 오라가 생겨요${G0.n?` · 지금 ${G0.name} ${G0.n}개`:''}`}</span><span style="color:${R?EL[R.el][1]:'var(--muted)'}">${gemResTxt(R)}</span></div>`}
@@ -2346,8 +2342,8 @@ function drawSlime(c,x,y,r,col,t,o={}){
 // ================= AUDIO (WebAudio 합성, 외부 파일 없음) =================
 const AU={ctx:null,set:{bgm:true,sfx:true},cur:null,step:0,next:0,last:{}};
 try{const a=JSON.parse(localStorage.getItem('dungeon-slayer-audio'));if(a)Object.assign(AU.set,a)}catch(e){}
-const OPT_DEF={bgmV:.8,sfxV:.8,shake:true,dmgNum:true,dmgShort:true,vib:true,fx:'high',res:'auto',bs:1,left:false,wake:true,auto:false,magnet:1,autoPause:true};
-let OPT={...OPT_DEF};try{Object.assign(OPT,JSON.parse(localStorage.getItem('dungeon-slayer-opt'))||{})}catch(e){}
+const OPT_DEF={bgmV:.8,sfxV:.8,shake:true,dmgNum:true,dmgShort:true,vib:true,fx:'high',res:'2',bs:1,left:false,wake:true,auto:false,magnet:1,autoPause:true};
+let OPT={...OPT_DEF};try{Object.assign(OPT,JSON.parse(localStorage.getItem('dungeon-slayer-opt'))||{})}catch(e){}if(!OPT.res28){OPT.res='2';OPT.res28=1}
 function optSave(){try{localStorage.setItem('dungeon-slayer-opt',JSON.stringify(OPT))}catch(e){}}
 function vib(p){if(typeof G!=='undefined'&&G&&G._ally)return;if(OPT.vib&&navigator.vibrate)try{navigator.vibrate(p)}catch(e){}}
 function auSave(){try{localStorage.setItem('dungeon-slayer-audio',JSON.stringify(AU.set))}catch(e){}}
@@ -2661,14 +2657,14 @@ const MENU_TABS={
       return `<button class="dgc" data-act="dgsel" data-k="${k}" aria-pressed="${k===cur}" style="--tc:${tc}">${k===cur?'<span class="sel">선택됨</span>':''}<span class="tag">${D.exp?'확장 던전 '+D.exp:'던전 '+(i+1)}</span><h4>${D.name}</h4>
         <div class="meta"><span class="rec" ${low?'style="color:#ff8a7a;border-color:#ff8a7a"':''}>권장 Lv ${D.rec}</span><span>${D.floors}층</span>${best?`<span>최고 ${best}층</span>`:''}${clr?`<span>클리어 ${clr}회</span>`:''}</div>
         <p>${I.feat||D.desc||''}</p><dl><dt>보스</dt><dd>${D.bossName}</dd><dt>주요 적</dt><dd>${I.foe||''}</dd><dt>속성</dt><dd>${I.el||''}</dd><dt>핵심 재료</dt><dd><span style="color:${MATS[m][1]}">● ${MATS[m][0]}</span> · 보유 ${fmt(save.mats[m]||0)}</dd><dt>세트</dt><dd style="color:${TIERS[DSET[k].tier].color}">${TIERS[DSET[k].tier].name} 장비 · ${WEAPONS[cls][DSET[k].w]}</dd></dl></button>`}).join('')}</div>
-      <h3 style="color:#ff6a82">세계의 적 · 엔드리스 · 도전</h3><div class="dgcards">${(()=>{const RS=raidState(),pct=RS.hp!=null?Math.max(1,Math.round(RS.hp/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100)):100;return `<button class="dgc endc" data-act="dgsel" data-k="raid" aria-pressed="${cur==='raid'}" style="--tc:255,58,74">${cur==='raid'?'<span class="sel">선택됨</span>':''}<span class="tag">레이드 ${RS.i+1}</span><h4>${raidName(RS.i)}</h4><div class="meta"><span>남은 체력 ${pct}%</span><span>토벌 ${RS.kills||0}회</span></div><p>체력이 30줄인 초거대 보스. 한 번에 3분 동안 싸우고, 깎은 체력은 그대로 남아요. 원정대를 꾸려 함께 도전하세요. 쓰러뜨리면 신화·초월 장비와 왕관을 쏟아내고, 더 강한 세계의 적이 깨어나요.</p><dl><dt>권장</dt><dd>Lv 90+ · 원정대 추천</dd><dt>보상</dt><dd>신화·초월 장비 · 펫 전설 장비 · 왕관 · 영혼</dd></dl></button>`})()}<button class="dgc endc" data-act="dgsel" data-k="endless" aria-pressed="${cur==='endless'}">${cur==='endless'?'<span class="sel">선택됨</span>':''}<span class="tag">엔드리스</span><h4>무한의 전장</h4>
+      <h3 style="color:#ff6a82">세계의 적 · 엔드리스 · 도전</h3><div class="dgcards">${(()=>{const RS=raidState(),pct=RS.hp!=null?Math.max(1,Math.round(RS.hp/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100)):100;return `<button class="dgc endc" data-act="dgsel" data-k="raid" aria-pressed="${cur==='raid'}" style="--tc:255,58,74">${cur==='raid'?'<span class="sel">선택됨</span>':''}<span class="tag">레이드 ${RS.i+1}</span><h4>${raidName(RS.i)}</h4><div class="meta"><span>남은 체력 ${pct}%</span><span>토벌 ${RS.kills||0}회</span></div><p>체력이 30줄인 초거대 보스. 한 번에 3분 동안 싸우고, 깎은 체력은 그대로 남아요. 쓰러뜨리면 신화·초월 장비와 왕관을 쏟아내고, 더 강한 세계의 적이 깨어나요.</p><dl><dt>권장</dt><dd>Lv 90+</dd><dt>보상</dt><dd>신화·초월 장비 · 펫 전설 장비 · 왕관 · 영혼</dd></dl></button>`})()}<button class="dgc endc" data-act="dgsel" data-k="endless" aria-pressed="${cur==='endless'}">${cur==='endless'?'<span class="sel">선택됨</span>':''}<span class="tag">엔드리스</span><h4>무한의 전장</h4>
         <div class="meta"><span>끝없는 웨이브</span>${save.endlessBest?`<span>최고 ${save.endlessBest}웨이브</span>`:''}</div>
         <p>거대한 투기장 하나. 웨이브마다 수십~수백 마리가 사방에서 몰려와요. 5웨이브마다 군단장이 나타나고, 갈수록 강해져요. 쓰러져도 전리품은 모두 챙겨요.</p><dl><dt>적</dt><dd>3웨이브마다 모든 던전의 군세가 차례로 등장</dd><dt>난이도</dt><dd>영웅 레벨에 맞춰 시작</dd><dt>보상</dt><dd>웨이브 섬멸 상자 · 보스의 영혼 · 경험치</dd></dl></button>${modeCards26(cur,h)}</div>${cur==='duel'?duelPick26(cls):''}`;
   },
   hero(cls,h,C){
     const s=calcStats(cls,h);
     return `<h2>영웅 선택</h2><div class="grid4">${CLASS_ORDER.map(k=>`<button class="hcard" data-act="sel" data-k="${k}" aria-pressed="${k===cls}"><canvas data-cls="${k}"></canvas><b>${CLASSES[k].name}</b><small>Lv ${save.heroes[k].level} · ${CLASSES[k].tag}</small></button>`).join('')}</div>
-    <h3>원정대 <span class="sub" style="margin-left:.5em">${C.name} 포함 최대 5명 · 동료는 AI가 사람처럼 싸워요 · 인원이 늘수록 던전이 넓어지고 적이 많고 강해지며, 원정 중엔 인원 1명당 전원의 체력·공격력·주문력·방어력·마법저항력이 10%씩 낮아져요 (5명이면 -50%)</span></h3><div class="ppre">${[0,1,2].map(i=>{const P=(save.ppre||[])[i];return `<div><b>원정 프리셋 ${i+1}</b><small>${P&&P.length?P.map(x=>CLASSES[x]?CLASSES[x].name:'').join(' · '):'비어 있음'}</small><span class="pb"><button class="btn" data-act="ppload" data-k="${i}" ${P&&P.length?'':'disabled'}>불러오기</button><button class="btn gold" data-act="ppsave" data-k="${i}">지금 구성 저장</button></span></div>`}).join('')}</div><div class="party">${CLASS_ORDER.filter(k=>k!==cls&&save.heroes[k]).map(k=>{const pl=partyList(),on=pl.includes(k);return `<button data-act="party" data-k="${k}" aria-pressed="${on}" class="${on?'on':''}" ${!on&&pl.length>=4?'disabled':''}><canvas data-cls="${k}"></canvas><b>${CLASSES[k].name}</b><small>Lv ${save.heroes[k].level}${on?' · 동행':''}${bondLv(k)?' · 호감 '+bondLv(k):''}</small></button>`}).join('')}</div>${partyList().length?`<div class="pset2"><span class="sub">동료 스킬 프리셋 · 원정에서 쓸 스킬셋을 골라요 (프리셋마다 레벨이 따로예요)</span>${partyList().map(k=>{const hh=save.heroes[k];plvInit(hh);const cur=presetOf(k,hh.preset||0)?(hh.preset||0):0;return `<div class="pr"><b>${CLASSES[k].name}</b>${[0,1,2].map(i=>{const F=i?presetOf(k,i):null;if(i&&!F)return '';const lv=i===cur?hh.level:(hh.plv&&hh.plv[i]?hh.plv[i].level:hh.level);const nm=i?F.name:'기본';return `<button data-act="apreset" data-k="${k}:${i}" aria-pressed="${i===cur}" class="${i===cur?'on':''}">${nm}<small>Lv ${lv}</small></button>`}).join('')}</div>`}).join('')}</div>`:''}${party26(cls)}
+
     <h3>${C.name} 능력치 <span class="cp" style="margin-left:calc(var(--u)*8)"><small>전투력</small>${fmt(power(s,cls))}</span></h3><div class="stats">${STAT_ORDER.map(k=>`<div class="${C.strong.includes(k)?'strong':''}"><span>${STAT_KR[k]}</span><span>${fmtStat(k,s[k])}</span></div>`).join('')}</div>
     ${(()=>{const A=abyssOf(h);return `<h3>심연 레벨 <span class="sub" style="margin-left:.5em">Lv 100 이후 끝없이 올라요 · 레벨마다 1포인트 · 남은 포인트 ${A.pts}</span></h3><div class="abyss"><div class="abh"><b>심연 ${A.lv}</b><div class="bar"><i style="transform:scaleX(${h.level>=100?(A.xp/abyssNeed(A.lv)).toFixed(3):0})"></i></div><small>${h.level>=100?`${fmt(Math.round(A.xp))} / ${fmt(abyssNeed(A.lv))}`:'Lv 100 달성 후 열려요'}</small></div><div class="abg">${ABYSS_ST.map(([k,n,v,u])=>`<div><span>${n}<em>+${+((A.a[k]||0)*v).toFixed(2)}${u}</em></span><button class="btn gold" data-act="abyss" data-k="${k}:1" ${A.pts<1?'disabled':''}>+1</button><button class="btn" data-act="abyss" data-k="${k}:10" ${A.pts<10?'disabled':''}>+10</button></div>`).join('')}</div></div>`})()}
     ${(()=>{const ss=soulSt(h),K=h.soulK||0,nx=SOUL[ss];return `<h3>영혼 무기 <span class="sub" style="margin-left:.5em">${C.name}로 처치할수록 손에 든 무기가 진화해요 · 누적 ${fmt(K)}</span></h3><div class="soul">${SOUL.map((S,i)=>`<div class="${i<ss?'on':''}" style="color:${S[2]}"><b>${S[1]}</b>${fmt(S[0])}처치</div>`).join('')}</div><p class="note">${ss?`현재 「${SOUL[ss-1][1]}」 · 피해 +${ss*4}%${ss>=2?' · 평타 4번째마다 영혼 검기':''}${ss>=3?' · 무기 주위 영혼 파편':''}${ss>=4?' · 불꽃 잔상':''}${ss>=5?' · 번개 휘감김':''}`:'아직 각인되지 않았어요'}${nx?` · 다음 「${nx[1]}」까지 ${fmt(nx[0]-K)}`:' · 최종 단계'}</p>`})()}
@@ -4442,7 +4438,7 @@ function renderSettings(){const onoff=k=>seg(k,[['true','켬'],['false','끔']])
     <textarea id="saveCode" placeholder="여기에 백업 코드를 붙여넣고 [불러오기]를 누르세요" spellcheck="false"></textarea>
     <div class="setrow"><span></span><button class="btn" id="copyBtn">복사</button><button class="btn gold" id="impBtn">불러오기</button></div>
     <div class="setrow"><span>모든 데이터 초기화<small>되돌릴 수 없어요</small></span><button class="btn warn" id="resetBtn">초기화</button></div></div>
-  <p class="sub" style="text-align:center;margin:0">던전 슬레이어즈 v${VERSION}</p>`}
+  <p class="sub" style="text-align:center;margin:0">던전 슬레이어 v${VERSION}</p>`}
 let setFrom=null;
 function openSettings(){setFrom=state==='game'&&G&&!G.over?'game':'menu';if(setFrom==='game'){if(!paused)togglePause(true);$('#pause').hidden=true}renderSettings();$('#settings').hidden=false}
 function closeSettings(){$('#settings').hidden=true;if(setFrom==='game'&&G&&paused)$('#pause').hidden=false;if(state==='menu')renderMenu()}
