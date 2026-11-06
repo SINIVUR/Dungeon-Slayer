@@ -548,7 +548,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.2.0';
+const VERSION='2.3.0';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1045,7 +1045,7 @@ const P2={
     mkS('psn4','궤도 포격',55,30,{t:'barrage',range:420,n:6,spreadR:200,r:75,m:2,iv:.25,delay:.9,seek:true,nm:'궤도 포격',col:'#ff6a5a'},{ult:true,short:'궤도포격'})]}
 };
 for(const k in P2)P2[k].skills.forEach(s=>s._cls=k);
-function mCost(sk,lv){return Math.round(sk.mana*(1+.05*((lv||1)-1))*(sk._cls&&CLASSES[sk._cls]&&CLASSES[sk._cls].base.mp>=150?1.5:1))}
+function mCost(sk,lv){return Math.round(sk.mana*(1+.12*((lv||1)-1))*(sk._cls&&CLASSES[sk._cls]&&CLASSES[sk._cls].base.mp>=150?1.5:1))}
 // 마나 경제 조정: 스킬 마나 소모 증가 · 기본 마나 재생 감소
 (function(){const MANA_SKILL=1.6,MANA_ULT=1.3,REGEN=.5;const done=new Set();
   for(const cls in CLASSES){const C=CLASSES[cls],sets=[C.skills,FORMS[cls]&&FORMS[cls].skills,P2[cls]&&P2[cls].skills].filter(Boolean);
@@ -1106,16 +1106,16 @@ const BEASTS={
  sniper:{name:'월야의 올빼미',arch:'bird',size:1.25,opt:{owl:1},pal:{body:'#3a3a6a',belly:'#b8b0d8',acc:'#e8e0ff',dark:'#14142a',glow:'#c8c0ff'},fx:'spirit',desc:'달빛 아래 소리 없이 사냥하는 올빼미. 한 발로 끝내요',range:520,interval:.55,
   bas:[{k:'shot',m:.8,pk:'blade',size:6,col:'#e8e0ff',spd:1300,pierce:true},{k:'shot',m:.8,pk:'blade',size:6,col:'#e8e0ff',spd:1300,pierce:true},{k:'shot',m:1.5,pk:'blade',size:8,col:'#c8c0ff',spd:1400,pierce:true,crit:.3}],
   skills:[['정밀 깃털',16,4,{t:'bolt',range:520,m:3,size:9,pierce:true,pk:'blade',crit:.3,col:'#e8e0ff'}],['소리 없는 급습',16,6,{t:'blinkchain',n:3,range:280,m:1.9,col:'#c8c0ff'}],['사냥 표식',18,8,{t:'mark',range:400,r:100,delay:.8,m:2.6,vuln:.3,col:'#e8e0ff'}],['월광 저격',55,26,{t:'beam',range:600,w:44,dur:1.2,tick:.1,m:1.1,col:'#e8e0ff'},{ult:true,short:'월광저격'}]]}};
-for(const k in BEASTS){const B=BEASTS[k];B.skills=B.skills.map((a,i)=>{const sk=mkS('bx_'+k+i,a[0],Math.round(a[1]*(i===3?1.3:1.6)),a[2],a[3],a[4]||{});sk._cls=k;sk.beast=1;return sk})}
+for(const k in BEASTS){const B=BEASTS[k];B.bas.forEach(x=>x.m*=.6);B.skills=B.skills.map((a,i)=>{a[3].m*=.55;const sk=mkS('bx_'+k+i,a[0],Math.round(a[1]*(i===3?1.3:1.6)),a[2],a[3],a[4]||{});sk._cls=k;sk.beast=1;return sk})}
 const beastLv=()=>Math.max(1,(XL().t||0));
 function beastOn(){return !!(G&&G.beast)}
 function toggleBeast(){if(!G||G.over||paused||G.dying||G.cine)return;if((XL().t||0)<1)return;if((G.bstCd||0)>0)return;const B=BEASTS[G.cls],p=G.p,ratio=p.hp/G.stats.hp;
   G.beast=!G.beast;G.bstCd=1.5;G.cd=G.beast?G.cdF[1]:G.cdF[0];G.aimSkill=null;G.stats=calcStats(G.cls,G.hero);p.hp=Math.min(G.stats.hp,G.stats.hp*ratio);
   setSkillBtns();drawPortrait();bsBtn.classList.toggle('on',G.beast);
   if(G.beast){sfx('summon');sfx('boom');G.shake+=12;vib([40,30,90]);G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:200,t:0,dur:.5,color:B.pal.glow,w:10});burst(p.x,p.y,B.pal.glow,40,300,5);burst(p.x,p.y,B.pal.acc,24,220,4);showBanner(B.name,'변신!');
-    for(const e of inCircle(p.x,p.y,160))hit(e,{true:Math.max(atk(),ap())*2,knock:50})}
+    for(const e of inCircle(p.x,p.y,160))hit(e,{true:Math.max(atk(),ap())*.6,knock:50})}
   else{sfx('rally');burst(p.x,p.y,'#ffffff',20,180,3);G.fx.push({k:'ring',x:p.x,y:p.y,r0:30,r1:6,t:0,dur:.35,color:B.pal.glow,w:5});addText(p.x,p.y-30,'변신 해제','#e8e8e8')}}
-function beastStats(s,t){const k=t||1;s.hp*=1.2+.02*k;if(s.atk)s.atk*=1.15+.015*k;if(s.ap)s.ap*=1.15+.015*k;s.def*=1.1;s.mr*=1.1;s.spd*=1.1;return s}
+function beastStats(s,t){const k=t||1;s.hp*=1.04+.006*k;if(s.atk)s.atk*=1+.004*k;if(s.ap)s.ap*=1+.004*k;s.def*=1.04;s.mr*=1.04;s.spd*=1.05;return s}
 function beastFx(B,x,y){if(!G||G.over||OPT.fx==='low'||Math.random()>.35)return;const f=B.fx,c=f==='flame'?(Math.random()<.5?'#ffb04a':'#ff6a2a'):f==='blood'?'#ff3a2a':f==='shadow'?'#8a5bd6':f==='leaf'?'#9ff07a':f==='spark'?'#f2d64b':f==='water'?'#8ad8ff':f==='dust'?'#d8b880':f==='soul'?'#ff6a78':B.pal.glow;
   G.parts.push({x:x+rand(-16,16),y:y+rand(-10,10),vx:rand(-15,15),vy:f==='water'||f==='leaf'?rand(10,30):rand(-60,-25),t:0,dur:rand(.4,.8),color:c,size:rand(1.5,3.2)})}
 function drawBeast(c,B,x,y,face,t,o={}){const P=B.pal,O=B.opt||{},A0=o.alpha??1,mv=!!o.moving,sw=o.swing||0;
@@ -1189,7 +1189,7 @@ let rsConfirm=null;
 function skBody(sk,lv){const t=trT(lv);return `<div class="nm">${sk.name}<em${t?' class="trl"':''}>${t?`Lv 10 · 초월 ${t}/5`:`Lv ${lv}/10`}</em></div><p>${sk.desc(lv)} · 마나 ${mCost(sk,lv)} · 쿨 ${+(sk.cd*trCD(lv)).toFixed(1)}초</p><div class="bon">${sk.bonus.map((b,j)=>`<span class="${lv>=[3,6,10][j]?'on':''}">Lv${[3,6,10][j]} ${b}</span>`).join('')}<span class="trs ${t?'on':''}">${t?`초월 ${t} · 피해 +${t*12}% · 쿨타임 -${t*9}% · 범위 +${t*6}%`:'초월 강화 (Lv10 이후 · 최대 5단계) · 피해·쿨타임·범위 대폭 강화'}</span></div>`}
 const skBtn=lv=>lv>=SK_MAX?'MAX':lv>=10?'초월 +1':'+1';
 function beastRow(cls,X,sp,pi){const B=BEASTS[cls],t=X.t||0,tr=Math.max(0,t-10),lv=Math.max(1,t);
-  return `<div class="skill xrow bst"><canvas data-beastprev="${cls}" width="150" height="120" aria-hidden="true"></canvas><div style="min-width:0"><div class="nm" style="color:${B.pal.glow}">변신 · ${B.name}<em${tr?' class="trl"':''}>${t?(tr?`Lv 10 · 초월 ${tr}/3`:`Lv ${t}/10`):'잠김'}</em></div><p>${B.desc}. 전투 중 각성 옆 변신 버튼(V)으로 켜고 끄며, 변신 중엔 모습과 평타·스킬이 완전히 바뀌어요. 체력 +${Math.round((.2+.02*lv)*100)}% · 공격력·주문력 +${Math.round((.15+.015*lv)*100)}% · 방어 +10% · 이속 +10%</p>
+  return `<div class="skill xrow bst"><canvas data-beastprev="${cls}" width="150" height="120" aria-hidden="true"></canvas><div style="min-width:0"><div class="nm" style="color:${B.pal.glow}">변신 · ${B.name}<em${tr?' class="trl"':''}>${t?(tr?`Lv 10 · 초월 ${tr}/3`:`Lv ${t}/10`):'잠김'}</em></div><p>${B.desc}. 전투 중 각성 옆 변신 버튼(V)으로 켜고 끄며, 변신 중엔 모습과 평타·스킬이 완전히 바뀌어요. 체력 +${Math.round((.04+.006*lv)*100)}% · 공격력·주문력 +${Math.round(.4*lv)}% · 방어 +4% · 이속 +5%</p>
   <div class="bon">${B.skills.map(k=>`<span class="${t?'on':''}">${k.ult?'★ ':''}${k.name}</span>`).join('')}${tr?`<span class="trs on">초월 ${tr} · 변신 스킬 피해 +${tr*12}% · 쿨 -${tr*9}%</span>`:''}</div></div><button class="btn gold" data-act="xup" data-k="${pi}:t" ${sp<1||t>=BEAST_MAX?'disabled':''}>${t>=BEAST_MAX?'MAX':t>=10?'초월 +1':t?'+1':'해금'}</button></div>`}
 function xRows(cls,h,pi){plvInit(h);const X=h.xl[pi],sp=spOf(h,pi),A=AWK[cls]&&AWK[cls][pi],U=SUP[cls]&&SUP[cls][pi];
   const row=(k,ico,nm,lv,desc,col)=>`<div class="skill xrow"><div class="sico" style="color:${col}">${svgI(ico)}</div><div style="min-width:0"><div class="nm" style="color:${col}">${nm}<em>Lv ${lv}/10</em></div><p>${desc}</p></div><button class="btn gold" data-act="xup" data-k="${pi}:${k}" ${sp<1||lv>=10?'disabled':''}>${lv>=10?'MAX':'+1'}</button></div>`;
@@ -2511,7 +2511,7 @@ function hordeClear(H){const p=G.p;G.shake+=8;sfx('levelup');G.fx.push({k:'ring'
 // ================= 무한의 전장 (엔드리스) =================
 const END_STAGES=['slime','skeleton','zombie','empire','hell','tower','goblin','ogre','elf','sea','cosmos'];
 function endSetup(){const lv=G.hero.level;let base=DUNGEONS.slime;for(const k of ['slime','skeleton','zombie','empire','hell','tower'])if(DUNGEONS[k].rec<=lv)base=DUNGEONS[k];
-  G.dg={...DUNGEONS.endless,xpMul:base.xpMul,goldMul:base.goldMul,tierUp:base.tierUp,crystal:.06};G.endBase={hp:base.hpMul*.75,atk:base.atkMul*.8};G.wave=0;G.endT=2.5;endStage()}
+  G.dg={...DUNGEONS.endless,xpMul:base.xpMul,goldMul:base.goldMul,tierUp:base.tierUp,crystal:.06};G.endBase={hp:base.hpMul*.35,atk:base.atkMul*.3};G.wave=0;G.endT=2.5;endStage()}
 function endStage(){const k=END_STAGES[Math.floor(Math.max(0,G.wave-1)/3)%END_STAGES.length];G.eTiles=DUNGEONS[k].tiles;DMAT.endless=DMAT[k];GUARD_FLAG.endless=GUARD_FLAG[k];return k}
 function updEndless(dt){const H=G.horde;if(H&&!H.done)return;G.endT-=dt;if(G.endT>0)return;G.endT=3.5;
   G.wave++;const k=endStage();G.dg.hpMul=G.endBase.hp*(1+.09*(G.wave-1));G.dg.atkMul=G.endBase.atk*(1+.05*(G.wave-1));
@@ -2536,17 +2536,17 @@ function rollType0(f){if(G&&G.dg&&G.dg.tiles==='fort')return rollSkel(f);if(G&&G
 // 던전 목록
 const DUNGEONS={
   slime:{name:'슬라임 동굴',rec:1,floors:5,boss:'king',bossName:'킹 슬라임',bossRoom:'킹 슬라임의 방',music:'dungeon',hpMul:1,atkMul:1,xpMul:1,goldMul:1,crystal:.12,tierUp:0,tiles:'slime',desc:'슬라임이 득실대는 축축한 동굴'},
-  skeleton:{name:'스켈레톤 주둔지',rec:15,floors:6,boss:'commander',bossName:'해골 사령관',bossRoom:'해골 사령관의 막사',music:'garrison',hpMul:1.9,atkMul:1.55,xpMul:2,goldMul:1.8,crystal:.06,tierUp:2,tiles:'fort',desc:'해골 군단이 지키는 폐허 요새. 어둠 속성이라 빛 속성 무기가 잘 들어요'}
+  skeleton:{name:'스켈레톤 주둔지',rec:15,floors:6,boss:'commander',bossName:'해골 사령관',bossRoom:'해골 사령관의 막사',music:'garrison',hpMul:2.2,atkMul:2,xpMul:2,goldMul:1.8,crystal:.06,tierUp:2,tiles:'fort',desc:'해골 군단이 지키는 폐허 요새. 어둠 속성이라 빛 속성 무기가 잘 들어요'}
 };
-DUNGEONS.zombie={name:'좀비 묘지',rec:30,floors:7,boss:'plague',bossName:'역병 군주',bossRoom:'역병 군주의 무덤',music:'graveyard',hpMul:3.2,atkMul:2.3,xpMul:3.5,goldMul:3,crystal:.08,tierUp:4,tiles:'grave',desc:'좀비가 몰려드는 저주받은 묘지. 독과 어둠 속성'};
-DUNGEONS.empire={name:'제국의 요새',rec:45,floors:8,boss:'general',bossName:'제국 대장군',bossRoom:'대장군의 지휘소',music:'empire',hpMul:5,atkMul:3.3,xpMul:5.5,goldMul:4.5,crystal:.08,tierUp:6,tiles:'empire',desc:'제국군이 지키는 철벽 요새'};
-DUNGEONS.hell={name:'악마의 성',rec:60,floors:9,boss:'demonlord',bossName:'마왕',bossRoom:'마왕의 옥좌',music:'hell',hpMul:7.5,atkMul:4.6,xpMul:8,goldMul:6.5,crystal:.1,tierUp:7,tiles:'hell',desc:'용암이 흐르는 마왕의 성. 불·어둠 속성 악마들'};
-DUNGEONS.tower={name:'신의 탑',rec:90,floors:10,boss:'god',bossName:'천공신',bossRoom:'신의 옥좌',music:'tower',hpMul:24,atkMul:13,xpMul:18,goldMul:14,crystal:.15,tierUp:8,tiles:'tower',desc:'구름 위로 솟은 마지막 시련. 빛 속성 천상의 군세'};
-DUNGEONS.goblin={name:'고블린 도적단',rec:60,floors:9,boss:'gobking',bossName:'도적왕 그락',bossRoom:'도적단 소굴',music:'goblin',hpMul:7.5,atkMul:4.6,xpMul:8,goldMul:8,crystal:.1,tierUp:7,tiles:'goblin',exp:1,desc:'확장 던전 1 · 떼로 몰려드는 고블린과 폭탄'};
-DUNGEONS.ogre={name:'오우거 토벌대',rec:60,floors:9,boss:'ogrelord',bossName:'대족장 고르',bossRoom:'대족장의 투기장',music:'ogre',hpMul:7.5,atkMul:4.6,xpMul:8.5,goldMul:7,crystal:.1,tierUp:7,tiles:'ogre',exp:2,desc:'확장 던전 2 · 거대한 오우거와 트롤의 협곡'};
-DUNGEONS.elf={name:'엘프의 성소',rec:60,floors:9,boss:'elfqueen',bossName:'달의 여사제 엘라리엘',bossRoom:'월광의 제단',music:'elf',hpMul:7.5,atkMul:4.6,xpMul:8.5,goldMul:7.5,crystal:.14,tierUp:7,tiles:'elf',exp:3,desc:'확장 던전 3 · 달빛이 깃든 숲의 신전과 엘프 수호자들'};
-DUNGEONS.sea={name:'심해의 용궁',rec:80,floors:10,boss:'dragonking',bossName:'심해 용왕 해신',bossRoom:'용왕의 수정궁',music:'sea',hpMul:16,atkMul:9,xpMul:14,goldMul:11,crystal:.15,tierUp:8,tiles:'sea',exp:4,desc:'확장 던전 4 · 깊은 바다 밑 용왕의 수정궁과 해저 군단'};
-DUNGEONS.cosmos={name:'우주적 코스모스',rec:100,floors:10,boss:'astra',bossName:'태초의 별 아스트라',bossRoom:'창세의 성좌',music:'cosmos',hpMul:36,atkMul:18,xpMul:26,goldMul:20,crystal:.2,tierUp:8,tiles:'cosmos',exp:5,desc:'확장 던전 5 · 별들이 태어나고 죽는 우주의 끝, 성좌의 군세'};
+DUNGEONS.zombie={name:'좀비 묘지',rec:30,floors:7,boss:'plague',bossName:'역병 군주',bossRoom:'역병 군주의 무덤',music:'graveyard',hpMul:4,atkMul:3.5,xpMul:3.5,goldMul:3,crystal:.08,tierUp:4,tiles:'grave',desc:'좀비가 몰려드는 저주받은 묘지. 독과 어둠 속성'};
+DUNGEONS.empire={name:'제국의 요새',rec:45,floors:8,boss:'general',bossName:'제국 대장군',bossRoom:'대장군의 지휘소',music:'empire',hpMul:7.5,atkMul:7,xpMul:6,goldMul:5,crystal:.08,tierUp:6,tiles:'empire',desc:'제국군이 지키는 철벽 요새'};
+DUNGEONS.hell={name:'악마의 성',rec:60,floors:9,boss:'demonlord',bossName:'마왕',bossRoom:'마왕의 옥좌',music:'hell',hpMul:26,atkMul:27,xpMul:12,goldMul:10,crystal:.1,tierUp:7,tiles:'hell',desc:'용암이 흐르는 마왕의 성. 불·어둠 속성 악마들'};
+DUNGEONS.tower={name:'신의 탑',rec:90,floors:10,boss:'god',bossName:'천공신',bossRoom:'신의 옥좌',music:'tower',hpMul:62,atkMul:96,xpMul:26,goldMul:20,crystal:.15,tierUp:8,tiles:'tower',desc:'구름 위로 솟은 마지막 시련. 빛 속성 천상의 군세'};
+DUNGEONS.goblin={name:'고블린 도적단',rec:60,floors:9,boss:'gobking',bossName:'도적왕 그락',bossRoom:'도적단 소굴',music:'goblin',hpMul:26,atkMul:27,xpMul:12,goldMul:12,crystal:.1,tierUp:7,tiles:'goblin',exp:1,desc:'확장 던전 1 · 떼로 몰려드는 고블린과 폭탄'};
+DUNGEONS.ogre={name:'오우거 토벌대',rec:60,floors:9,boss:'ogrelord',bossName:'대족장 고르',bossRoom:'대족장의 투기장',music:'ogre',hpMul:26,atkMul:27,xpMul:12.5,goldMul:10.5,crystal:.1,tierUp:7,tiles:'ogre',exp:2,desc:'확장 던전 2 · 거대한 오우거와 트롤의 협곡'};
+DUNGEONS.elf={name:'엘프의 성소',rec:60,floors:9,boss:'elfqueen',bossName:'달의 여사제 엘라리엘',bossRoom:'월광의 제단',music:'elf',hpMul:26,atkMul:27,xpMul:12.5,goldMul:11,crystal:.14,tierUp:7,tiles:'elf',exp:3,desc:'확장 던전 3 · 달빛이 깃든 숲의 신전과 엘프 수호자들'};
+DUNGEONS.sea={name:'심해의 용궁',rec:80,floors:10,boss:'dragonking',bossName:'심해 용왕 해신',bossRoom:'용왕의 수정궁',music:'sea',hpMul:42,atkMul:62,xpMul:20,goldMul:16,crystal:.15,tierUp:8,tiles:'sea',exp:4,desc:'확장 던전 4 · 깊은 바다 밑 용왕의 수정궁과 해저 군단'};
+DUNGEONS.cosmos={name:'우주적 코스모스',rec:100,floors:10,boss:'astra',bossName:'태초의 별 아스트라',bossRoom:'창세의 성좌',music:'cosmos',hpMul:85,atkMul:150,xpMul:36,goldMul:28,crystal:.2,tierUp:8,tiles:'cosmos',exp:5,desc:'확장 던전 5 · 별들이 태어나고 죽는 우주의 끝, 성좌의 군세'};
 const DG_ORDER=['slime','skeleton','zombie','empire','hell','tower','goblin','ogre','elf','sea','cosmos'];
 DUNGEONS.endless={name:'무한의 전장',rec:1,floors:1,boss:'king',bossName:'끝없는 군세',bossRoom:'',music:'hell',hpMul:1,atkMul:1,xpMul:1,goldMul:1,crystal:.06,tierUp:0,tiles:'hell',endless:true,desc:'엔드리스 모드 · 거대한 투기장에 끝없이 몰려오는 적'};
 // ================= 강화 · 전투력 · 업적 =================
