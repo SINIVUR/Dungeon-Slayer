@@ -604,7 +604,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.6.0';
+const VERSION='2.6.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1695,8 +1695,8 @@ function drawRival(c,e,t){const R=e.rv;if(!R)return;
 
 // ---------- 모드 공통 ----------
 function modeBossKill(e){for(const o of G.enemies)if(!o.dead&&o!==e){o.dead=true;burst(o.x,o.y,'#ffffff',6,100,2)}
-  if(G.dg.rush){const R=G.rush;R.stage++;save.rushBest=Math.max(save.rushBest||0,R.stage);recSet('rush',R.stage);rushReward(e);showBanner(`${R.stage}단계 돌파!`,'다음 보스가 다가와요');sfx('levelup');G.timers.push({t:3.2,fn:()=>{if(G&&!G.over&&!G.dying)rushStage()}})}
-  else if(G.dg.duel){const D=duelSt(),rk=D.rank;D.wins=(D.wins||0)+1;D.rank=Math.min(DUEL_MAX,rk+1);G.duelWin=true;for(let i=0;i<5;i++)dropAt(e.x,e.y,'gold',Math.round(4000*(1+rk*.5)));dropAt(e.x,e.y,'crystal',4+rk);if(rk%2===1)dropAt(e.x,e.y,'soul',1+Math.floor(rk/4));if(rk>=4&&rk%5===4)gemGrant(2+Math.floor(rk/6),3+Math.floor(rk/5),e.x,e.y);
+  if(G.dg.rush){const R=G.rush;R.stage++;save.rushBest=Math.max(save.rushBest||0,R.stage);recSet('rush',R.stage);rushReward(e);showBanner(`${R.stage}단계 돌파!`,'다음 보스가 다가와요');sfx('levelup');G.timers.push({t:3.2,fn:function f(){if(!G||G.over)return;if(G.dying){G.timers.push({t:.5,fn:f});return}rushStage()}})}
+  else if(G.dg.duel){const D=duelSt(),rk=D.rank;D.wins=(D.wins||0)+1;D.rank=Math.min(DUEL_MAX,rk+1);G.duelWin=true;{const L=G.loot,g=Math.round(20000*(1+rk*.5));L.gold+=g;L.crystal=(L.crystal||0)+4+rk;if(rk%2===1)L.soul=(L.soul||0)+1+Math.floor(rk/4);addText(e.x,e.y-40,'+'+fmt(g)+' G','#ffd34d',true);burst(e.x,e.y,'#ffd34d',30,220,3)}if(rk>=4&&rk%5===4)gemGrant(2+Math.floor(rk/6),3+Math.floor(rk/5),e.x,e.y);
     showBanner('결투 승리!',`결투장 ${D.rank}등급 돌파`);G.timers.push({t:3,fn:()=>{if(G&&!G.over)endRun(true)}})}}
 function kill26(e){cdxKill(e.type);carnGain(e);if(G.dg.rush||G.dg.duel)return;const tu=G.dg.tierUp||0;
   if(e.raid){gemGrant(3,5,e.x,e.y);gemGrant(3,5,e.x,e.y)}else if(e.boss){if(Math.random()<.35)gemGrant(1+Math.floor(tu/3),2+Math.floor(tu/3),e.x,e.y)}else if(e.guard&&Math.random()<.06)gemGrant(1,1+Math.floor(tu/4),e.x,e.y)}
@@ -1751,7 +1751,7 @@ function codex26(){cdxScan();const X=cdx(),L=cdxTypes();const ent=k=>{const D=ET
   const grp=CDX_GRP.map(([nm,f])=>{const ks=L.filter(k=>f(ETYPES[k]));if(!ks.length)return '';const dn=ks.filter(k=>(X.m[k]||0)>=cdxNeed(k)).length;return `<div class="tierhead"><b>${nm}</b><span>${dn} / ${ks.length}</span></div><div class="cdx">${ks.map(ent).join('')}</div>`}).join('');
   const cls=CLASS_ORDER.map(c=>{const q=g=>UNIQ_ORDER.filter(i=>X.i[`${g}:${c}:${i}`]).length;return `<div><b>${CLASSES[c].name}</b><small style="color:${UNIQ_COLOR}">전설 ${q('u')}/6</small><small style="color:${MY_COLOR}">신화 ${q('my')}/6</small><small style="color:${TR_COLOR}">초월 ${q('tr')}/6</small></div>`}).join('');
   return `<h2>도감 <span class="sub">몬스터 ${X.cm}/${L.length} 완성 · 장비 ${X.ic}종 수집</span></h2><p class="note" style="margin:0 0 6px">몬스터는 30마리(보스는 1번) 처치하면 완성돼요. 완성한 몬스터마다 피해·체력 +0.25%, 모은 장비 종류마다 피해 +0.1%가 모든 영웅에게 영구 적용돼요. 지금 보너스: 피해 +${(X.cm*.25+X.ic*.1).toFixed(1)}% · 체력 +${(X.cm*.25).toFixed(1)}%</p>${grp}<h3>고유 장비 수집</h3><div class="cdxi">${cls}</div>`}
-function act26(act,k,h,cls){
+function act26(act,k,h,cls){if(!SLOT_ORDER.includes(save.eqSlot))save.eqSlot='weapon';
   if(act==='form26'){save.form=k;toastMenu(`진형: ${FMN26[k].n}`)}
   else if(act==='duelopp'){duelSt().opp=k;toastMenu(`결투 상대: ${CLASSES[k].name}`)}
   else if(act==='achsub'){save.achSub=k}
@@ -2786,9 +2786,9 @@ function menuAction(e){
   else if(act==='buyw'){const w=+k;if(save.gold>=W_SHOP[w]){save.gold-=W_SHOP[w];const it=makeWeapon(cls,w,0);save.stash.push(it);toastMenu(`${itemName(it)} 구매 · 보관함에 넣었어요`)}}
   else if(act==='craftw'){const w=+k,fd=DSET[save.forgeDg]?save.forgeDg:(DSET[save.dg]?save.dg:'slime'),R=DSET[fd].w===w?DSET[fd].r:W_RECIPE[w];if(canAfford(R)){save.gold-=R.gold;for(const m in R.mats)save.mats[m]-=R.mats[m];const r=Math.random(),rar=r<.1?2:r<.4?1:0;const it=makeWeapon(cls,w,rar);save.stash.push(it);toastMenu(`${RARITY[rar].name} ${itemName(it)} 제작 완료`)}}
   else if(act==='craftu'){const R=U_RECIPE;if(canAfford(R)){save.gold-=R.gold;for(const m in R.mats)save.mats[m]-=R.mats[m];const it=makeUnique(cls,+k);save.stash.push(it);toastMenu(`전설 장비 ${it.name} 제작 완료`)}}
-  else if(act==='craftmy'){const i=+k,src=mySource(cls,h,i);if(src&&canAfford(MY_RECIPE)){save.gold-=MY_RECIPE.gold;for(const m in MY_RECIPE.mats)save.mats[m]-=MY_RECIPE.mats[m];const it=makeMyth(cls,i);it.up=src.up||0;it.spent=src.spent||0;it.el=src.el;
+  else if(act==='craftmy'){const i=+k,src=mySource(cls,h,i);if(src&&canAfford(MY_RECIPE)){save.gold-=MY_RECIPE.gold;for(const m in MY_RECIPE.mats)save.mats[m]-=MY_RECIPE.mats[m];const it=makeMyth(cls,i);it.up=src.up||0;it.spent=src.spent||0;it.el=src.el;it.gem=src.gem||null;it.lock=src.lock;
     const si=save.stash.indexOf(src);if(si>=0){save.stash.splice(si,1);save.stash.push(it)}else{h.equip[src.slot]=it}enhFx='';toastMenu(`신화 각성! ${itemName(it)}`)}}
-  else if(act==='crafttr'){const i=+k,src=trSource(cls,h,i);if(src&&canAfford(TR_RECIPE)){save.gold-=TR_RECIPE.gold;for(const m in TR_RECIPE.mats)save.mats[m]-=TR_RECIPE.mats[m];const it=makeTrans(cls,i);it.up=src.up||0;it.spent=src.spent||0;it.el=src.el;
+  else if(act==='crafttr'){const i=+k,src=trSource(cls,h,i);if(src&&canAfford(TR_RECIPE)){save.gold-=TR_RECIPE.gold;for(const m in TR_RECIPE.mats)save.mats[m]-=TR_RECIPE.mats[m];const it=makeTrans(cls,i);it.up=src.up||0;it.spent=src.spent||0;it.el=src.el;it.gem=src.gem||null;it.lock=src.lock;
     const si=save.stash.indexOf(src);if(si>=0){save.stash.splice(si,1);save.stash.push(it)}else{h.equip[src.slot]=it}enhFx='';toastMenu(`초월! ${itemName(it)}`)}}
   else if(act==='elem'){const ER={gold:500,mats:{crystal:5}},ew=h.equip.weapon;if(ew&&canAfford(ER)){save.gold-=ER.gold;save.mats.crystal-=5;ew.el=k;toastMenu(`${itemName(ew)} 완성`)}}
   else if(act==='psup'){const [pi,i]=k.split(':').map(Number),key=pi===1?'fskills':'pskills';if(!h[key])h[key]=[1,1,1,1];const c=skCost(h[key][i]);if(spOf(h,pi)>=c&&h[key][i]<SK_MAX){h[SPK[pi]]-=c;h[key][i]++;if(h[key][i]>10)toastMenu(`초월 강화! ${presetOf(cls,pi).skills[i].name} 초월 ${h[key][i]-10}`);if(G&&!G.over)renderPauseSkills()}}
@@ -3023,7 +3023,7 @@ function varDeath(e){const k=e.var,f=fe(),tier=DSET[G.dgKey]?DSET[G.dgKey].tier:
 function startRun(){
   const cls=save.selected,hero=save.heroes[cls];
   const dgKey=DUNGEONS[save.dg]?save.dg:'slime';
-  G={dgKey,dg:DUNGEONS[dgKey],cls,def:CLASSES[cls],hero,stats:calcStats(cls,hero),floor:1,loot:{gold:0,...Object.fromEntries(Object.keys(MATS).map(k=>[k,0])),items:[]},kills:0,xpGained:0,levels:0,time:0,
+  G={dgKey,dg:dgKey==='rush'?{...DUNGEONS.rush}:DUNGEONS[dgKey],cls,def:CLASSES[cls],hero,stats:calcStats(cls,hero),floor:1,loot:{gold:0,...Object.fromEntries(Object.keys(MATS).map(k=>[k,0])),items:[]},kills:0,xpGained:0,levels:0,time:0,
     cdF:[[0,0,0,0],[0,0,0,0]],form:0,buffs:{},combo:0,lastAtk:-9,atkTimer:0,enemies:[],projs:[],zones:[],fx:[],parts:[],texts:[],drops:[],timers:[],shake:0,cam:{x:0,y:0},over:false};
   G.cd=G.cdF[0];if(!hero.pskills)hero.pskills=[1,1,1,1];G.form=presetOf(cls,hero.preset||0)?hero.preset:0;G.ents=[];G.parry=null;
   G.p={x:0,y:0,r:13,hp:G.stats.hp,mp:G.stats.mp,face:0,moving:false,swingT:0,swingDir:1,stun:0,slowT:0,slowAmt:0,inv:0,dash:null,poison:0,poisonDps:0};
@@ -3335,12 +3335,12 @@ function endRun(success){wakeOff();
   const k=success||G.dg.endless||G.dg.raid||G.dg.rush||G.dg.duel?1:.5,L=G.loot,got={gold:Math.floor(L.gold*k)};
   save.gold+=got.gold;for(const m of Object.keys(MATS)){got[m]=Math.floor((L[m]||0)*k);save.mats[m]=(save.mats[m]||0)+got[m]}
   for(const it of L.items)save.stash.push(it);
-  REC().kills+=G.kills;REC().runs++;if(success)REC().boss++;
+  REC().kills+=G.kills;REC().runs++;if(success&&!G.dg.duel)REC().boss++;
   if(G.dgKey==='slime'){save.best=Math.max(save.best,success?G.dg.floors:G.floor);if(success)save.clears++}save.bests=save.bests||{};save.clearsBy=save.clearsBy||{};if(G.dg.endless)save.endlessBest=Math.max(save.endlessBest||0,G.wave||0);else save.bests[G.dgKey]=Math.max(save.bests[G.dgKey]||0,success?G.dg.floors:G.floor);if(success)save.clearsBy[G.dgKey]=(save.clearsBy[G.dgKey]||0)+1;persist();
   $('#rTitle').textContent=success?`${G.dg.name} 정복!`:'쓰러졌어요';
   $('#rTitle').style.color=success?'var(--gold)':'var(--danger)';
   $('#rSub').textContent=success?`${G.dg.bossName}을 쓰러뜨렸어요. 전리품을 모두 챙겨 마을로 돌아가요. · 처치 ${G.kills}`:`${G.floor}층에서 원정이 끝났어요. 골드와 재료는 절반만 가져가고, 장비는 모두 챙겨요. · 처치 ${G.kills}`;
-  recSet('runKills',G.kills);if(success&&!G.dg.endless&&!G.dg.raid)recSet('fast',G.time,true);if(G.dg.endless)recSet('wave',G.wave||0);
+  recSet('runKills',G.kills);if(success&&!G.dg.endless&&!G.dg.raid&&!G.dg.duel&&!G.dg.rush)recSet('fast',G.time,true);if(G.dg.endless)recSet('wave',G.wave||0);
   if(G.dg.raid){if(!G.raidWin)raidEnd(false);const RS=raidState();$('#rTitle').textContent=G.raidWin?'세계의 적 토벌!':'토벌 실패 · 체력 저장';$('#rTitle').style.color=G.raidWin?'var(--gold)':'';$('#rSub').textContent=`이번 도전 피해 ${nShort(Math.round(G.raidDmg||0))} · `+(G.raidWin?`다음 세계의 적 「${raidName(RS.i)}」이 깨어났어요`:`남은 체력 ${Math.max(1,Math.round((RS.hp||0)/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100))}% · 다시 도전해 마무리하세요`)}
   if(G.dg.endless){$('#rTitle').textContent=`웨이브 ${G.wave} 도달`;$('#rTitle').style.color='var(--gold)';$('#rSub').textContent=`무한의 전장에서 ${fmt(G.kills)}마리를 쓸어버렸어요. 전리품은 모두 챙겨요. · 최고 기록 ${save.endlessBest}웨이브`}
   $('#rLoot').innerHTML=`<span class="chip"><span class="dot" style="background:var(--gold)"></span>${fmt(got.gold)} G</span>`+Object.keys(MATS).filter(m=>got[m]).map(m=>`<span class="chip"><span class="dot" style="background:${MATS[m][1]}"></span>${MATS[m][0]} ${got[m]}</span>`).join('')+`<span class="chip"><span class="dot" style="background:var(--xp)"></span>경험치 ${fmt(G.xpGained)}${G.levels?` · 레벨업 ${G.levels}회`:''}</span>`;
