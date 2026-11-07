@@ -611,7 +611,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.8.3';
+const VERSION='2.8.4';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1569,7 +1569,7 @@ function coopWave(C,i){const A=C.A,as=A.ctx.stats,pw=Math.max(atk(),ap()),aw=Mat
 
 // ---------- 도륙 게이지 ----------
 const CARN_DUR=5;
-function carnGain(e){if(!G||G.carnT>0)return;const v=e.boss?12:e.guard?6:(e.elite||e.var)?1.2:e.horde?.12:.3,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100&&!G.over&&!G.dying)useCarnage()}
+function carnGain(e){if(!G||G.carnT>0)return;const v=e.boss?40:e.guard?20:(e.elite||e.var)?5:e.horde?.5:1.5,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100&&!G.over&&!G.dying)useCarnage()}
 function useCarnage(){if(!G||G.over||G.dying||paused)return;if(G.carnT>0)return;if((G.carn||0)<100){toast(`도륙 게이지 ${Math.floor(G.carn||0)}%`);return}
   G.carn=0;G.carnT=CARN_DUR;G.carnN=0;c26().carn++;showBanner('도 륙','평타가 화면 전체를 베어요');G.shake+=12;sfx('boom');G.glitch=Math.max(G.glitch||0,.6);G.cflash=.45;vib([40,30,80]);
   for(let i=0;i<6;i++)G.cslash.push({a:i*Math.PI/6+rand(-.1,.1),o:rand(-.2,.2),t:0,d:.4,w:rand(4,8),col:i%2?'#ff3a4a':'#ffffff'})}
