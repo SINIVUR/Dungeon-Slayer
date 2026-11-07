@@ -611,7 +611,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.8.1';
+const VERSION='2.8.3';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1108,7 +1108,7 @@ const P2={
     mkS('psn4','궤도 포격',55,30,{t:'barrage',range:420,n:6,spreadR:200,r:75,m:2,iv:.25,delay:.9,seek:true,nm:'궤도 포격',col:'#ff6a5a'},{ult:true,short:'궤도포격'})]}
 };
 for(const k in P2)P2[k].skills.forEach(s=>s._cls=k);
-function mCost(sk,lv){return Math.round(sk.mana*(1+.12*((lv||1)-1))*(sk._cls&&CLASSES[sk._cls]&&CLASSES[sk._cls].base.mp>=150?1.5:1))}
+function mCost(sk,lv){return Math.round(sk.mana*(.5+.11*((lv||1)-1))*(sk._cls&&CLASSES[sk._cls]&&CLASSES[sk._cls].base.mp>=150?1.5:1))}
 // 마나 경제 조정: 스킬 마나 소모 증가 · 기본 마나 재생 감소
 (function(){const MANA_SKILL=1.6,MANA_ULT=1.3,REGEN=.5;const done=new Set();
   for(const cls in CLASSES){const C=CLASSES[cls],sets=[C.skills,FORMS[cls]&&FORMS[cls].skills,P2[cls]&&P2[cls].skills].filter(Boolean);
@@ -1450,7 +1450,7 @@ function drawAllyFig(c,A,t){const C=A.ctx,p=C.p,down=A.down>0;let sw=p.swingT>0?
   {const nm=C.def.name+(down?` · ${Math.ceil(A.down)}`:''),L=nameSpr(nm,down);c.drawImage(L,p.x-L.width/4,y-12,L.width/2,L.height/2)}c.restore()}
 // ================= 연출: 날려버리기 · 보스 격파 =================
 function enemyCol(e){return e.skel?'#e6dfcc':e.zom?'#8ab060':e.hum?'#c9b8a8':e.dem?'#ff6a3a':e.ang?'#fff3c4':e.sea?'#8ad8ff':e.cos?'#d0a8ff':e.elf?'#bfeedd':e.gob?'#7fb04a':e.ogr?'#b08a6a':(e.el&&EL[e.el]?EL[e.el][1]:'#9ad06a')}
-function launchFlyer(e){if(!G.flyers)G.flyers=[];if(G.flyers.length>70)return;const src=G.p,a=Math.atan2(e.y-src.y,e.x-src.x),k=Math.min(4,Math.log2(e._ld/e.maxHp+1)),sp=480+260*k;G.flyers.push({x:e.x,y:e.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:e.r,rot:0,vr:(a>0?1:-1)*(10+k*4),col:enemyCol(e),t:0})}
+function launchFlyer(e){return;if(!G.flyers)G.flyers=[];if(G.flyers.length>70)return;const src=G.p,a=Math.atan2(e.y-src.y,e.x-src.x),k=Math.min(4,Math.log2(e._ld/e.maxHp+1)),sp=480+260*k;G.flyers.push({x:e.x,y:e.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:e.r,rot:0,vr:(a>0?1:-1)*(10+k*4),col:enemyCol(e),t:0})}
 function updFlyers(dt){const F=G.flyers;if(!F)return;for(let i=F.length-1;i>=0;i--){const f=F[i];f.t+=dt;f.x+=f.vx*dt;f.y+=f.vy*dt;f.vx*=1-dt*1.2;f.vy*=1-dt*1.2;f.rot+=f.vr*dt;
   if(hitsWall(f.x,f.y,f.r*.6)){burst(f.x,f.y,f.col,14,240,3.5);G.fx.push({k:'ring',x:f.x,y:f.y,r0:4,r1:f.r*2.4,t:0,dur:.25,color:f.col,w:4});G.shake=Math.min(10,G.shake+1.2);F.splice(i,1);continue}
   if(f.t>1.1){burst(f.x,f.y,f.col,8,140,3);F.splice(i,1)}}}
