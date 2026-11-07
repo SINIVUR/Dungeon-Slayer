@@ -770,7 +770,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='3.0.1';
+const VERSION='3.0.2';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1517,7 +1517,7 @@ function enemyTgt(e){if(!G.allies||!G.allies.length||G._ally)return G.p;if(G.pdo
 function allyXp(A,n){const h=A.hero;if(h.level>=100){abyssXp(h,n);return}h.xp+=n;let up=false;while(h.level<100&&h.xp>=xpNeed(h.level)){h.xp-=xpNeed(h.level);h.level++;const K=SPK[h.preset||0];h[K]=(h[K]||0)+1;up=true}
   if(up){const r=A.ctx.p.hp/A.ctx.stats.hp;A.ctx.stats=calcStats(A.cls,h);A.ctx.p.hp=A.ctx.stats.hp*r}}
 function updAllies(dt){if(!G.allies||!G.allies.length)return;const PL=G.p;
-  if(G.pdown>0&&!G.over){G.pdown-=dt;if(!G.allies.some(A=>A.down<=0)){G.pdown=0;showBanner('전멸','원정대가 모두 쓰러졌어요');setTimeout(()=>{if(G&&!G.over)endRun(false)},900)}else if(G.pdown<=0){G.pdown=0;G.dying=false;PL.hp=G.stats.hp*.5;PL.mp=G.stats.mp*.5;PL.inv=2;burst(PL.x,PL.y,'#fff3c0',30,220,4);showBanner('부활!','다시 싸워요');sfx('levelup')}}
+  if(G.pdown>0&&!G.over){G.pdown-=dt;if(!G.allies.some(A=>A.down<=0)){G.pdown=0;showBanner('전멸','원정대가 모두 쓰러졌어요');{const g=G;setTimeout(()=>{if(G===g&&!g.over)endRun(false)},900)}}else if(G.pdown<=0){G.pdown=0;G.dying=false;PL.hp=G.stats.hp*.5;PL.mp=G.stats.mp*.5;PL.inv=2;burst(PL.x,PL.y,'#fff3c0',30,220,4);showBanner('부활!','다시 싸워요');sfx('levelup')}}
   for(const A of G.allies){if(A.down>0){A.down-=dt;if(A.down<=0){const q=A.ctx.p;q.x=PL.x;q.y=PL.y;q.hp=A.ctx.stats.hp*.5;q.mp=A.ctx.stats.mp*.5;q.inv=1.5;burst(q.x,q.y,'#fff3c0',20,180,3);addText(q.x,q.y-30,'부활!','#fff3c0')}continue}
     withAlly(A,()=>allyTick(A,dt,PL))}
   if(G._xpQ){const q=G._xpQ;G._xpQ=0;gainXp(q)}}
@@ -1817,8 +1817,8 @@ function duelOpp(){const D=duelSt();let k=D.opp;if(!CLASSES[k]||k===save.selecte
 const DUEL_MAX=30;
 function duelSpawn(){const D=duelSt(),k=duelOpp(),hh=save.heroes[k],r=G.map.rooms[0],x=(r.cx+.5)*T,y=(r.cy-7)*T,e=spawnEnemy('rival',x,y),rk=D.rank,pw=Math.max(G.stats.atk||0,G.stats.ap||0);
   e.rv={cls:k,col:HERO_GLOW[k]||'#fff',ranged:RANGED_CLS.has(k)||!!CLASSES[k].range,rk,form:presetOf(k,hh.preset||0)?hh.preset:0};G.rivalRk=rk;
-  e.maxHp=e.hp=pw*220*(1+.18*rk)*(1+(hh.level||1)/200);e.def=0;e.mr=0;e.spd=150*(1+.015*rk);e.r=15;e.xp=Math.round(xpNeed(Math.min(99,G.hero.level))*.12);e.awake=false;e.state='chase';e.stT=1.6;e.atkT=1;e.face=Math.PI/2;pvpInit(e,k,e.rv.form,rk);
-  G.boss=e;$('#bossName').textContent=`${CLASSES[k].name} · ${e.rv.pn} · 결투 ${rk+1}등급`}
+  e.maxHp=e.hp=pw*220*(1+.18*rk)*(1+(hh.level||1)/200);e.def=0;e.mr=0;e.spd=150*(1+.015*rk);e.r=15;e.xp=Math.round(xpNeed(Math.min(99,G.hero.level))*.12);e.awake=false;e.state='chase';e.stT=1.6;e.atkT=1;e.face=Math.PI/2;pvpInit(e,k,e.rv.form,rk,true);
+  G.boss=e;$('#bossName').textContent=`${CLASSES[k].name} · ${e.rv.pn} Lv ${e.rv.lv} · 결투 ${rk+1}등급`}
 function rivalAmt(pct,type){return G.stats.hp*pct*(.75+.1*(G.rivalRk||0))*(G.rivalAwk?1.25:1)*(100+eff(type==='magic'?'mr':'def'))/100}
 function rivalProj(e,a,pct,sp,col){G.projs.push({x:e.x,y:e.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:7,life:2,t:0,hostile:true,dmg:rivalAmt(pct,'magic'),kind:'orb',color:col,hitSet:new Set()})}
 function updRival(e,dt,d,ux,uy,sm_){const p=G.p,R=e.rv;if(!R)return;if(!e.awake){if(d<420)e.awake=true;else return}if(!e.chaser){$('#bossbar').hidden=false;$('#bossI').style.transform=`scaleX(${Math.max(0,e.hp/e.maxHp)})`}music('boss');
@@ -2449,8 +2449,8 @@ function drawSummon(c,look,o,t,col,fade){c.save();c.globalAlpha=Math.max(.15,fad
 for(const k of ['samurai','gunblade','gunner','lancer','sniper'])CLASSES[k].skills.forEach(s=>s._cls=k);
 
 // ================= SAVE =================
-const SAVE_KEY='dungeon-slayer-save-v1';
-const newHero=()=>({level:1,xp:0,plv:[{level:1,xp:0},{level:1,xp:0},{level:1,xp:0}],xl:[{a:0,s:0,n:0},{a:0,s:0,n:0},{a:0,s:0,n:0}],sp:0,sp1:0,sp2:0,spv:3,preset:0,skills:[1,1,1,1],fskills:[1,1,1,1],pskills:[1,1,1,1],equip:{head:null,arm:null,leg:null,shoe:null,acc:null}});
+const SAVE_KEY='dungeon-slayer-save-v3';
+const newHero=()=>({level:1,xp:0,plv:[{level:1,xp:0},{level:1,xp:0},{level:1,xp:0}],xl:[{a:0,s:0,n:0},{a:0,s:0,n:0},{a:0,s:0,n:0}],sp:0,sp1:0,sp2:0,spv:4,preset:0,skills:[1,1,1,1],fskills:[1,1,1,1],pskills:[1,1,1,1],equip:{head:null,arm:null,leg:null,shoe:null,acc:null}});
 const defaultSave=()=>({potions:3,gold:300,mats:Object.fromEntries(Object.keys(MATS).map(k=>[k,0])),stash:[],selected:'warrior',heroes:Object.fromEntries(CLASS_ORDER.map(k=>[k,newHero()])),nextId:1,best:0,clears:0});
 function loadSave(){try{const s=JSON.parse(localStorage.getItem(SAVE_KEY));if(s&&s.heroes){const d=defaultSave();const r=Object.assign(d,s,{mats:Object.assign(d.mats,s.mats),heroes:Object.assign(d.heroes,s.heroes)});for(const m in MATS)if(r.mats[m]==null)r.mats[m]=0;if(r.mats.core>0){r.mats.crystal+=Math.ceil(r.mats.core/2);r.mats.core=0}
   for(const k in r.heroes){const h=r.heroes[k];if(!h.fskills)h.fskills=[1,1,1,1];if(!h.pskills)h.pskills=[1,1,1,1];if(!(h.spv>=2)){const used=a=>a.reduce((x,y)=>x+y,0)-4,L=h.level-1;h.sp=Math.max(0,L-used(h.skills));h.sp1=Math.max(0,L-used(h.fskills));h.sp2=Math.max(0,L-used(h.pskills));h.spv=2}plvInit(h);if(h.spv===2){['skills','fskills','pskills'].forEach((key,pi)=>{const ex=(h[key]||[]).reduce((t,lv)=>t+Math.max(0,lv-10),0);if(ex)h[SPK[pi]]=(h[SPK[pi]]||0)+ex});h.spv=3}}mig211(r);mig300(r);return r}}catch(e){}return defaultSave()}
@@ -2466,6 +2466,7 @@ function plvInit(h){if(!h.plv)h.plv=[0,1,2].map(()=>({level:h.level||1,xp:h.xp||
 function plvSync(h){plvInit(h);h.plv[h.preset||0]={level:h.level,xp:h.xp}}
 function plvLoad(h){plvInit(h);const P=h.plv[h.preset||0];h.level=P.level;h.xp=P.xp}
 function persist(){try{for(const k in save.heroes)plvSync(save.heroes[k]);localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+try{localStorage.removeItem('dungeon-slayer-save-v1')}catch(_){}
 let save=loadSave();if(save._spFixed){const n=save._spFixed;delete save._spFixed;setTimeout(()=>{try{toastMenu(`스킬포인트 오류를 고쳤어요 · 프리셋 ${n}개의 포인트를 올바르게 돌려받았어요`)}catch(_){}},1500)}
 const xpNeed=l=>Math.round(40+l*18+l*l*2.2);
 // ================= 경지 · 칭호 =================
@@ -3049,7 +3050,7 @@ const MENU_TABS={
 
     <h3>${C.name} 능력치 <span class="cp" style="margin-left:calc(var(--u)*8)"><small>전투력</small>${fmt(power(s,cls))}</span></h3><div class="stats">${STAT_ORDER.map(k=>`<div class="${C.strong.includes(k)?'strong':''}"><span>${STAT_KR[k]}</span><span>${fmtStat(k,s[k])}</span></div>`).join('')}</div>
     ${(()=>{const A=abyssOf(h);return `<h3>심연 레벨 <span class="sub" style="margin-left:.5em">Lv 100 이후 끝없이 올라요 · 레벨마다 1포인트 · 남은 포인트 ${A.pts}</span></h3><div class="abyss"><div class="abh"><b>심연 ${A.lv}</b><div class="bar"><i style="transform:scaleX(${h.level>=100?(A.xp/abyssNeed(A.lv)).toFixed(3):0})"></i></div><small>${h.level>=100?`${fmt(Math.round(A.xp))} / ${fmt(abyssNeed(A.lv))}`:'Lv 100 달성 후 열려요'}</small></div><div class="abg">${ABYSS_ST.map(([k,n,v,u])=>`<div><span>${n}<em>+${+((A.a[k]||0)*v).toFixed(2)}${u}</em></span><button class="btn gold" data-act="abyss" data-k="${k}:1" ${A.pts<1?'disabled':''}>+1</button><button class="btn" data-act="abyss" data-k="${k}:10" ${A.pts<10?'disabled':''}>+10</button></div>`).join('')}</div></div>`})()}
-    ${(()=>{const ss=soulSt(h),K=h.soulK||0,nx=SOUL[ss];return `<h3>영혼 무기 <span class="sub" style="margin-left:.5em">${C.name}로 처치할수록 손에 든 무기가 진화해요 · 누적 ${fmt(K)}</span></h3><div class="soul">${SOUL.map((S,i)=>`<div class="${i<ss?'on':''}" style="color:${S[2]}"><b>${S[1]}</b>${fmt(S[0])}처치</div>`).join('')}</div><p class="note">${ss?`현재 「${SOUL[ss-1][1]}」 · 피해 +${ss*4}%${ss>=2?' · 평타 4번째마다 영혼 검기':''}${ss>=3?' · 무기 주위 영혼 파편':''}${ss>=4?' · 불꽃 잔상':''}${ss>=5?' · 번개 휘감김':''}`:'아직 각인되지 않았어요'}${nx?` · 다음 「${nx[1]}」까지 ${fmt(nx[0]-K)}`:' · 최종 단계'}</p>`})()}
+    ${(()=>{const ss=soulSt(h),K=h.soulK||0,nx=SOUL[ss];return `<h3>영혼 무기 <span class="sub" style="margin-left:.5em">${JO(C.name,'으로')} 처치할수록 손에 든 무기가 진화해요 · 누적 ${fmt(K)}</span></h3><div class="soul">${SOUL.map((S,i)=>`<div class="${i<ss?'on':''}" style="color:${S[2]}"><b>${S[1]}</b>${fmt(S[0])}처치</div>`).join('')}</div><p class="note">${ss?`현재 「${SOUL[ss-1][1]}」 · 피해 +${ss*4}%${ss>=2?' · 평타 4번째마다 영혼 검기':''}${ss>=3?' · 무기 주위 영혼 파편':''}${ss>=4?' · 불꽃 잔상':''}${ss>=5?' · 번개 휘감김':''}`:'아직 각인되지 않았어요'}${nx?` · 다음 「${nx[1]}」까지 ${fmt(nx[0]-K)}`:' · 최종 단계'}</p>`})()}
     <h3>경지 <span class="sub" style="margin-left:.5em">레벨이 오를수록 경지가 높아지고, 몸집이 커지며 발밑에 오라가 생겨요</span></h3><div class="realm">${REALM.map((R,i)=>{const ri=realmIdx(h.level);return `<div class="${i<ri?'on':i===ri?'cur':''}" style="color:${R.col}"><b>${R.n}</b>Lv ${R.lv}<br>능력치 +${Math.round(R.b*100)}%</div>`}).join('')}</div>
     <h3>칭호 <span class="sub" style="margin-left:.5em">누적 처치 ${fmt(REC().kills||0)} · 칭호마다 피해 +3% · 업적 탭 → 칭호에서 머리 위 칭호를 장착해요</span></h3><div class="ktl">${KILL_TITLES.map(([n,t],i)=>{const ti=titleIdx(REC().kills||0);return `<span class="${i<ti?'on':i===ti?'cur':''}">${t} · ${fmt(n)}</span>`}).join('')}</div>
     <h3>해탈</h3><p class="note">전투 중 초필살기 옆 금색 버튼(키보드 T). 시간이 멈추고, 몇십 초 동안 신의 경지에 올라요. 피해 ×${(1.3+.06*realmIdx(h.level)).toFixed(2)} · 공속 ×1.3 · 이속 ×1.15 · 치명타 +10% · 받는 피해 -25% · 마나 소모 -40% · 쿨타임 1.5배 빠르게 · 시작 시 체력·마나 30% 회복 · 주변 적 자동 소각 · 지속 ${8+2*realmIdx(h.level)}초 (경지가 높을수록, 해탈 강화를 할수록 길고 강해짐) · 재사용 ${NIR_CD}초</p>
@@ -3274,7 +3275,7 @@ const MENU3={
       <div class="p3"><div class="hd"><b>평타</b></div><p class="note" style="margin:0">${C.basic}</p></div>
       <div class="p3"><div class="hd"><b>해탈</b><span>전투 중 금색 버튼 (키보드 T)</span></div><p class="note" style="margin:0">시간이 멈추고 신의 경지에 올라요. 피해 ×${(1.3+.06*realmIdx(h.level)).toFixed(2)} · 공속 ×1.3 · 이속 ×1.15 · 치명타 +10% · 받는 피해 -25% · 마나 소모 -40% · 지속 ${8+2*realmIdx(h.level)}초 · 재사용 ${NIR_CD}초</p></div>`;
     if(sub==='grow'){const ss=soulSt(h),K=h.soulK||0,nx=SOUL[ss],ri=realmIdx(h.level),ti=titleIdx(REC().kills||0);
-      return bar+`<div class="p3"><div class="hd"><b>영혼 무기</b><span>${C.name}로 처치할수록 무기가 진화해요 · 누적 ${fmt(K)}</span></div><div class="soul">${SOUL.map((S,i)=>`<div class="${i<ss?'on':''}" style="color:${S[2]}"><b>${S[1]}</b>${fmt(S[0])}처치</div>`).join('')}</div><p class="note" style="margin:calc(var(--u)*6) 0 0">${ss?`현재 「${SOUL[ss-1][1]}」 · 피해 +${ss*4}%`:'아직 각인되지 않았어요'}${nx?` · 다음 「${nx[1]}」까지 ${fmt(nx[0]-K)}`:' · 최종 단계'}</p></div>
+      return bar+`<div class="p3"><div class="hd"><b>영혼 무기</b><span>${JO(C.name,'으로')} 처치할수록 무기가 진화해요 · 누적 ${fmt(K)}</span></div><div class="soul">${SOUL.map((S,i)=>`<div class="${i<ss?'on':''}" style="color:${S[2]}"><b>${S[1]}</b>${fmt(S[0])}처치</div>`).join('')}</div><p class="note" style="margin:calc(var(--u)*6) 0 0">${ss?`현재 「${SOUL[ss-1][1]}」 · 피해 +${ss*4}%`:'아직 각인되지 않았어요'}${nx?` · 다음 「${nx[1]}」까지 ${fmt(nx[0]-K)}`:' · 최종 단계'}</p></div>
       <div class="p3"><div class="hd"><b>경지</b><span>레벨이 오를수록 몸집이 커지고 발밑에 오라가 생겨요</span></div><div class="realm">${REALM.map((R,i)=>`<div class="${i<ri?'on':i===ri?'cur':''}" style="color:${R.col}"><b>${R.n}</b>Lv ${R.lv}<br>능력치 +${Math.round(R.b*100)}%</div>`).join('')}</div></div>
       <div class="p3"><div class="hd"><b>처치 칭호</b><span>누적 처치 ${fmt(REC().kills||0)} · 칭호마다 피해 +3%</span></div><div class="ktl">${KILL_TITLES.map(([n,t],i)=>`<span class="${i<ti?'on':i===ti?'cur':''}">${t} · ${fmt(n)}</span>`).join('')}</div></div>`}
     return bar+`<div class="hgrid3">${CLASS_ORDER.map(k=>`<button class="hcard" data-act="sel" data-k="${k}" aria-pressed="${k===cls}"><canvas data-cls="${k}"></canvas><b>${CLASSES[k].name}</b><small>Lv ${save.heroes[k].level} · ${CLASSES[k].tag}</small></button>`).join('')}</div>`},
@@ -3293,6 +3294,7 @@ function act3(act,k,h,cls){
   if(act==='achall'){let n=0;for(const a of ACH)if(achDone(a)&&!achClaimed(a)){save.ach=save.ach||{};save.ach[a.id]=1;grant(a.rw);n++}toastMenu(n?`업적 보상 ${n}개를 받았어요`:'받을 보상이 없어요');return true}
   return false}
 function gradeLbl3(it){const g=itemGrade(it),l=itemLabel(it);return l.startsWith(g)?l:g+' '+l}
+function JO(w,a,b){w=String(w);const c=w.charCodeAt(w.length-1);if(c<0xAC00||c>0xD7A3)return w+a;const j=(c-0xAC00)%28;if(a==='으로')return w+(j===0||j===8?'로':'으로');return w+(j?a:b)}
 function enter3(){$('#enterBtn').click()}
 function renderMenu(){
   if(tab==='pet'||tab==='shop'){if(tab==='shop'){save.fsub='shop';tab='forge'}else tab='hero'}if(!MENU3[tab])tab='home';
@@ -3848,7 +3850,7 @@ function spawnWave(){if(G.dg.endless||G.dg.raid||G.dg.rush||G.dg.duel||(G.horde&
 function showBanner(a,b){if(G&&G._rv){if(a==='각성 종료'||/^레벨/.test(a))return;a='상대 · '+a}else if(G&&G._ally)return;const el=$('#banner');el.innerHTML=`<b>${a}</b><small>${b}</small>`;el.style.opacity=1;clearTimeout(showBanner.t);showBanner.t=setTimeout(()=>el.style.opacity=0,1800)}
 function toast(msg,color){if(G&&G._ally)return;const d=document.createElement('div');d.textContent=msg;if(color)d.style.color=color;const box=$('#toasts');box.appendChild(d);while(box.children.length>3)box.firstChild.remove();setTimeout(()=>d.remove(),2400)}
 function endRun(success){wakeOff();
-  if(G.over)return;G.over=true;state='result';music(null);sfx(success?'victory':'defeat');
+  if(!G||G.over)return;G.over=true;state='result';music(null);sfx(success?'victory':'defeat');
   const k=success||G.dg.endless||G.dg.raid||G.dg.rush||G.dg.duel?1:.5,L=G.loot,got={gold:Math.floor(L.gold*k)};
   save.gold+=got.gold;for(const m of Object.keys(MATS)){got[m]=Math.floor((L[m]||0)*k);save.mats[m]=(save.mats[m]||0)+got[m]}
   for(const it of L.items)save.stash.push(it);
@@ -3856,7 +3858,7 @@ function endRun(success){wakeOff();
   if(G.dgKey==='slime'){save.best=Math.max(save.best,success?G.dg.floors:G.floor);if(success)save.clears++}save.bests=save.bests||{};save.clearsBy=save.clearsBy||{};if(G.dg.endless)save.endlessBest=Math.max(save.endlessBest||0,G.wave||0);else save.bests[G.dgKey]=Math.max(save.bests[G.dgKey]||0,success?G.dg.floors:G.floor);if(success)save.clearsBy[G.dgKey]=(save.clearsBy[G.dgKey]||0)+1;persist();
   $('#rTitle').textContent=success?`${G.dg.name} 정복!`:'쓰러졌어요';
   $('#rTitle').style.color=success?'var(--gold)':'var(--danger)';
-  $('#rSub').textContent=success?`${G.dg.bossName}을 쓰러뜨렸어요. 전리품을 모두 챙겨 마을로 돌아가요. · 처치 ${G.kills}`:`${G.floor}층에서 원정이 끝났어요. 골드와 재료는 절반만 가져가고, 장비는 모두 챙겨요. · 처치 ${G.kills}`;
+  $('#rSub').textContent=success?`${JO(G.dg.bossName,'을','를')} 쓰러뜨렸어요. 전리품을 모두 챙겨 마을로 돌아가요. · 처치 ${G.kills}`:`${G.floor}층에서 원정이 끝났어요. 골드와 재료는 절반만 가져가고, 장비는 모두 챙겨요. · 처치 ${G.kills}`;
   recSet('runKills',G.kills);if(success&&!G.dg.endless&&!G.dg.raid&&!G.dg.duel&&!G.dg.rush)recSet('fast',G.time,true);if(G.dg.endless)recSet('wave',G.wave||0);
   if(G.dg.raid){if(!G.raidWin)raidEnd(false);const RS=raidState();$('#rTitle').textContent=G.raidWin?'세계의 적 토벌!':'토벌 실패 · 체력 저장';$('#rTitle').style.color=G.raidWin?'var(--gold)':'';$('#rSub').textContent=`이번 도전 피해 ${nShort(Math.round(G.raidDmg||0))} · `+(G.raidWin?`다음 세계의 적 「${raidName(RS.i)}」이 깨어났어요`:`남은 체력 ${Math.max(1,Math.round((RS.hp||0)/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100))}% · 다시 도전해 마무리하세요`)}
   if(G.dg.endless){$('#rTitle').textContent=`웨이브 ${G.wave} 도달`;$('#rTitle').style.color='var(--gold)';$('#rSub').textContent=`무한의 전장에서 ${fmt(G.kills)}마리를 쓸어버렸어요. 전리품은 모두 챙겨요. · 최고 기록 ${save.endlessBest}웨이브`}
@@ -3934,6 +3936,7 @@ function healP(n,quiet){const p=G.p;const before=p.hp;p.hp=Math.min(G.stats.hp,p
 function hurtP(amount,type,el){
   if(G._tp&&G._tp.allyRef&&!G._ally){const A=G._tp.allyRef;if(A.down>0)return;return withAlly(A,()=>hurtP(amount,type,el))}
   if(G.pdown>0&&!G._ally)return;
+  if(G.dying&&!G._ally)return;
   const p=G.p;if(p.inv>0||(p.dash&&p.dash.inv)||G.over)return;
   if(G.parry&&G.parry.t>0){const P=G.parry;addText(p.x,p.y-28,'막음!',P.col);if(P.cd<=0){P.cd=.3;const R=(P.sp.r||110);sfx('crit');G.shake+=3;G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:R,t:0,dur:.3,color:P.col,w:6});burst(p.x,p.y,P.col,14,200,3);for(const e of inCircle(p.x,p.y,R))tHit(e,P.sp,P.lv);if(P.sp.heal)healP(G.stats.hp*P.sp.heal)}p.inv=.12;return}
   let d=type==='magic'?amount*100/(100+eff('mr')):amount*100/(100+eff('def'));
@@ -3943,7 +3946,7 @@ function hurtP(amount,type,el){
   if(G.shield&&G.shield.t>0){const a=Math.min(G.shield.amt,d);G.shield.amt-=a;d-=a;if(a>0)addText(p.x,p.y-26,'-'+Math.round(a),'#a6e8ff')}
   if(d<=0)return;
   awkHurt();p.hp-=d;p.inv=.15;sfx('hurt',.08);if(d>G.stats.hp*.08)vib(35);G.shake=Math.min(8,G.shake+3);addText(p.x,p.y-26,'-'+d,'#ff6b5b');
-  if(p.hp<=0){p.hp=0;burst(p.x,p.y,'#d8574b',24,160,4);if(G._ally){G._ally.down=30;addText(p.x,p.y-30,'전투 불능 · 30초 후 부활','#ff6b5b');return}if(G.allies&&G.allies.length)showBanner('리더 전투 불능','원정이 끝났어요');setTimeout(()=>endRun(false),900);G.dying=true}
+  if(p.hp<=0){p.hp=0;burst(p.x,p.y,'#d8574b',24,160,4);if(G._ally){G._ally.down=30;addText(p.x,p.y-30,'전투 불능 · 30초 후 부활','#ff6b5b');return}if(G.allies&&G.allies.length)showBanner('리더 전투 불능','원정이 끝났어요');{const g=G;setTimeout(()=>{if(G===g&&!g.over)endRun(false)},900)}G.dying=true}
 }
 function killEnemy(e){
   if(e.pv&&!e.dead)pvpPurge(e.pv);
@@ -4240,10 +4243,15 @@ function doBasic0(a){if(G.carnT>0&&!G._ally)carnSlash();
 // ================= 적대 영웅 (결투 · 추격자 · 시련): 실제 스킬셋 · 프리셋으로 싸움 =================
 // 상대는 플레이어와 똑같은 전투 코드(castSkill · doBasic · 각성 · 초필살기 · 해탈)를 자기 문맥에서 돌리고,
 // 그 공격은 플레이어 위치의 대역(X)만 노린다. X가 받은 피해는 플레이어 체력 기준으로 바꿔 hurtP로 넘긴다.
-const PVP_BASE=.009,PVP_CAP=.18;
+let PVP_BASE=.009,PVP_CAP=.18,PVP_HP=20,PVP_DMG=.28,PVP_RK=.08;
 function pvpPresets(cls){return [0,1,2].filter(i=>i===0||presetOf(cls,i))}
-function pvpInit(e,cls,pi,rk){
+function pvpInit(e,cls,pi,rk,real){
   const base=save.heroes[cls],hero=JSON.parse(JSON.stringify(base)),me=G.hero,mi=G.form||0;
+  if(real){plvInit(hero);plvSync(hero);hero.preset=pi;plvLoad(hero);const keep=save.heroes[cls];save.heroes[cls]=hero;let C;try{C=mkCtx(cls)}finally{save.heroes[cls]=keep}
+    C.hero=hero;C.form=presetOf(cls,pi)?pi:0;C.p.x=e.x;C.p.y=e.y;C.cd=C.cdF[0];C.awkCd=8;C.supCd=15;C.nirCd=1e9;
+    const A={cls,slot:0,down:0,think:.6,ctx:C,hero},X={pvX:1,type:'rival',x:G.p.x,y:G.p.y,r:G.p.r||13,hp:1e15,maxHp:1e15,def:0,mr:0,el:null,st:{},dead:false,boss:true,awake:true,spd:0,flash:0,vx:0,vy:0},K=1+PVP_RK*(rk||0);
+    e.pv={A,X,q:[],rk,pw:1,cls,pi,real:1,K};e.maxHp=e.hp=C.stats.hp*PVP_HP*K;e.def=C.stats.def;e.mr=C.stats.mr;
+    e.rv.form=C.form;e.rv.pn=(presetOf(cls,C.form)||{}).name||CLASSES[cls].name;e.rv.ranged=RANGED_CLS.has(cls)||!!CLASSES[cls].range;e.rv.lv=hero.level;return e}
   const myArr=me[['skills','fskills','pskills'][mi]]||[1,1,1,1],avg=myArr.reduce((a,b)=>a+b,0)/4,L=Math.max(1,Math.min(15,Math.round(avg+rk/3)));
   hero.preset=pi;hero.level=Math.max(1,G.hero.level);hero.skills=[L,L,L,L];hero.fskills=[L,L,L,L];hero.pskills=[L,L,L,L];
   plvInit(me);const MX=me.xl[mi]||{a:0,s:0,n:0};hero.plv=[0,1,2].map(()=>({level:hero.level,xp:0}));hero.xl=[0,1,2].map(()=>({a:MX.a||0,s:MX.s||0,n:MX.n||0,t:0,ab:0}));
@@ -4285,10 +4293,11 @@ function pvpTick(e,dt){const R=e.pv,A=R.A,C=A.ctx,P=G.p,X=R.X;
   for(const k of ['poison','bleed']){const s=st[k];if(s&&s.t>0){s.t-=dt;dot+=s.dps}}
   if(st.burn&&st.burn.t>0){st.burn.t-=dt;dot+=st.burn.dps*st.burn.stacks}
   if(dot>0)R.q.push({d:dot*dt,type:'magic',el:'poison',dot:1});
-  if(st.stun>0){P.stun=Math.max(P.stun||0,Math.min(.7,st.stun));st.stun=0}
+  if(st.stun>0){if(G.time>=(R.ccImm||0)){P.stun=Math.max(P.stun||0,Math.min(.5,st.stun));R.ccImm=G.time+1.5+Math.min(.5,st.stun)}st.stun=0}
   if(st.slow&&st.slow.t>0){P.slowT=Math.max(P.slowT||0,st.slow.t);P.slowAmt=st.slow.amt;st.slow=null}
   // 피해 변환: 상대 공격력 1배짜리 한 방 ≈ 내 체력의 4.5% (등급·각성 보정, 내 방어로 다시 깎임)
   if(R.q.length&&!G.dying&&!G.over){let ph=0,mg=0;for(const q of R.q){if(q.type==='magic')mg+=q.d;else ph+=q.d}R.q.length=0;
+    if(R.real){const inv=P.inv,cap=G.stats.hp*.3,tot=(ph+mg)*PVP_DMG*R.K,sc=tot>cap?cap/tot:1;if(ph>0)hurtP(ph*PVP_DMG*R.K*sc,'phys');if(mg>0){P.inv=Math.min(P.inv,inv);hurtP(mg*PVP_DMG*R.K*sc,'magic')}return}
     const k=G.stats.hp*PVP_BASE*(.75+.1*(R.rk||0))*(C.awk?1.15:1)/R.pw;
     const inv=P.inv,cap=G.stats.hp*PVP_CAP,tot=ph+mg,sc=tot*k>cap?cap/(tot*k):1;if(ph>0)hurtP(ph*k*sc*(100+eff('def'))/100,'phys');if(mg>0){P.inv=Math.min(P.inv,inv);hurtP(mg*k*sc*(100+eff('mr'))/100,'magic')}}else R.q.length=0}
 function pvpPurge(R){for(const k of ['projs','zones','timers','ents'])if(G[k])G[k]=G[k].filter(x=>x.rv!==R)}
@@ -4363,7 +4372,7 @@ function update(dt){juiceFrame(dt);
   egBuild();egSeparate();
   if(G.time%1<dt)G.enemies=G.enemies.filter(e=>!e.dead);
   G.waveT-=dt;if(G.waveT<=0&&!G.dying){G.waveT=rand(6,9.5)-Math.min(2,fe()*.15);spawnWave()}
-  if(G.bstCd>0)G.bstCd-=dt;updPet(dt);updAllies(dt);updFlyers(dt);upd26(dt);upd29(dt);if(G.dg.raid&&G.raidT>0&&!G.dying){G.raidT-=dt;if(G.raidT<=0){G.raidT=0;showBanner('시간 종료','남은 체력이 저장돼요');G.dying=true;setTimeout(()=>{if(G&&!G.over)endRun(false)},1200)}}G.lsCap=Math.min(G.stats.hp*.3,(G.lsCap??G.stats.hp*.3)+G.stats.hp*.3*dt);updHorde(dt);updNir(dt);if(G.dg.endless&&!G.dying)updEndless(dt);if(G.mk&&G.mk.show>0)G.mk.show-=dt;
+  if(G.bstCd>0)G.bstCd-=dt;updPet(dt);updAllies(dt);updFlyers(dt);upd26(dt);upd29(dt);if(G.dg.raid&&G.raidT>0&&!G.dying){G.raidT-=dt;if(G.raidT<=0){G.raidT=0;showBanner('시간 종료','남은 체력이 저장돼요');G.dying=true;{const g=G;setTimeout(()=>{if(G===g&&!g.over)endRun(false)},1200)}}}G.lsCap=Math.min(G.stats.hp*.3,(G.lsCap??G.stats.hp*.3)+G.stats.hp*.3*dt);updHorde(dt);updNir(dt);if(G.dg.endless&&!G.dying)updEndless(dt);if(G.mk&&G.mk.show>0)G.mk.show-=dt;
   // drops
   for(let i=G.drops.length-1;i>=0;i--){const d=G.drops[i];d.t+=dt;const dx=p.x-d.x,dy=p.y-d.y,dd=Math.hypot(dx,dy);
     const MR=OPT.magnet>=3?99999:OPT.magnet>=2?260:120;if(d.t>.35&&dd<MR){const sp=Math.max(260+(Math.min(MR,400)-dd)*4,420);d.x+=dx/dd*sp*dt;d.y+=dy/dd*sp*dt}else{d.x+=d.vx*dt;d.y+=d.vy*dt;d.vx*=.9;d.vy*=.9}
@@ -4378,7 +4387,7 @@ function update(dt){juiceFrame(dt);
   const tx=Math.floor(p.x/T),ty=Math.floor(p.y/T),ti=ty*MW+tx;
   if(ti!==G.lastTile){G.lastTile=ti;const R=5;for(let y=ty-R;y<=ty+R;y++)for(let x=tx-R;x<=tx+R;x++)if(x>=0&&y>=0&&x<MW&&y<MH&&(x-tx)**2+(y-ty)**2<=R*R+1)G.seen[y*MW+x]=1;
     const r=roomAt(p.x,p.y);if(r){for(let y=r.y-1;y<=r.y+r.h;y++)for(let x=r.x-1;x<=r.x+r.w;x++)if(x>=0&&y>=0&&x<MW&&y<MH)G.seen[y*MW+x]=1;
-      if(r===G.map.portal&&!G.portalSeen){G.portalSeen=true;if(G.floor<G.dg.floors){toast('포탈룸 발견! 층 보스를 쓰러뜨려야 포탈이 열려요','#ff9a7a');if(G.guard)G.guard.awake=true}else{toast(`${G.dg.bossName}이 깨어났어요!`,'#ff9a7a');if(G.boss)G.boss.awake=true}}}
+      if(r===G.map.portal&&!G.portalSeen){G.portalSeen=true;if(G.floor<G.dg.floors){toast('포탈룸 발견! 층 보스를 쓰러뜨려야 포탈이 열려요','#ff9a7a');if(G.guard)G.guard.awake=true}else{toast(`${JO(G.dg.bossName,'이','가')} 깨어났어요!`,'#ff9a7a');if(G.boss)G.boss.awake=true}}}
     G.miniDirty=true}
   // portal
   if(G.portal.active&&Math.hypot(p.x-G.portal.x,p.y-G.portal.y)<28&&!G.dying){G.portalT+=dt;if(G.portalT>.6){sfx('portal');if(G.floor>=G.dg.floors)endRun(true);else{G.fx=[];G.parts=[];enterFloor(G.floor+1)}}}else G.portalT=0;
