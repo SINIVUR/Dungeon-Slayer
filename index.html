@@ -527,7 +527,6 @@ h3:first-child{margin-top:0}
       <button data-tab="shop" role="tab">상점</button>
       <button data-tab="forge" role="tab">대장간</button>
       <button data-tab="skill" role="tab">스킬</button>
-      <button data-tab="pet" role="tab">펫</button>
       <button data-tab="ach" role="tab">업적</button>
     </nav>
     <section class="content frame" id="content"></section>
@@ -612,7 +611,7 @@ h3:first-child{margin-top:0}
 
 <script>
 'use strict';
-const VERSION='2.8.0';
+const VERSION='2.8.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1267,11 +1266,11 @@ const petItemGrade=it=>it.g==='tr'?'초월':it.g==='my'?'신화':it.g==='u'?'전
 const petItemPP=it=>it?it.pp*(1+.06*(it.up||0)):0;
 const petEnhCost=it=>Math.round(400*Math.pow((it.up||0)+1,1.65)*(1+(it.tier||0)*.25)*(it.g==='tr'?3:it.g==='my'?2:it.g==='u'?1.5:1));
 const petItemValue=it=>it.g?5000:Math.round(60*(1+it.tier)*(1+it.rar));
-function petHeroBonus(){if(!save.pets)return null;const P=save.pets.list[save.pets.active];return P&&P.gear&&P.gear.hb?P.gear.hb:null}
+function petHeroBonus(){return null;const P=save.pets.list[save.pets.active];return P&&P.gear&&P.gear.hb?P.gear.hb:null}
 function petPower(stats){const S=petSave(),k=S.active,P=S.list[k];if(!P)return 0;const base=Math.max(stats.atk||0,stats.ap||0);return base*(.18+.62*P.lv/100)*(1+petItemPP(P.gear))*petEvoMul(k)}
 function petGainXp(n){const S=petSave(),k=S.active,P=S.list[k];if(!P||P.lv>=100)return;P.xp+=n;let up=false;while(P.lv<100&&P.xp>=petXpNeed(P.lv)){P.xp-=petXpNeed(P.lv);P.lv++;up=true}
   if(up&&G&&G.pet){addText(G.pet.x,G.pet.y-30,`${PETS[k].name.split(' ').pop()} Lv ${P.lv}!`,PETS[k].col,true);burst(G.pet.x,G.pet.y,PETS[k].col,16,160,3);sfx('levelup',.3)}}
-function petSetup(){const S=petSave();G.pet=null;G.petBuff=null;G.petWall=0;if(!S.active||G.dg.duel)return;const p=G.p;G.pet={k:S.active,x:p.x-26,y:p.y+10,face:0,t:0,cd:[.5,3,5,8,12],hop:0,dash:null}}
+function petSetup(){G.pet=null;G.petBuff=null;G.petWall=0;return;const p=G.p;G.pet={k:S.active,x:p.x-26,y:p.y+10,face:0,t:0,cd:[.5,3,5,8,12],hop:0,dash:null}}
 function petNearest(r){const P=G.pet;let best=null,bd=r;for(const e of G.enemies){if(e.dead||!e.awake&&!G.horde)continue;const d=Math.hypot(e.x-P.x,e.y-P.y);if(d<bd&&losClear(P.x,P.y,e.x,e.y)){bd=d;best=e}}return best}
 function petPP(){return petPower(G.stats)*(nirOn()?1.2:1)}
 function updPet(dt){const P=G.pet;if(!P)return;const p=G.p,S=petSave(),L=S.list[P.k].lv,pp=petPP(),D=PETS[P.k];P.t+=dt;
@@ -1468,7 +1467,7 @@ function raidSpawn(){const R=raidState(),r=G.map.rooms[0],x=(r.cx+.5)*T,y=(r.cy-
   e.atk=16000*(1+.22*R.i)*(1+.1*(PS-1));e.def=80+R.i*10;e.mr=80+R.i*10;e.awake=false;G.boss=e;G.raidT=180;G.raidDmg=0;G.raidHp0=e.hp;$('#bossName').textContent=e.rname;ABY.boss12.col=RAID_NAMES[R.i%RAID_NAMES.length][2]}
 function raidEnd(killed){const R=raidState(),b=G.boss;if(killed){R.i++;R.hp=null;R.hpPS=null;R.kills=(R.kills||0)+1}else if(b&&!b.dead){R.hp=b.hp;R.hpPS=G.PS||1}recSet('raid',G.raidDmg||0)}
 function raidReward(e){const i=e.ri||0;for(let k=0;k<8;k++)dropAt(e.x,e.y,'gold',Math.round(60000*(1+i*.5)/8));dropAt(e.x,e.y,'crown',6+i);dropAt(e.x,e.y,'soul',15+i*3);dropAt(e.x,e.y,'crystal',40+i*8);
-  dropAt(e.x,e.y,'item',makeMyth(G.cls,randi(0,5)));if(i>=1||Math.random()<.4)dropAt(e.x,e.y,'item',makeTrans(G.cls,randi(0,5)));dropAt(e.x,e.y,'petitem',makePetItem(12,2,i>=2?'my':'u'))}
+  dropAt(e.x,e.y,'item',makeMyth(G.cls,randi(0,5)));if(i>=1||Math.random()<.4)dropAt(e.x,e.y,'item',makeTrans(G.cls,randi(0,5)));}
 
 
 // ================= v2.6 : 도륙 · 각인석 · 세트 · 원정대 · 펫 진화 · 보스 러시 · 결투장 · 칭호 · 도감 =================
@@ -1569,16 +1568,16 @@ function coopWave(C,i){const A=C.A,as=A.ctx.stats,pw=Math.max(atk(),ap()),aw=Mat
   const q=A.ctx.p;q.swingT=.18;q.swingDir=-(q.swingDir||1);burst(q.x,q.y,C.c2,10,160,3)}
 
 // ---------- 도륙 게이지 ----------
-const CARN_DUR=7;
-function carnGain(e){if(!G||G.carnT>0)return;const v=e.boss?30:e.guard?15:(e.elite||e.var)?3:e.horde?.35:.8,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100&&!G.over&&!G.dying)useCarnage()}
+const CARN_DUR=5;
+function carnGain(e){if(!G||G.carnT>0)return;const v=e.boss?12:e.guard?6:(e.elite||e.var)?1.2:e.horde?.12:.3,was=G.carn||0;G.carn=Math.min(100,was+v);if(was<100&&G.carn>=100&&!G.over&&!G.dying)useCarnage()}
 function useCarnage(){if(!G||G.over||G.dying||paused)return;if(G.carnT>0)return;if((G.carn||0)<100){toast(`도륙 게이지 ${Math.floor(G.carn||0)}%`);return}
   G.carn=0;G.carnT=CARN_DUR;G.carnN=0;c26().carn++;showBanner('도 륙','평타가 화면 전체를 베어요');G.shake+=12;sfx('boom');G.glitch=Math.max(G.glitch||0,.6);G.cflash=.45;vib([40,30,80]);
   for(let i=0;i<6;i++)G.cslash.push({a:i*Math.PI/6+rand(-.1,.1),o:rand(-.2,.2),t:0,d:.4,w:rand(4,8),col:i%2?'#ff3a4a':'#ffffff'})}
-function carnSlash(){const now=G.time;if(now-(G.carnLast||-9)<.1)return;G.carnLast=now;G.carnN=(G.carnN||0)+1;
-  const mag=G.def.strong.includes('ap'),v=Math.max(atk(),ap())*1.25,L=viewEnemies(20,45);for(const e of L)hit(e,mag?{magic:v,knock:6}:{phys:v,knock:6});
+function carnSlash(){const now=G.time;if(now-(G.carnLast||-9)<.22)return;G.carnLast=now;G.carnN=(G.carnN||0)+1;
+  const mag=G.def.strong.includes('ap'),v=Math.max(atk(),ap())*.3,L=viewEnemies(20,12);for(const e of L)hit(e,mag?{magic:v,knock:6}:{phys:v,knock:6});
   const n=2+(G.carnN%3);for(let i=0;i<n;i++)G.cslash.push({a:rand(-1,1)+(Math.random()<.5?0:Math.PI/2),o:rand(-.35,.35),t:0,d:.26,w:rand(3,7),col:Math.random()<.7?'#ffffff':'#ff3a4a'});
   G.glitch=Math.max(G.glitch||0,.28);G.shake=Math.min(10,G.shake+2);sfx('crit',.06)}
-function carnFinale(){const mag=G.def.strong.includes('ap'),v=Math.max(atk(),ap())*7,L=viewEnemies(40,70);for(const e of L)hit(e,mag?{magic:v,knock:24}:{phys:v,knock:24});
+function carnFinale(){const mag=G.def.strong.includes('ap'),v=Math.max(atk(),ap())*1.5,L=viewEnemies(40,20);for(const e of L)hit(e,mag?{magic:v,knock:24}:{phys:v,knock:24});
   for(let i=0;i<10;i++)G.cslash.push({a:i*Math.PI/10,o:0,t:-i*.03,d:.45,w:9,col:i%2?'#ff3a4a':'#ffffff'});G.cflash=.9;G.shake+=22;G.slowmo=.5;G.finish={t:0,dur:.5};G.glitch=Math.max(G.glitch||0,.8);sfx('boom');showBanner('마무리 일섬','');vib([60,30,140])}
 
 // ---------- 펫 진화 ----------
@@ -1621,7 +1620,6 @@ const TITLES0=[
   {k:'lv100',n:'초월자',col:'#ff5a8a',d:'영웅 하나를 Lv 100으로',ok:()=>anyHero(h=>h.level>=100),b:{dm:.02}},
   {k:'abyss50',n:'심연을 걷는 자',col:'#a070ff',d:'심연 레벨 50 달성',ok:()=>anyHero(h=>h.abyss&&h.abyss.lv>=50),b:{dm:.04}},
     {k:'soul5',n:'신살자',col:'#ff2a3a',d:'영혼 무기 「신살」 달성',ok:()=>anyHero(h=>soulSt(h)>=5),b:{dm:.04}},
-  {k:'pet2',n:'신수의 주인',col:'#9ae0ff',d:'펫을 2단계까지 진화',ok:()=>PET_KEYS.some(k=>petEvo(k)>=2),b:{dr:.03}},
   {k:'settr',n:'완전무결',col:'#ff2a3a',d:'초월 세트 완성',ok:()=>anyHero((h,k)=>{const S=heroSet(h,k);return S&&S.g>=3}),b:{dm:.05}},
 ];let TITLES_=null;const titlesAll=()=>TITLES_||(TITLES_=[...TITLES0,...KILL_TITLES.map(([n,t],i)=>({k:'kill'+i,n:t,col:'#ffcf9a',d:`누적 처치 ${fmt(n)}`,ok:()=>titleIdx(REC().kills||0)>=i,b:null}))]);
 function titleCur(){if(typeof save==='undefined'||!save.title)return null;const T=titlesAll().find(x=>x.k===save.title);return T&&T.ok()?T:null}
@@ -1735,7 +1733,7 @@ function party26(cls){const pl=partyList();const fk=save.form||'free';
   ${pl.length?`<span class="sub">호감도 · 함께 원정할수록 올라요. 레벨마다 동료 능력치 +2%</span><div class="pr">${pl.map(k=>{const v=(save.bond&&save.bond[k])||0,L=bondLv(k),nx=L<10?12*(L+1)*(L+1):null;return `<span class="bond"><b>${CLASSES[k].name}</b> 호감 ${L}${nx?` <small>${Math.floor(v)}/${nx}</small>`:' <small>MAX</small>'}</span>`}).join('')}</div>`:''}
   <span class="note" style="margin:0">전투 중 왼쪽 위 지시 버튼으로 동료에게 <b>집결 · 돌격 · 집중</b>을 명령해요 (키보드 Z · X · C).</span></div>`}
 function modeCards26(cur,h){const D=duelSt(),k=duelOpp();return `<button class="dgc endc" data-act="dgsel" data-k="rush" aria-pressed="${cur==='rush'}" style="--tc:255,176,74">${cur==='rush'?'<span class="sel">선택됨</span>':''}<span class="tag">도전</span><h4>보스 러시</h4><div class="meta"><span>최고 ${save.rushBest||0}단계</span></div><p>모든 던전의 보스가 차례로 나타나요. 한 마리를 쓰러뜨릴 때마다 다음 보스가 등장하고, 11마리를 다 잡으면 더 강해져서 다시 시작돼요. 단계마다 보상이 커져요.</p><dl><dt>권장</dt><dd>Lv 60+</dd><dt>보상</dt><dd>단계별 골드·결정·영혼·왕관 · 던전 장비 · 전설~초월 · 각인석</dd></dl></button>
-  <button class="dgc endc" data-act="dgsel" data-k="duel" aria-pressed="${cur==='duel'}" style="--tc:110,170,255">${cur==='duel'?'<span class="sel">선택됨</span>':''}<span class="tag">결투장 ${D.rank+1}등급</span><h4>결투장</h4><div class="meta"><span>상대 ${CLASSES[k].name}</span><span>승리 ${D.wins||0}회</span></div><p>키운 다른 영웅과 1대1로 붙어요. 상대는 그 영웅의 스킬셋과 장비 외형으로 싸우고, 체력이 절반이 되면 각성, 25%에서 초필살기를 써요. 이길수록 등급이 오르고 상대가 강해져요.</p><dl><dt>규칙</dt><dd>1대1 · 펫은 함께하지 않아요</dd><dt>보상</dt><dd>골드 · 결정 · 영혼 · 각인석 · 결투 칭호</dd></dl></button>`}
+  <button class="dgc endc" data-act="dgsel" data-k="duel" aria-pressed="${cur==='duel'}" style="--tc:110,170,255">${cur==='duel'?'<span class="sel">선택됨</span>':''}<span class="tag">결투장 ${D.rank+1}등급</span><h4>결투장</h4><div class="meta"><span>상대 ${CLASSES[k].name}</span><span>승리 ${D.wins||0}회</span></div><p>키운 다른 영웅과 1대1로 붙어요. 상대는 그 영웅의 스킬셋과 장비 외형으로 싸우고, 체력이 절반이 되면 각성, 25%에서 초필살기를 써요. 이길수록 등급이 오르고 상대가 강해져요.</p><dl><dt>규칙</dt><dd>1대1 결투</dd><dt>보상</dt><dd>골드 · 결정 · 영혼 · 각인석 · 결투 칭호</dd></dl></button>`}
 function duelPick26(cls){const k=duelOpp();return `<div class="pset2"><span class="sub">결투 상대 고르기 · 상대는 그 영웅의 프리셋 모습으로 나와요</span><div class="pr">${CLASS_ORDER.filter(x=>x!==cls).map(x=>`<button data-act="duelopp" data-k="${x}" aria-pressed="${x===k}" class="${x===k?'on':''}">${CLASSES[x].name}<small>Lv ${save.heroes[x].level}</small></button>`).join('')}</div></div>`}
 function setBox26(cls,h){const S=heroSet(h,cls),G0=setProg(h),R=gemRes(h);
   return `<div class="set26" style="--sc:${S?S.col:G0.col||'#9bb0a7'}"><b>${S?`✦ ${S.n} 완성`:`세트 ${G0.n||0}/5`}</b><span>${S?`외형 변화 · 전용 오라 · 피해 +${Math.round(S.dm*100)}% · 체력 +${Math.round(S.hp*100)}%`:`방어구 5부위(머리·팔·다리·신발·장신구)를 같은 던전 세트나 고유 장비로 맞추면 외형이 바뀌고 전용 오라가 생겨요${G0.n?` · 지금 ${G0.name} ${G0.n}개`:''}`}</span><span style="color:${R?EL[R.el][1]:'var(--muted)'}">${gemResTxt(R)}</span></div>`}
@@ -2625,7 +2623,7 @@ function sizePreview(){pv.width=Math.max(1,Math.round(pv.clientWidth*DPR));pv.he
 const MAT_SHORT={jelly:'젤리',bone:'뼈',spore:'포자',steel:'강철',sulfur:'유황',feather:'깃털',loot:'장물',tusk:'엄니',leaf:'잎사귀',soul:'영혼',crystal:'결정',crown:'왕관',core:'핵'};
 function resChips(){const dm=DMAT[DUNGEONS[save.dg]?save.dg:'slime']||'jelly';return `<span class="chip" title="골드"><span class="dot" style="background:var(--gold)"></span>${fmt(save.gold)} G</span>`+[dm,'soul','crystal','crown'].map(k=>`<span class="chip" title="${MATS[k][0]}"><span class="dot" style="background:${MATS[k][1]}"></span>${MAT_SHORT[k]} ${save.mats[k]}</span>`).join('')}
 function renderMenu(){
-  $('#res').innerHTML=resChips();
+  if(tab==='pet')tab='hero';$('#res').innerHTML=resChips();
   {const cls=save.selected,h=save.heroes[cls];document.querySelectorAll('#nav button').forEach(b=>{b.setAttribute('aria-selected',b.dataset.tab===tab);if(b.dataset.tab==='ach')b.classList.toggle('ndot',hasClaimable());if(b.dataset.tab==='skill')b.classList.toggle('ndot',spTotal(h)>0);if(b.dataset.tab==='equip')b.classList.toggle('ndot',hasBetterGear(cls,h))});}
   const cls=save.selected,h=save.heroes[cls],C=CLASSES[cls];
   $('#sideName').innerHTML=`${C.name} <em style="font-style:normal;font-size:.62em;color:${realmOf(h.level).col}">${realmOf(h.level).n}</em><span>「${titleShow()}」 · ${['기본','프리셋 1','프리셋 2'][h.preset||0]} Lv ${h.level}${spTotal(h)?` · 스킬포인트 ${spTotal(h)}`:''}</span>`;
@@ -2657,7 +2655,7 @@ const MENU_TABS={
       return `<button class="dgc" data-act="dgsel" data-k="${k}" aria-pressed="${k===cur}" style="--tc:${tc}">${k===cur?'<span class="sel">선택됨</span>':''}<span class="tag">${D.exp?'확장 던전 '+D.exp:'던전 '+(i+1)}</span><h4>${D.name}</h4>
         <div class="meta"><span class="rec" ${low?'style="color:#ff8a7a;border-color:#ff8a7a"':''}>권장 Lv ${D.rec}</span><span>${D.floors}층</span>${best?`<span>최고 ${best}층</span>`:''}${clr?`<span>클리어 ${clr}회</span>`:''}</div>
         <p>${I.feat||D.desc||''}</p><dl><dt>보스</dt><dd>${D.bossName}</dd><dt>주요 적</dt><dd>${I.foe||''}</dd><dt>속성</dt><dd>${I.el||''}</dd><dt>핵심 재료</dt><dd><span style="color:${MATS[m][1]}">● ${MATS[m][0]}</span> · 보유 ${fmt(save.mats[m]||0)}</dd><dt>세트</dt><dd style="color:${TIERS[DSET[k].tier].color}">${TIERS[DSET[k].tier].name} 장비 · ${WEAPONS[cls][DSET[k].w]}</dd></dl></button>`}).join('')}</div>
-      <h3 style="color:#ff6a82">세계의 적 · 엔드리스 · 도전</h3><div class="dgcards">${(()=>{const RS=raidState(),pct=RS.hp!=null?Math.max(1,Math.round(RS.hp/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100)):100;return `<button class="dgc endc" data-act="dgsel" data-k="raid" aria-pressed="${cur==='raid'}" style="--tc:255,58,74">${cur==='raid'?'<span class="sel">선택됨</span>':''}<span class="tag">레이드 ${RS.i+1}</span><h4>${raidName(RS.i)}</h4><div class="meta"><span>남은 체력 ${pct}%</span><span>토벌 ${RS.kills||0}회</span></div><p>체력이 30줄인 초거대 보스. 한 번에 3분 동안 싸우고, 깎은 체력은 그대로 남아요. 쓰러뜨리면 신화·초월 장비와 왕관을 쏟아내고, 더 강한 세계의 적이 깨어나요.</p><dl><dt>권장</dt><dd>Lv 90+</dd><dt>보상</dt><dd>신화·초월 장비 · 펫 전설 장비 · 왕관 · 영혼</dd></dl></button>`})()}<button class="dgc endc" data-act="dgsel" data-k="endless" aria-pressed="${cur==='endless'}">${cur==='endless'?'<span class="sel">선택됨</span>':''}<span class="tag">엔드리스</span><h4>무한의 전장</h4>
+      <h3 style="color:#ff6a82">세계의 적 · 엔드리스 · 도전</h3><div class="dgcards">${(()=>{const RS=raidState(),pct=RS.hp!=null?Math.max(1,Math.round(RS.hp/(RAID_HP(RS.i)*(1+.6*((RS.hpPS||1)-1)))*100)):100;return `<button class="dgc endc" data-act="dgsel" data-k="raid" aria-pressed="${cur==='raid'}" style="--tc:255,58,74">${cur==='raid'?'<span class="sel">선택됨</span>':''}<span class="tag">레이드 ${RS.i+1}</span><h4>${raidName(RS.i)}</h4><div class="meta"><span>남은 체력 ${pct}%</span><span>토벌 ${RS.kills||0}회</span></div><p>체력이 30줄인 초거대 보스. 한 번에 3분 동안 싸우고, 깎은 체력은 그대로 남아요. 쓰러뜨리면 신화·초월 장비와 왕관을 쏟아내고, 더 강한 세계의 적이 깨어나요.</p><dl><dt>권장</dt><dd>Lv 90+</dd><dt>보상</dt><dd>신화·초월 장비 · 왕관 · 영혼</dd></dl></button>`})()}<button class="dgc endc" data-act="dgsel" data-k="endless" aria-pressed="${cur==='endless'}">${cur==='endless'?'<span class="sel">선택됨</span>':''}<span class="tag">엔드리스</span><h4>무한의 전장</h4>
         <div class="meta"><span>끝없는 웨이브</span>${save.endlessBest?`<span>최고 ${save.endlessBest}웨이브</span>`:''}</div>
         <p>거대한 투기장 하나. 웨이브마다 수십~수백 마리가 사방에서 몰려와요. 5웨이브마다 군단장이 나타나고, 갈수록 강해져요. 쓰러져도 전리품은 모두 챙겨요.</p><dl><dt>적</dt><dd>3웨이브마다 모든 던전의 군세가 차례로 등장</dd><dt>난이도</dt><dd>영웅 레벨에 맞춰 시작</dd><dt>보상</dt><dd>웨이브 섬멸 상자 · 보스의 영혼 · 경험치</dd></dl></button>${modeCards26(cur,h)}</div>${cur==='duel'?duelPick26(cls):''}`;
   },
@@ -3468,7 +3466,7 @@ function hurtP(amount,type,el){
 }
 function killEnemy(e){
   if(e.dead)return;const D0=ETYPES[e.type];e.dead=true;G.kills++;kill26(e);if(e.horde&&G.horde)G.horde.killed++;if(e.var)varDeath(e);soulKill();if(!e.boss&&!e.guard&&e._ld>e.maxHp*1.5)launchFlyer(e);{const q=G.kq||(G.kq=[]);q.push(G.time);while(q.length&&q[0]<G.time-1)q.shift();if(q.length>(recs().kps||0))recSet('kps',q.length)}if(G.mk&&G.mk.n>(recs().streak||0))recSet('streak',G.mk.n);
-  {const ch=e.boss?.6:e.guard?.15:e.elite?.03:e.horde?.001:.004;if(Math.random()<ch)dropAt(e.x,e.y,'petitem',makePetItem(DSET[G.dgKey]?DSET[G.dgKey].tier:Math.min(4,1+Math.floor(fe()/3)),rollRarity(),e.boss&&G.dg.tierUp>=7&&Math.random()<.12?'u':null))}
+  {const ch=e.boss?.6:e.guard?.15:e.elite?.03:e.horde?.001:.004;if(false)dropAt(e.x,e.y,'petitem',makePetItem(DSET[G.dgKey]?DSET[G.dgKey].tier:Math.min(4,1+Math.floor(fe()/3)),rollRarity(),e.boss&&G.dg.tierUp>=7&&Math.random()<.12?'u':null))}
   {const M=G.mk;if(M){M.n=G.time-M.t<.75?M.n+1:1;M.t=G.time;M.show=1.6;M.pop=1}const ti=titleIdx((REC().kills||0)+G.kills);if(ti>(G.ttl||0)){G.ttl=ti;G.ttlMul=1+.03*ti;showBanner(`칭호 「${KILL_TITLES[ti][1]}」`,`누적 처치 ${fmt(KILL_TITLES[ti][0])} · 피해 +${ti*3}%`);sfx('levelup');G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:10,r1:160,t:0,dur:.5,color:'#ffb04a',w:6})}}sfx(e.boss?'bossdie':D0.skel?'bone':'die',.03);
   const col=D0.skel?['#e6dfcc']:D0.zom?['#8ab060']:D0.hum?['#c9b8a8']:D0.dem?['#ff6a3a']:D0.ang?['#fff3c4']:D0.sea?['#8ad8ff']:D0.cos?['#d0a8ff']:D0.elf?['#bfeedd']:D0.gob?['#7fb04a']:D0.ogr?['#b08a6a']:slimeColor(e.boss?'king':e.el);burst(e.x,e.y,col[0],e.boss?60:14,e.boss?260:140,e.r>20?5:3);
   gainXp(e.xp);
