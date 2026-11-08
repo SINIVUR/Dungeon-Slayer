@@ -823,7 +823,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='3.4.2';
+const VERSION='3.4.3';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -3763,8 +3763,8 @@ function autoTidy(items){const cls=G.cls,h=save.heroes[cls],r={eq:0,sold:new Set
   const lv=save.autoSell|0;if(lv){const bp=heroPower(cls,h);for(const it of items){const i=save.stash.indexOf(it);if(i<0||it.lock||it.uniq!=null||it.my||it.tr||it.up||it.gem||(it.rar|0)>=lv)continue;
     if((!it.cls||it.cls===cls)&&powerWith(cls,h,it)>bp)continue;r.g+=sellValue(it);save.stash.splice(i,1);r.sold.add(it)}save.gold+=r.g}
   return r}
-// 던전별 클리어 시간 메달 (층당 기준 시간 · 금 30초 · 은 50초 · 동 80초)
-const MEDAL=[null,['동','#d08a4e'],['은','#d9e1ea'],['금','#ffd34d']],MEDAL_S=[0,80,50,30];
+// 던전별 클리어 시간 메달 (층당 기준 시간 · 금 45초 · 은 75초 · 동 120초) · v3.3 난이도 기준으로 재측정
+const MEDAL=[null,['동','#d08a4e'],['은','#d9e1ea'],['금','#ffd34d']],MEDAL_S=[0,120,75,45];
 function medalOk(dk){const D=DUNGEONS[dk];return !!D&&!D.endless&&!D.raid&&!D.rush&&!D.duel&&dk!=='trial'}
 function medalLim(dk,m){return MEDAL_S[m]*(DUNGEONS[dk].floors||1)}
 function medalOf(dk,t){if(t==null||!medalOk(dk))return 0;for(let m=3;m>=1;m--)if(t<=medalLim(dk,m))return m;return 0}
@@ -4025,13 +4025,14 @@ function killEnemy(e){
   {const ch=e.boss?.6:e.guard?.15:e.elite?.03:e.horde?.001:.004;if(false)dropAt(e.x,e.y,'petitem',makePetItem(DSET[G.dgKey]?DSET[G.dgKey].tier:Math.min(4,1+Math.floor(fe()/3)),rollRarity(),e.boss&&G.dg.tierUp>=7&&Math.random()<.12?'u':null))}
   {const M=G.mk;if(M){M.n=G.time-M.t<.75?M.n+1:1;M.t=G.time;M.show=1.6;M.pop=1}const ti=titleIdx((REC().kills||0)+G.kills);if(ti>(G.ttl||0)){G.ttl=ti;G.ttlMul=1+.03*ti;showBanner(`칭호 「${KILL_TITLES[ti][1]}」`,`누적 처치 ${fmt(KILL_TITLES[ti][0])} · 피해 +${ti*3}%`);sfx('levelup');G.fx.push({k:'ring',x:G.p.x,y:G.p.y,r0:10,r1:160,t:0,dur:.5,color:'#ffb04a',w:6})}}if(e.boss)sfx('bossdie');
   const col=D0.skel?['#e6dfcc']:D0.zom?['#8ab060']:D0.hum?['#c9b8a8']:D0.dem?['#ff6a3a']:D0.ang?['#fff3c4']:D0.sea?['#8ad8ff']:D0.cos?['#d0a8ff']:D0.elf?['#bfeedd']:D0.gob?['#7fb04a']:D0.ogr?['#b08a6a']:slimeColor(e.boss?'king':e.el);jKill(e,col[0]);burst(e.x,e.y,col[0],e.boss?60:14,e.boss?260:140,e.r>20?5:3);
-  gainXp(e.xp);
-  const D=D0,f=fe(),gm=(1+.35*(f-1))*G.dg.goldMul,tu=G.dg.tierUp;
+  // v3.4.3 보상 상향: 경험치 ×1.2 · 골드 ×1.25 · 재료/결정 ×1.2 · 장비 드랍 약 +30%
+  gainXp(Math.round(e.xp*1.2));
+  const D=D0,f=fe(),gm=(1+.35*(f-1))*G.dg.goldMul*1.25,tu=G.dg.tierUp;
   const g=Math.round(randi(D.gold[0],D.gold[1])*gm*(G.cls==='raider'&&G.buffs.plunder>0&&G.hero.skills[0]>=6?1.5:1));dropAt(e.x,e.y,'gold',e.horde?Math.ceil(g*.4):g);
-  {const dm=DMAT[G.dgKey]||'jelly',big=e.r>=17;if(Math.random()<(big?.6:.32)*(e.horde?.35:1))dropAt(e.x,e.y,dm,big?randi(1,3):1)}
-  if(e.el!=='grass'&&Math.random()<G.dg.crystal)dropAt(e.x,e.y,'crystal',1);
-  if(Math.random()<(e.horde?.01:.035)){if(Math.random()<.35){const wp=f<=3?[0,1]:f<=6?[1,2,3]:[3,4,5];dropAt(e.x,e.y,'item',makeWeapon(G.cls,Math.min(9,pick(wp)+tu),rollRarity()))}else{const tp=f<=3?[0,0,1]:f<=6?[0,1,1,2]:[1,2,2,3];dropAt(e.x,e.y,'item',makeItem(pick(GEAR_SLOTS),Math.min(4,pick(tp)+Math.ceil(tu/2)),rollRarity()))}}
-  if(e.elite){dropAt(e.x,e.y,'gold',g*2);if(Math.random()<.4)dropAt(e.x,e.y,'item',makeItem(pick(GEAR_SLOTS),Math.min(4,(f<=3?0:f<=6?1:2)+randi(0,1)),rollRarity()));dropAt(e.x,e.y,DMAT[G.dgKey]||'jelly',randi(2,3));dropAt(e.x,e.y,'crystal',1)}
+  {const dm=DMAT[G.dgKey]||'jelly',big=e.r>=17;if(Math.random()<(big?.72:.38)*(e.horde?.35:1))dropAt(e.x,e.y,dm,big?randi(1,3):1)}
+  if(e.el!=='grass'&&Math.random()<G.dg.crystal*1.2)dropAt(e.x,e.y,'crystal',1);
+  if(Math.random()<(e.horde?.013:.046)){if(Math.random()<.35){const wp=f<=3?[0,1]:f<=6?[1,2,3]:[3,4,5];dropAt(e.x,e.y,'item',makeWeapon(G.cls,Math.min(9,pick(wp)+tu),rollRarity()))}else{const tp=f<=3?[0,0,1]:f<=6?[0,1,1,2]:[1,2,2,3];dropAt(e.x,e.y,'item',makeItem(pick(GEAR_SLOTS),Math.min(4,pick(tp)+Math.ceil(tu/2)),rollRarity()))}}
+  if(e.elite){dropAt(e.x,e.y,'gold',g*2);if(Math.random()<.52)dropAt(e.x,e.y,'item',makeItem(pick(GEAR_SLOTS),Math.min(4,(f<=3?0:f<=6?1:2)+randi(0,1)),rollRarity()));dropAt(e.x,e.y,DMAT[G.dgKey]||'jelly',randi(2,3));dropAt(e.x,e.y,'crystal',1)}
   if(e.type==='big'){for(let i=0;i<2;i++)spawnEnemy('small',e.x+rand(-10,10),e.y+rand(-10,10)).awake=true}
   if(e.type==='gbomber'){G.zones.push({x:e.x,y:e.y,r:58,t:0,dur:2.5,kind:'fire',hostile:true,el:'fire',tick:.4,tt:0,dmg:e.atk*.6});burst(e.x,e.y,'#ff8a3d',24,220,4);G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:60,t:0,dur:.3,color:'#ff8a3d',w:6});sfx('explode',.08)}
   if(e.type==='bloater'){G.zones.push({x:e.x,y:e.y,r:62,t:0,dur:3.5,kind:'poison',hostile:true,tick:.4,tt:0,dmg:e.atk*.7});burst(e.x,e.y,'#9ad04a',24,200,4);sfx('explode',.1)}
