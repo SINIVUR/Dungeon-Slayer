@@ -823,7 +823,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='3.4.3';
+const VERSION='3.5.0';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -914,7 +914,7 @@ const CLASSES={
     skills:[
       {key:'r1',name:'3연볼트',mana:14,cd:4,aim:'cone',range:320,angle:30,desc:l=>`전방 부채꼴로 독 볼트 3발, 각각 공격력의 ${Math.round(90*sm(l))}% 독 피해 + 중독`,bonus:['볼트 5발','중독 피해 +50%','적중 시 둔화 20%']},
       {key:'r2',name:'스탭볼트',mana:12,cd:3,aim:'dash',range:120,desc:l=>`원하는 방향으로 대쉬하며 가장 가까운 적에게 독 볼트 1발, 공격력의 ${Math.round(140*sm(l))}% 피해`,bonus:['대쉬 거리 +40%','볼트 관통','쿨타임 1.5초']},
-      {key:'r3',name:'사방볼트',mana:16,cd:5,aim:'self',radius:320,desc:l=>`상하좌우 4방향으로 독 볼트 1발씩, 각각 공격력의 ${Math.round(100*sm(l))}% 피해 + 중독`,bonus:['8방향 발사','볼트 관통','중독 피해 2배']},
+      {key:'r3',name:'독무 사방볼트',mana:16,cd:5,aim:'self',radius:320,tpl:{t:'bolt',n:8,spread:6.3,range:320,pk:'bolt',m:.8,boom:70,boomM:.5,st:'poison',col:'#9ad04a'},desc:l=>`8방향으로 독 볼트 1발씩, 각각 공격력의 ${Math.round(100*sm(l))}% 피해 + 중독 · 맞은 곳에서 독이 터져 반경 70 안 적에게 50% 피해`,bonus:['8방향 발사','볼트 관통','중독 피해 2배']},
       {key:'r4',name:'사냥꾼의 힘',short:'사냥꾼의힘',mana:40,cd:30,aim:'buff',ult:true,desc:l=>`8초간 이동속도 +60%, 공격속도 +${80+5*(l-1)}%, 이동이 스텝(짧은 무적 대쉬)으로 바뀜`,bonus:['지속시간 +3초','스텝마다 주변에 독 폭발','평타가 3갈래로 발사']}
     ]},
   gungsu:{name:'신궁',tag:'공격력 극대화',strong:['atk','armorPen'],range:260,
@@ -1093,7 +1093,7 @@ function tplVal(lv){return sm(lv)*(lv>=6?1.25:1)}
 function tplDesc(sp,lv,cls){const C=CLASSES[cls]||CLASSES[save.selected];const mag=sp.mag||C.strong.includes('ap');const stat=mag?'주문력':'공격력';const pct=Math.round(sp.m*100*tplVal(lv)*(sp.t==='exec'&&lv>=3?1.1:1));
   const el=sp.el?`${EL[sp.el][0]} 속성 `:'';const st=sp.st?`, ${ST_KR[sp.st]}`:'';const dm=`${stat}의 ${pct}% ${el}피해${st}`;if(TPL2.has(sp.t))return tplDesc2(sp,lv,dm,st);const n=(sp.n||1)+(lv>=3&&(sp.n||1)>1?2:0);
   switch(sp.t){case'arc':return `전방 부채꼴을 ${sp.hits>1?sp.hits+'번 ':''}베어 각각 ${dm}`;case'nova':return `주변 원형으로 ${sp.hits>1?sp.hits+'번 ':''}공격해 각각 ${dm}`;
-  case'bolt':return `${n}발 발사${sp.pierce?' (관통)':''}${sp.home?' (유도)':''}, 각각 ${dm}`;case'blast':return `${sp.leap?'지정한 곳으로 도약해 내리꽂아':'지정한 곳을 폭발시켜'} 범위 안 적에게 ${dm}`;
+  case'bolt':return `${n}발 발사${sp.pierce?' (관통)':''}${sp.home?' (유도)':''}, 각각 ${dm}${sp.boom?` · 맞은 곳에서 폭발해 반경 ${sp.boom} 안 적에게 ${Math.round((sp.boomM||.6)*100)}% 피해`:''}`;case'blast':return `${sp.leap?'지정한 곳으로 도약해 내리꽂아':'지정한 곳을 폭발시켜'} 범위 안 적에게 ${dm}`;
   case'rain':return `${(sp.dur||3)}초간 ${sp.self?'주변':'지정 범위'}에 ${sp.tick||.3}초마다 ${dm}${sp.pull?', 적을 끌어당김':''}`;case'dash':return `돌진하며 경로의 모든 적에게 ${dm}`;
   case'chain':return `적 ${n}명에게 튀는 연쇄 공격, 각각 ${dm}`;case'exec':return `${(sp.range||95)>150?'원거리':'근접'} 단일 대상에게 ${dm}${sp.apen?`, 방어관통 +${Math.round(sp.apen*100)}%`:''}`;
   case'orbit':case'boomer':case'wave':case'mine':case'summon':case'mark':case'blink':case'blinkchain':case'parry':case'beam':case'barrage':return tplDesc2(sp,lv,dm,st);
@@ -1111,6 +1111,8 @@ function tplDesc2(sp,lv,dm,st){const nm=sp.nm||'';const up=lv>=3;switch(sp.t){
   case'beam':return `${(sp.dur||2)+(up?1:0)}초간 ${nm}을(를) 뿜어 적을 따라가며 ${sp.tick||.15}초마다 ${dm} · 이동 가능`;
   case'barrage':return `지정 범위에 ${nm} ${(sp.n||6)+(up?2:0)}발이 차례로 떨어져 각각 ${dm}${sp.seek?' · 적을 노림':''}`;}return ''}
 function tplBonus(sp){const B2={orbit:'개수 +1',boomer:'크기 +30%',wave:'분출 +2',mine:'설치 +1',summon:'지속시간 +2초',mark:'범위 +20%',blink:'범위 +20%',blinkchain:'대상 +2',parry:'지속시간 +1초',beam:'지속시간 +1초',barrage:'타격 +2'};if(B2[sp.t])return [B2[sp.t],'피해 +25%','쿨타임 -25%'];const a=sp.t==='bolt'&&(sp.n||1)>1?'투사체 +2':sp.t==='chain'?'대상 +2':sp.t==='dash'?'거리 +30%':sp.t==='buff'?'지속시간 +2초':sp.t==='exec'?'피해 +10%':'범위 +20%';return [a,'피해 +25%','쿨타임 -25%']}
+// 볼트 폭발: 맞은 적 주변 반경 안 적에게 일부 피해
+function tBoom(e,sp,lv,col){const sp2=Object.assign({},sp,{m:sp.m*(sp.boomM||.6),boom:0,st:sp.st});let n=0;for(const q of inCircle(e.x,e.y,sp.boom)){if(q===e)continue;tHit(q,sp2,lv);if(++n>=8)break}G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:sp.boom,t:0,dur:.22,color:col,w:4})}
 function mkS(key,name,mana,cd,sp,x={}){const o={key,name,mana,cd,tpl:sp,ico:x.ico||TPL_ICO[sp.t]+(sp.t==='bolt'&&(sp.n||1)>2?'':''),aim:x.aim||(sp.t==='rain'&&sp.self?'self':sp.t==='bolt'&&(sp.n||1)>1&&(sp.spread||0)<6?'cone':TPL_AIM[sp.t]),
   range:sp.range||sp.r||sp.len||(sp.t==='arc'?sp.r:300),radius:sp.r,angle:sp.a||(sp.spread?sp.spread/DEG:120),width:sp.size?sp.size*2:24,ult:!!x.ult,short:x.short,bonus:tplBonus(sp)};
   if(sp.t==='bolt'&&(sp.n||1)>2)o.ico='a3';if(sp.t==='bolt'&&sp.home)o.ico='g2';if(sp.t==='blast'&&sp.leap)o.ico='q4';if(sp.t==='rain'&&sp.self)o.ico='m4';if(x.ico)o.ico=x.ico;
@@ -1135,7 +1137,7 @@ function runTpl(sp,lv,a){if(TPL2.has(sp.t))return runTpl2(sp,lv,a);const p=G.p,c
   case'bolt':{const rg=sp.range||360,i=aimInfo(a,rg);p.face=i.dir;p.swingT=.12;const n=(sp.n||1)+(up&&(sp.n||1)>1?2:0),spr=sp.spread||0,tgt=sp.home?nearestEnemy(p.x,p.y,rg*1.2):null;
     sfx(sp.pk==='bullet'?'gun':tMag(sp)?'orb':'arrow',.03);
     for(let k=0;k<n;k++){const d=n>1?(spr>=6.2?k*TAU/n:i.dir-spr/2+spr*k/(n-1)):i.dir,spd=sp.spd||700;
-      proj({x:p.x,y:p.y,vx:Math.cos(d)*spd,vy:Math.sin(d)*spd,r:sp.size||7,life:rg/spd*(sp.home?1.6:1),kind:sp.pk||'orb',color:col,pierce:!!sp.pierce,home:tgt,big:sp.big,onHit:e=>tHit(e,sp,lv)})}break}
+      proj({x:p.x,y:p.y,vx:Math.cos(d)*spd,vy:Math.sin(d)*spd,r:sp.size||7,life:rg/spd*(sp.home?1.6:1),kind:sp.pk||'orb',color:col,pierce:!!sp.pierce,home:tgt,big:sp.big,onHit:e=>{tHit(e,sp,lv);if(sp.boom)tBoom(e,sp,lv,col)}})}break}
   case'blast':{const rg=sp.range||300,i=aimInfo(a,rg),R=sp.r*(up?1.2:1);let tx=i.tx,ty=i.ty;if(wallAt(tx,ty)){tx=p.x;ty=p.y}
     const boom=(x,y)=>{if(!G||G.over)return;sfx('explode');G.shake+=6;burst(x,y,col,24,220,4);G.fx.push({k:'ring',x,y,r0:8,r1:R,t:0,dur:.4,color:col,w:7});for(const e of inCircle(x,y,R))tHit(e,sp,lv)};
     if(sp.leap){const d=Math.hypot(tx-p.x,ty-p.y);p.face=i.dir;if(d>20)startDash(i.dir,d,1000,()=>{},()=>boom(p.x,p.y));else boom(p.x,p.y)}
@@ -1170,7 +1172,7 @@ Object.assign(CLASSES,{
   gunner:{name:'거너',tag:'공격속도 · 공격력',strong:['atkSpd','atk'],range:340,
     base:{hp:150,mp:90,atk:16,def:6,ap:4,mr:6,spd:172,hpRegen:1.3,mpRegen:8,armorPen:.05,magicPen:0,atkSpd:1.4,crit:.1},grow:{hp:15,mp:4,atk:2,def:.7,ap:.3,mr:.6,hpRegen:.09,mpRegen:.13},
     basic:'쌍권총 · 양손으로 빠르게 2발 연사',interval:.32,comboLen:1,bas:[{k:'shot',m:.2,n:2,iv:.06,spd:1000}],
-    skills:[mkS('gn1','연사',18,12,{t:'buff',dur:5,stats:{atkSpd:1.2},col:'#ffe9a8'}),mkS('gn2','수류탄',16,6,{t:'blast',range:300,r:90,delay:.5,m:1.5,col:'#ff9a4a'}),mkS('gn3','관통탄',14,4,{t:'bolt',range:420,pk:'bullet',size:6,m:2.2,spd:1300,pierce:true,apen:.3,col:'#fff2a0'}),mkS('gn4','탄막',50,30,{t:'bolt',n:24,spread:6.3,range:340,pk:'bullet',m:.8,spd:950,col:'#ffe9a8'},{ult:true})]},
+    skills:[mkS('gn1','연사',18,12,{t:'buff',dur:5,stats:{atkSpd:1.2},col:'#ffe9a8'}),mkS('gn2','수류탄',16,6,{t:'blast',range:300,r:90,delay:.5,m:1.5,col:'#ff9a4a'}),mkS('gn3','작열 관통탄',14,4,{t:'bolt',range:420,pk:'bullet',size:6,m:2.2,spd:1300,pierce:true,apen:.3,boom:80,boomM:.55,col:'#fff2a0'},{short:'작열관통'}),mkS('gn4','탄막',50,30,{t:'bolt',n:24,spread:6.3,range:340,pk:'bullet',m:.8,spd:950,col:'#ffe9a8'},{ult:true})]},
   lancer:{name:'창술사',tag:'체력 · 공격력 · 방어관통',strong:['hp','atk','armorPen'],
     base:{hp:200,mp:85,atk:20,def:10,ap:4,mr:7,spd:160,hpRegen:1.5,mpRegen:8,armorPen:.12,magicPen:0,atkSpd:.95,crit:.06},grow:{hp:20,mp:4,atk:2.4,def:1.1,ap:.3,mr:.7,hpRegen:.1,mpRegen:.13},
     basic:'창 3연타 · 찌르기 → 찌르기 → 휘둘러 쓸기(넓은 범위)',interval:.55,bas:[{k:'cone',r:110,a:28,m:.45,apen:.1},{k:'cone',r:110,a:28,m:.45,apen:.1},{k:'cone',r:100,a:150,m:.5,w:1.4}],
@@ -1178,7 +1180,7 @@ Object.assign(CLASSES,{
   sniper:{name:'스나이퍼',tag:'공격력 · 치명타 · 방어관통',strong:['atk','crit','armorPen'],range:500,
     base:{hp:130,mp:90,atk:30,def:5,ap:4,mr:5,spd:160,hpRegen:1.2,mpRegen:8,armorPen:.2,magicPen:0,atkSpd:.6,crit:.2},grow:{hp:13,mp:4,atk:3.6,def:.6,ap:.3,mr:.5,hpRegen:.08,mpRegen:.13},
     basic:'저격총 · 느리지만 강력한 관통탄 1발 (가장 긴 사거리)',interval:1.1,comboLen:1,bas:[{k:'shot',m:1,pierce:true,spd:1600,range:500,size:5,col:'#fff6c0'}],
-    skills:[mkS('sn1','조준 사격',16,5,{t:'exec',range:520,m:4,apen:.5,col:'#fff6c0'},{short:'조준사격'}),mkS('sn2','연막탄',18,14,{t:'buff',dur:4,stats:{spd:.5,dr:.3},col:'#b8c0c8'}),mkS('sn3','관통 저격',20,6,{t:'bolt',range:600,pk:'bullet',size:7,m:3,spd:1600,pierce:true,apen:.4,col:'#fff6c0'},{short:'관통저격'}),mkS('sn4','헤드샷',45,26,{t:'exec',range:600,m:12,crit:1,apen:.6,col:'#ff6a5a'},{ult:true})]}
+    skills:[mkS('sn1','조준 사격',16,5,{t:'exec',range:520,m:4,apen:.5,col:'#fff6c0'},{short:'조준사격'}),mkS('sn2','연막탄',18,14,{t:'buff',dur:4,stats:{spd:.5,dr:.3},col:'#b8c0c8'}),mkS('sn3','폭렬 저격',20,6,{t:'bolt',range:600,pk:'bullet',size:7,m:3,spd:1600,pierce:true,apen:.4,boom:95,boomM:.6,col:'#fff6c0'},{short:'폭렬저격'}),mkS('sn4','헤드샷',45,26,{t:'exec',range:600,m:12,crit:1,apen:.6,col:'#ff6a5a'},{ult:true})]}
 });
 CLASS_ORDER.push('samurai','gunblade','gunner','lancer','sniper');
 Object.assign(PAL,{samurai:{body:'#2a2a3a',trim:'#e8322a',cape:'#1a1a28',head:'#e9cba6',hair:'#1a1a1f',weapon:'#e6ecf2'},gunblade:{body:'#3a4250',trim:'#ffb35a',cape:'#2f3238',head:'#e5c39c',hair:'#6a4a2a',weapon:'#aab3bb'},
@@ -1207,7 +1209,7 @@ const FORMS={
   paladin:{name:'심판관',el:'light',aura:'#fff3c4',acc:'wings',pal:{body:'#d9c27a',trim:'#fffbe8',cape:'#fff3c4'},skills:[
     mkS('fp1','심판의 망치',16,6,{t:'blast',range:280,r:75,delay:.3,m:1.6,st:'stun',col:'#fff3c4'},{short:'심판의망치'}),mkS('fp2','신성 창',14,4,{t:'bolt',range:380,pk:'dart',size:8,m:1.8,pierce:true,col:'#fff3c4'},{short:'신성창'}),mkS('fp3','빛의 고리',20,8,{t:'nova',r:120,hits:2,m:1.1,col:'#fff3c4'},{short:'빛의고리'}),mkS('fp4','천벌',50,30,{t:'rain',range:360,r:150,dur:3,tick:.25,m:.6,st:'stun',col:'#fffbe8'},{ult:true})]},
   ranger:{name:'화염 사수',el:'fire',aura:'#ff8a3d',acc:'flame',pal:{body:'#7a3a1a',trim:'#ffb35a',cape:'#4a2010'},skills:[
-    mkS('fr1','화염 볼트',14,4,{t:'bolt',n:3,spread:.3,range:320,pk:'bolt',m:.9,st:'burn',col:'#ff8a3d'},{short:'화염볼트'}),mkS('fr2','폭발 볼트',18,6,{t:'blast',range:320,r:75,delay:.3,m:1.5,st:'burn',col:'#ff8a3d'},{short:'폭발볼트'}),mkS('fr3','화염 지대',20,8,{t:'rain',range:320,r:100,dur:3,tick:.3,m:.35,st:'burn',col:'#ff6a2a'},{short:'화염지대'}),mkS('fr4','소이탄 세례',50,30,{t:'rain',range:360,r:160,dur:4,tick:.25,m:.45,st:'burn',col:'#ffb35a'},{ult:true,short:'소이탄세례'})]},
+    mkS('fr1','화염 볼트',14,4,{t:'bolt',n:3,spread:.3,range:320,pk:'bolt',m:.9,st:'burn',boom:60,boomM:.5,col:'#ff8a3d'},{short:'화염볼트'}),mkS('fr2','폭발 볼트',18,6,{t:'blast',range:320,r:75,delay:.3,m:1.5,st:'burn',col:'#ff8a3d'},{short:'폭발볼트'}),mkS('fr3','화염 지대',20,8,{t:'rain',range:320,r:100,dur:3,tick:.3,m:.35,st:'burn',col:'#ff6a2a'},{short:'화염지대'}),mkS('fr4','소이탄 세례',50,30,{t:'rain',range:360,r:160,dur:4,tick:.25,m:.45,st:'burn',col:'#ffb35a'},{ult:true,short:'소이탄세례'})]},
   gungsu:{name:'뇌궁',el:'elec',aura:'#fff6a0',acc:'halo',pal:{body:'#2b3a6a',trim:'#fff6a0',cape:'#1a2448'},skills:[
     mkS('fg1','뇌전시',14,4,{t:'bolt',range:300,pk:'dart',size:7,m:2.2,pierce:true,st:'para',col:'#fff6a0',spd:1000}),mkS('fg2','천뢰',18,6,{t:'chain',n:4,range:320,m:1.4,st:'para',col:'#fff6a0'}),mkS('fg3','성광시',22,8,{t:'bolt',n:3,spread:.5,range:320,pk:'dart',home:true,m:1.3,col:'#fff6a0'}),mkS('fg4','천궁 강림',50,30,{t:'exec',range:420,m:9,apen:.6,col:'#fff6a0'},{ult:true,short:'천궁강림'})]},
   raider:{name:'해적 선장',el:'water',aura:'#4aa8ff',acc:'crown',pal:{body:'#2a3a5a',trim:'#e3b04b',cape:'#8a1f1f',hair:'#1a1a1a'},skills:[
@@ -1223,11 +1225,11 @@ const FORMS={
   gunblade:{name:'포격 기사',el:'fire',aura:'#ff9a4a',acc:'flame',pal:{body:'#3a2a2a',trim:'#ff9a4a',cape:'#2a1a1a'},skills:[
     mkS('fgb1','캐논 블레이드',14,4,{t:'arc',r:100,a:120,hits:2,m:1.1,st:'burn',col:'#ff9a4a'},{short:'캐논블레이드'}),mkS('fgb2','화염 산탄',16,5,{t:'bolt',n:7,spread:.8,range:230,pk:'bullet',m:.6,st:'burn',col:'#ff9a4a',spd:1000},{short:'화염산탄'}),mkS('fgb3','포격',22,8,{t:'blast',range:340,r:100,delay:.5,m:2,st:'burn',col:'#ff6a2a'}),mkS('fgb4','오버히트',45,28,{t:'buff',dur:7,stats:{atkSpd:1,crit:.2},col:'#ff9a4a'},{ult:true})]},
   gunner:{name:'전기 거너',el:'elec',aura:'#7fe0ff',acc:'halo',pal:{body:'#2a4a5a',trim:'#7fe0ff',cape:'#1a2a3a'},skills:[
-    mkS('fgn1','테이저',14,4,{t:'chain',n:3,range:300,m:1.1,st:'para',col:'#7fe0ff'}),mkS('fgn2','전자기탄',16,5,{t:'bolt',range:420,pk:'bullet',size:7,m:1.8,spd:1200,pierce:true,st:'para',col:'#7fe0ff'}),mkS('fgn3','방전 지뢰',20,8,{t:'blast',range:280,r:90,delay:.6,m:1.6,st:'stun',col:'#7fe0ff'},{short:'방전지뢰'}),mkS('fgn4','레일건',50,28,{t:'bolt',range:600,pk:'bigarrow',size:12,m:7,spd:1600,pierce:true,apen:.5,col:'#bff4ff'},{ult:true})]},
+    mkS('fgn1','테이저',14,4,{t:'chain',n:3,range:300,m:1.1,st:'para',col:'#7fe0ff'}),mkS('fgn2','방전탄',16,5,{t:'bolt',range:420,pk:'bullet',size:7,m:1.8,spd:1200,pierce:true,st:'para',boom:90,boomM:.6,col:'#7fe0ff'},{short:'방전탄'}),mkS('fgn3','방전 지뢰',20,8,{t:'blast',range:280,r:90,delay:.6,m:1.6,st:'stun',col:'#7fe0ff'},{short:'방전지뢰'}),mkS('fgn4','레일건',50,28,{t:'bolt',range:600,pk:'bigarrow',size:12,m:7,spd:1600,pierce:true,apen:.5,col:'#bff4ff'},{ult:true})]},
   lancer:{name:'용기사',el:'wind',aura:'#9ee6c0',acc:'wings',pal:{body:'#2a5a4a',trim:'#e3b04b',cape:'#1a3a30'},skills:[
     mkS('fln1','용의 숨결',16,5,{t:'arc',r:150,a:60,hits:4,m:.7,col:'#9ee6c0'},{short:'용의숨결'}),mkS('fln2','도약 강하',18,7,{t:'blast',range:260,r:100,leap:true,m:1.8,st:'stun',col:'#9ee6c0'},{short:'도약강하'}),mkS('fln3','용린 회전',18,6,{t:'nova',r:120,hits:3,m:.8,knock:12,col:'#9ee6c0'},{short:'용린회전'}),mkS('fln4','천룡 강림',50,30,{t:'rain',range:380,r:160,dur:3,tick:.2,m:.5,col:'#e8fff4'},{ult:true,short:'천룡강림'})]},
   sniper:{name:'그림자 저격수',el:'dark',aura:'#8a5bd6',acc:'hood',pal:{body:'#1a1a24',trim:'#8a5bd6',cape:'#101018'},skills:[
-    mkS('fsn1','그림자탄',14,4,{t:'bolt',n:3,spread:.4,range:480,pk:'bullet',home:true,m:1.1,col:'#b98aff'}),mkS('fsn2','독침 저격',16,5,{t:'bolt',range:600,pk:'bullet',size:6,m:2.4,spd:1600,pierce:true,st:'poison',col:'#b46ee0'},{short:'독침저격'}),mkS('fsn3','덫',16,8,{t:'blast',range:300,r:70,delay:.6,m:1.4,st:'stun',col:'#8a5bd6'}),mkS('fsn4','데스 마크',45,26,{t:'exec',range:600,m:14,apen:.6,col:'#9a6af0'},{ult:true,short:'데스마크'})]}
+    mkS('fsn1','그림자탄',14,4,{t:'bolt',n:3,spread:.4,range:480,pk:'bullet',home:true,m:1.1,col:'#b98aff'}),mkS('fsn2','독안개 저격',16,5,{t:'bolt',range:600,pk:'bullet',size:6,m:2.4,spd:1600,pierce:true,st:'poison',boom:85,boomM:.55,col:'#b46ee0'},{short:'독안개'}),mkS('fsn3','덫',16,8,{t:'blast',range:300,r:70,delay:.6,m:1.4,st:'stun',col:'#8a5bd6'}),mkS('fsn4','데스 마크',45,26,{t:'exec',range:600,m:14,apen:.6,col:'#9a6af0'},{ult:true,short:'데스마크'})]}
 };
 for(const k in FORMS)FORMS[k].skills.forEach(s=>s._cls=k);
 
@@ -2381,7 +2383,8 @@ function skBody(sk,lv){const t=trT(lv);return `<div class="nm">${sk.name}<em${t?
 const skBtn=lv=>lv>=SK_MAX?'MAX':lv>=10?'초월 +1':'+1';
 const ABY_MAX=43;
 // 프리셋 밸런스 보정 [화력 배율, 광역 배율(같은 순간 3마리째부터), 파편(주변 3마리에 주는 피해 비율)] · v3.0 측정 기반
-let PBAL={"mage":[[0.889,0.324,0],[0.838,1,0],[0.562,1,0]],"berserker":[[1.263,1.377,0],[1.646,2.679,0],[1.256,1.941,0]],"gungsu":[[0.573,2.738,0.25],[0.673,3,0.25],[0.753,1,0]],"bmage":[[1.782,1,0],[1.317,1,0],[1.158,1,0]],"gunblade":[[1.099,1,0],[1.027,2.169,0],[0.836,1,0]],"sniper":[[0.564,3,0.25],[0.576,1.35,0],[0.884,1,0]],"warrior":[[1.109,3,0.1],[1.036,0.617,0],[0.959,4,0]],"assassin":[[1.029,1.451,0.25],[0.66,0.904,0],[0.721,1,0]],"ranger":[[1.799,2.169,0],[1.092,1.269,0],[1.084,1,0]],"reaper":[[0.849,3,0.25],[0.757,1.881,0],[0.759,1,0]],"samurai":[[0.873,2.169,0],[0.804,0.557,0],[1.019,0.567,0]],"lancer":[[1.175,1.739,0.1],[1.055,1.169,0],[1.011,1.353,0]],"archer":[[0.902,3,0.25],[1.077,0.944,0],[0.998,1,0]],"paladin":[[3,2.586,0],[2.729,1,0],[1.137,0.965,0]],"raider":[[0.822,3,0.25],[1.12,1.724,0],[0.833,1,0]],"archmage":[[1.339,1,0],[0.869,0.486,0],[0.76,1,0]],"gunner":[[0.962,1.142,0],[1.123,1.018,0],[0.869,1.037,0]]};
+// 프리셋 밸런스 [피해 배율, 3번째 이후 광역 배율, 주변 튀김 피해, 받는 피해 배율] · v3.5 자동 측정으로 조정
+let PBAL={"mage":[[1.211,0.542,0.1,0.522],[0.802,1.534,0,0.722],[1.253,2.568,0.2,0.614]],"berserker":[[1.52,2.115,0,1],[1.816,1.767,0,0.722],[1.457,1.402,0,0.722]],"gungsu":[[0.486,2.294,0.15,0.614],[0.596,2.722,0.25,0.722],[0.649,0.956,0,0.614]],"bmage":[[2.246,1.001,0,1.392],[1.752,1.102,0,1.392],[1.254,0.874,0,1.643]],"gunblade":[[1.332,1.352,0.1,1.18],[1.161,3.596,0,1.18],[0.998,1.666,0.1,1]],"sniper":[[0.46,2.09,0.15,0.722],[0.504,1.771,0.1,0.614],[1.171,1.869,0.1,0.614]],"warrior":[[1.386,2.664,0,1.18],[1.11,0.685,0.0,0.666],[0.767,1.707,0,0.85]],"assassin":[[0.99,1.218,0.15,0.85],[0.703,1.016,0,0.45],[0.605,1.001,0,0.85]],"ranger":[[2.501,2.651,0.1,0.85],[1.406,1.666,0.1,0.722],[1.602,1.683,0,0.722]],"reaper":[[0.728,1.798,0.05,0.85],[0.65,1.436,0,0.722],[0.848,1.218,0,0.722]],"samurai":[[0.735,1.761,0,0.85],[0.74,0.584,0.1,0.85],[1.042,0.574,0,1.392]],"lancer":[[1.275,1.374,0,0.85],[1.195,1.11,0,0.725],[1.018,1.369,0,1.18]],"archer":[[0.849,3.309,0.25,0.85],[1.293,1.449,0.1,0.722],[1.128,1.247,0,0.722]],"paladin":[[3.065,2.342,0,1.392],[3.468,1.016,0,1.18],[1.329,1.28,0,1]],"raider":[[0.737,2.156,0.15,1.003],[1.545,2.947,0,0.722],[0.905,1.296,0,0.722]],"archmage":[[2.108,1.429,0,0.614],[1.022,0.801,0.1,0.614],[0.699,1.298,0,0.722]],"gunner":[[1.021,1.397,0.1,0.722],[1.296,1.457,0.1,0.522],[0.886,1.202,0,0.722]]};
 function pbalOf(cls,pi){const a=PBAL[cls];return (a&&a[pi])||[1,1]}
 function balStats(s,cls,hero){const pi=hero.preset||0,k=pbalOf(cls,pi)[0];if(k!==1){if(s.atk)s.atk*=k;if(s.ap)s.ap*=k}}
 function abyRow(X,sp,pi){const m=X.ab||0;return `<div class="skill xrow"><div class="sico" style="color:#b48aff">${svgI('nir')}</div><div style="min-width:0"><div class="nm" style="color:#b48aff">심연<em>Lv ${m}/${ABY_MAX}</em></div><p>스킬을 다 올리고 남는 포인트를 모두 받아요 · 레벨당 공격력·주문력 +1% · 체력 +1% · 방어·마저 +1% — 현재 +${m}%</p></div><button class="btn gold" data-act="xup" data-k="${pi}:ab" ${sp<1||m>=ABY_MAX?'disabled':''}>${m>=ABY_MAX?'MAX':'+1'}</button></div>`}
@@ -4009,6 +4012,7 @@ function hurtP(amount,type,el){
   if(G.pdown>0&&!G._ally)return;
   if(G.dying&&!G._ally)return;
   const p=G.p;if(p.inv>0||(p.dash&&p.dash.inv)||G.over)return;
+  if(!G._ally){const B=pbalOf(G.cls,G.form||0);if(B[3])amount*=B[3]}
   if(G.parry&&G.parry.t>0){const P=G.parry;addText(p.x,p.y-28,'막음!',P.col);if(P.cd<=0){P.cd=.3;const R=(P.sp.r||110);sfx('crit');G.shake+=3;G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:R,t:0,dur:.3,color:P.col,w:6});burst(p.x,p.y,P.col,14,200,3);for(const e of inCircle(p.x,p.y,R))tHit(e,P.sp,P.lv);if(P.sp.heal)healP(G.stats.hp*P.sp.heal)}p.inv=.12;return}
   let d=type==='magic'?amount*100/(100+eff('mr')):amount*100/(100+eff('def'));
   if(G.buffs.warUlt>0&&G.hero.skills[3]>=10&&G.cls==='warrior')d*=.85;
