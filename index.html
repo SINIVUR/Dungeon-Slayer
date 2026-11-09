@@ -186,6 +186,7 @@ h3:first-child{margin-top:0}
 .bar.cn.full{box-shadow:0 0 0 1px rgba(0,0,0,.7),0 0 10px 2px rgba(255,40,60,.85);animation:carnpulse .7s steps(2) infinite}.bar.cn.on i{background:linear-gradient(90deg,#fff,#ff3a4a)}
 .bar span{position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--u)*9);line-height:1;font-variant-numeric:tabular-nums;text-shadow:0 1px 1px #000}
 .buffs{display:flex;gap:calc(var(--u)*4);flex-wrap:wrap;min-height:calc(var(--u)*14)}
+.buffs span.trb{background:linear-gradient(180deg,rgba(70,40,110,.88),rgba(24,12,40,.88));border-color:rgba(201,168,255,.7);color:#e6d6ff}.buffs span.trb b{color:#c9a8ff;margin-right:calc(var(--u)*4);font-weight:700}
 .buffs span{font-size:calc(var(--u)*9);line-height:1.3;padding:0 calc(var(--u)*6);border-radius:4px;background:linear-gradient(180deg,rgba(60,48,22,.85),rgba(20,15,6,.85));border:1px solid rgba(227,176,75,.5);color:var(--gold-hi)}
 #flr{position:absolute;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + var(--u)*8);display:flex;align-items:baseline;gap:calc(var(--u)*8);white-space:nowrap;
   font-family:var(--display);font-weight:700;font-size:calc(var(--u)*12);line-height:1.2;padding:calc(var(--u)*4) calc(var(--u)*12);border-radius:999px;background:linear-gradient(180deg,rgba(51,29,31,.85),rgba(16,9,10,.85));border:1px solid var(--gold-line);text-shadow:0 1px 2px #000}
@@ -823,7 +824,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='3.6.1';
+const VERSION='3.6.2';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1913,7 +1914,8 @@ function kill29(e){const v=e.x,w=e.y;
     showBanner('추격자 격퇴!',`${CLASSES[e.rv.cls].name}의 그림자를 물리쳤어요`);G.slowmo=.8;G.finish={t:0,dur:.8};music(G.dg.music);G.rivalAwk=0}}
 function trialWin(e){const cls=G.cls,first=!trialDone(cls);if(!save.trials)save.trials={};save.trials[cls]=(save.trials[cls]||0)+1;
   dropAt(e.x,e.y,'soul',first?10:3);dropAt(e.x,e.y,'crown',first?5:1);dropAt(e.x,e.y,'crystal',first?20:6);for(let i=0;i<5;i++)dropAt(e.x,e.y,'gold',first?40000:8000);if(first)dropAt(e.x,e.y,'item',makeUnique(cls,randi(0,5)));
-  showBanner(first?`시련 돌파 · 「${TRIAL[cls][2]}」 각성`:'시련 돌파!',first?trialTxt(TRIAL[cls][3])+' · 궁극 외형 해금':'보상을 챙겨요');calcStatsNow();G.timers.push({t:4,fn:()=>{if(G&&!G.over){for(const d of G.drops)if(d.kind!=='item'||true){}endRun(true)}}})}
+  showBanner(first?`시련 돌파 · 「${TRIAL[cls][2]}」 각성`:`시련 돌파 · ${save.trials[cls]}회째`,first?trialTxt(TRIAL[cls][3])+' · 궁극 외형 해금':`각성 「${TRIAL[cls][2]}」 유지 중 · 전리품은 자동으로 챙겨요`);G._trb=null;calcStatsNow();G.timers.push({t:4,fn:()=>{if(G&&!G.over)endRun(true)}})}
+function sweepDrops(){if(!G||!G.drops)return;for(const d of G.drops){try{collect(d)}catch(_){}}G.drops.length=0}
 function calcStatsNow(){const hp=G.p.hp/G.stats.hp;G.stats=calcStats(G.cls,G.hero);G.p.hp=G.stats.hp*hp}
 function end29(success){if(success&&G.dg.endmaze)setTimeout(()=>{try{showEnding()}catch(e){}},1200)}
 
@@ -3926,7 +3928,7 @@ function spawnWave(){if(G.dg.endless||G.dg.raid||G.dg.rush||G.dg.duel||(G.horde&
 function showBanner(a,b){if(G&&G._rv){if(a==='각성 종료'||/^레벨/.test(a))return;a='상대 · '+a}else if(G&&G._ally)return;const el=$('#banner');el.innerHTML=`<b>${a}</b><small>${b}</small>`;el.style.opacity=1;clearTimeout(showBanner.t);showBanner.t=setTimeout(()=>el.style.opacity=0,1800)}
 function toast(msg,color){if(G&&G._ally)return;const d=document.createElement('div');d.textContent=msg;if(color)d.style.color=color;const box=$('#toasts');box.appendChild(d);while(box.children.length>3)box.firstChild.remove();setTimeout(()=>d.remove(),2400)}
 function endRun(success){wakeOff();try{frzApply(0)}catch(_){}
-  if(!G||G.over)return;G.over=true;state='result';music(null);sfx(success?'victory':'defeat');
+  if(!G||G.over)return;if(success)sweepDrops();G.over=true;state='result';music(null);sfx(success?'victory':'defeat');
   const k=success||G.dg.endless||G.dg.raid||G.dg.rush||G.dg.duel?1:.5,L=G.loot,got={gold:Math.floor(L.gold*k)};
   save.gold+=got.gold;for(const m of Object.keys(MATS)){got[m]=Math.floor((L[m]||0)*k);save.mats[m]=(save.mats[m]||0)+got[m]}
   for(const it of L.items)save.stash.push(it);const TD=autoTidy(L.items);G._tidy=TD;
@@ -4970,7 +4972,7 @@ function updateHud(){{const V=$('#vig'),M=G.mood,k=(M?M.c:'')+VW+'x'+VH;if(V._k!
    const M=G.mk,sh=!!(M&&M.show>0&&M.n>=5);if(mkEl._on!==sh){mkEl._on=sh;mkEl.style.opacity=sh?1:0}if(sh&&mkEl._n!==M.n){mkEl._n=M.n;$('#mkN').textContent=`${M.n} KILL`;$('#mkL').textContent=M.n>=200?'종 말':M.n>=100?'백 인 참':M.n>=50?'대 학 살':M.n>=25?'학 살':M.n>=10?'연 속 처 치':'처 치';mkEl.classList.remove('pop');void mkEl.offsetWidth;mkEl.classList.add('pop')}
    hud26();}
   if(G.dg.rush)set('flr',`보스 러시 · ${(G.rush?G.rush.stage:0)+1}단계<small>${G.dg.bossName}</small>`,'innerHTML');else if(G.dg.duel)set('flr',`결투장 · ${duelSt().rank+1}등급<small>1대1 결투</small>`,'innerHTML');else if(G.dg.raid)set('flr',`세계의 적 · ${Math.floor((G.raidT||0)/60)}:${String(Math.floor((G.raidT||0)%60)).padStart(2,'0')}<small>이번 피해 ${nShort(Math.round(G.raidDmg||0))}</small>`,'innerHTML');else if(G.dg.endless)set('flr',`무한의 전장 · 웨이브 ${G.wave}<small>${fmt(G.loot.gold)} G · 처치 ${G.kills}</small>`,'innerHTML');else set('flr',`${G.dg.name} ${G.floor}F<small>${fmt(G.loot.gold)} G · 처치 ${G.kills}</small>`,'innerHTML');
-  const b=G.buffs,names={formBuff:'강화',warUlt:'사기 증진',rapid:'연속화살',mageUlt:'마력 해방',stealth:'은신',frenzy:'광분',banner:'깃발',bbar:'마력 방벽',thunder:'천둥 강림',hunt:'사냥꾼의 힘',plunder:'약탈',reapRun:'낫긁어달리기'};let bh='';for(const k in names)if(b[k]>0)bh+=`<span>${names[k]} ${b[k].toFixed(1)}</span>`;if(G.shield)bh+=`<span>보호막 ${Math.round(G.shield.amt)}</span>`;if(G.ult5)bh+=`<span>질풍난무 ×${G.ult5.left}</span>`;set('buffs',bh,'innerHTML');
+  const b=G.buffs,names={formBuff:'강화',warUlt:'사기 증진',rapid:'연속화살',mageUlt:'마력 해방',stealth:'은신',frenzy:'광분',banner:'깃발',bbar:'마력 방벽',thunder:'천둥 강림',hunt:'사냥꾼의 힘',plunder:'약탈',reapRun:'낫긁어달리기'};let bh='';if(G._trb==null)G._trb=trialDone(G.cls)&&TRIAL[G.cls]?`<span class="trb"><b>각성 「${TRIAL[G.cls][2]}」</b>${trialTxt(TRIAL[G.cls][3])}</span>`:'';bh+=G._trb;for(const k in names)if(b[k]>0)bh+=`<span>${names[k]} ${b[k].toFixed(1)}</span>`;if(G.shield)bh+=`<span>보호막 ${Math.round(G.shield.amt)}</span>`;if(G.ult5)bh+=`<span>질풍난무 ×${G.ult5.left}</span>`;set('buffs',bh,'innerHTML');
   for(let i=0;i<4;i++){const sk=curSkills()[i],el=btnEls[i];let cdv=G.cd[i]/sk.cd,ct=G.cd[i]>0?(G.cd[i]>=10?Math.ceil(G.cd[i]):G.cd[i].toFixed(1)):'';
     if(G.cls==='assassin'&&i===2&&G.cd[i]>sk.cd)cdv=G.cd[i]/18;
     if(G.cls==='assassin'&&i===3&&G.ult5){cdv=0;ct='×'+G.ult5.left}
