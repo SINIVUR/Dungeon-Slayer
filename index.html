@@ -284,7 +284,7 @@ h3:first-child{margin-top:0}
 .medal{--mc:#ffd34d;display:inline-grid;place-items:center;width:2.1em;height:2.1em;border-radius:50%;font-weight:900;font-size:.95em;color:#1a1008;background:radial-gradient(circle at 35% 30%,#fff 0,var(--mc) 38%,color-mix(in srgb,var(--mc) 55%,#000) 100%);box-shadow:0 0 0 2px rgba(0,0,0,.5),0 0 12px color-mix(in srgb,var(--mc) 60%,transparent);flex:none}
 .medal.sm{width:1.55em;height:1.55em;font-size:.72em;vertical-align:middle}
 .medal.none{background:rgba(255,255,255,.08);color:var(--muted);box-shadow:none}
-.eqpre{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.eqpre>span{font-size:.78em;color:var(--muted);letter-spacing:.06em;margin-right:2px}.eqpre .btn{font-size:.82em;padding:5px 10px}.eqpre .btn small{margin-left:6px;opacity:.7}.eqpre em{font-style:normal;font-size:.74em;color:var(--muted);margin-left:auto}
+.eqpre{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 8px}.eqpre>span{font-size:.78em;color:var(--muted);letter-spacing:.06em;margin-right:2px}.eqpre .btn{font-size:.8em;padding:3px 10px;min-height:0}.eqpre .btn small{margin-left:6px;opacity:.7}.eqpre em{font-style:normal;font-size:.74em;color:var(--muted);margin-left:auto}
 body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::after{animation:none!important}
 #rItems .tidy{font-size:.82em;color:var(--gold);padding:2px 4px 6px;letter-spacing:.02em}
 #rItems .row.sold{opacity:.45}
@@ -631,7 +631,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 .dd3 dt{color:var(--muted)}.dd3 dd{margin:0;color:#f0e4d4}
 .dd3 .sel{display:none}
 /* 장비 */
-.eq3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:calc(var(--u)*10);height:100%;min-height:0}
+.eqwrap{display:flex;flex-direction:column;height:100%;min-height:0}.eqwrap>.eqpre{flex:none}.eq3{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.12fr);gap:calc(var(--u)*10);height:100%;min-height:0}.eqwrap>.eq3{flex:1 1 0;height:auto}.eq3>div::after{content:'';display:block;height:calc(var(--u)*14)}
 .eq3 > div{overflow:auto;min-height:0;overscroll-behavior:contain;padding-right:calc(var(--u)*2)}
 .eq3 .eqtop{grid-template-columns:1fr}
 .eq3 .eqR .tierhead:first-child{margin-top:0;position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#140a0c 80%,rgba(20,10,12,0));padding:calc(var(--u)*2) 0 calc(var(--u)*6)}
@@ -823,7 +823,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='3.6.0';
+const VERSION='3.6.1';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -3350,7 +3350,7 @@ const MENU3={
     for(const n of [...tmp.children]){if(n.classList.contains('tierhead'))toR=true;(toR?R:L).push(n.outerHTML)}
     const cur=h.preset||0,pv=[0,1,2].filter(i=>i===0||presetOf(cls,i));
     const pbar=pv.length>1?`<div class="eqpre"><span>장비 세트</span>${pv.map(i=>{const F=presetOf(cls,i),n=SLOT_ORDER.filter(sl=>eqOf(h,i)[sl]).length;return `<button class="btn${i===cur?' gold':''}" data-act="preset" data-k="${i}" aria-pressed="${i===cur}">${PRE_N[i]} · ${F?F.name:CLASSES[cls].name}<small>${n}/6</small></button>`}).join('')}<em>프리셋마다 장비를 따로 맞춰요</em></div>`:'';
-    return pbar+`<div class="eq3"><div class="eqL" data-sk="eqL">${L.join('')}</div><div class="eqR" data-sk="eqR">${R.join('')}</div></div>`},
+    return `<div class="eqwrap">${pbar}<div class="eq3"><div class="eqL" data-sk="eqL">${L.join('')}</div><div class="eqR" data-sk="eqR">${R.join('')}</div></div></div>`},
   skill(cls,h,C){return MENU_TABS.skill(cls,h,C)},
   forge(cls,h,C){return MENU_TABS.forge(cls,h,C)},
   ach(cls,h,C){const n=ACH.filter(a=>achDone(a)&&!achClaimed(a)).length,sub=save.achSub||'ach';let html=MENU_TABS.ach(cls,h,C);if(sub==='ach'&&n)html=html.replace('<div class="tierhead"><b>도전 과제</b>',`<div class="tierhead"><b>도전 과제</b><button class="btn gold" data-act="achall" style="margin-left:auto;order:9">보상 ${n}개 모두 받기</button>`);return html}};
