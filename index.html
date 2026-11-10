@@ -834,7 +834,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='4.3.6';
+const VERSION='4.3.7';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -2586,7 +2586,8 @@ function eqSwap(h,to){const from=h.eqp??(h.preset||0);if(h.eqp==null)h.eqp=from;
   // 프리셋마다 무기 스킨 · 영혼 무기도 따로 (새 영웅처럼 처음부터)
   if(!h.pst)h.pst=[null,null,null];h.pst[from]={wskin:!!h.wskin,wskinOn:!!h.wskinOn,soulK:h.soulK||0};const N=h.pst[to]||{wskin:false,wskinOn:false,soulK:0};h.wskin=N.wskin;h.wskinOn=N.wskinOn;h.soulK=N.soulK;h.pst[to]=null;h.eqp=to}
 function eqOf(h,i){return (h.eqp??(h.preset||0))===i?h.equip:((h.eqs&&h.eqs[i])||EQ_EMPTY())}
-function persist(){try{for(const k in save.heroes)plvSync(save.heroes[k]);localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
+function goldGuard(){if(typeof save==='undefined'||!save)return;const k=save.stashOwner||'_',L=(window._lg=window._lg||{});if(Number.isFinite(save.gold))L[k]=save.gold;else save.gold=Number.isFinite(L[k])?L[k]:0;if(save.mats)for(const m in save.mats){const q=k+'|'+m;if(Number.isFinite(save.mats[m]))L[q]=save.mats[m];else save.mats[m]=Number.isFinite(L[q])?L[q]:0}if(save.slots)for(const sk in save.slots){const o=save.slots[sk];if(o&&!Number.isFinite(o.gold))o.gold=0;if(o&&o.mats)for(const m in o.mats)if(!Number.isFinite(o.mats[m]))o.mats[m]=0}}
+function persist(){goldGuard();try{for(const k in save.heroes)plvSync(save.heroes[k]);localStorage.setItem(SAVE_KEY,JSON.stringify(save))}catch(e){}}
 try{localStorage.removeItem('dungeon-slayer-save-v1')}catch(_){}
 // ================= 신규 영웅 5종 (v3.8): 격투가 · 도끼병 · 망치꾼 · 음양사 · 바드 =================
 Object.assign(CLASSES,{
@@ -3746,7 +3747,7 @@ function act3(act,k,h,cls){
 function gradeLbl3(it){const g=itemGrade(it),l=itemLabel(it);return l.startsWith(g)?l:g+' '+l}
 function JO(w,a,b){w=String(w);const c=w.charCodeAt(w.length-1);if(c<0xAC00||c>0xD7A3)return w+a;const j=(c-0xAC00)%28;if(a==='으로')return w+(j===0||j===8?'로':'으로');return w+(j?a:b)}
 function enter3(){$('#enterBtn').click()}
-function renderMenu(){stashSync();
+function renderMenu(){stashSync();goldGuard();
   if(tab==='shop'){save.fsub='shop';tab='forge'}if(!MENU3[tab])tab='home';
   const cls=save.selected,h=save.heroes[cls],C=CLASSES[cls],dk=curDg(),DG=DUNGEONS[dk];
   $('#res').innerHTML=resChips();
@@ -4844,7 +4845,7 @@ function updPZ(dt){const p=G.p;
     if(z.kind==='arrows'&&Math.random()<.7)G.fx.push({k:'fall',x:z.x+rand(-1,1)*z.r*.8,y:z.y+rand(-1,1)*z.r*.8,t:0,dur:.25});
     if(z.t>=z.dur){if(z.onEnd)z.onEnd(z);G.zones.splice(i,1)}}
 }
-function update(dt){if(G&&G.scd>0)G.scd-=dt;if(G)updLib(dt);juiceFrame(dt);{const H=nhH();if(H&&H.tick)H.tick(dt)}if(G&&G.dg&&G.dg.elemd&&!G.over){elTick(dt);elBombs(dt)}
+function update(dt){if(G&&(G._gg=(G._gg||0)+1)%30===0)goldGuard();if(G&&G.scd>0)G.scd-=dt;if(G)updLib(dt);juiceFrame(dt);{const H=nhH();if(H&&H.tick)H.tick(dt)}if(G&&G.dg&&G.dg.elemd&&!G.over){elTick(dt);elBombs(dt)}
   G.time+=dt;const p=G.p,b=G.buffs;egBuild();
   for(const k in b)if(b[k]>0)b[k]=Math.max(0,b[k]-dt);
   if(G.shield&&G.shield.t>0){G.shield.t-=dt;if(G.shield.t<=0||G.shield.amt<=0)G.shield=null}
