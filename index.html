@@ -834,7 +834,7 @@ body.bat #btn3.ready,body.bat #btn3.ready .ug,body.bat #frz,body.bat .enter::aft
 
 <script>
 'use strict';
-const VERSION='4.3.5';
+const VERSION='4.3.6';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -5585,13 +5585,13 @@ function useLiberate(){if(!G||G.over||paused||G.dying||G._rv||G._ally)return;con
   if(libOn())return;if((G.libCd||0)>0){addText(G.p.x,G.p.y-28,`해방 ${Math.ceil(G.libCd)}초`,'#ffb020');return}
   G.lib={t:LIB_T,lv,t0:performance.now()};G.libCd=libCD(lv);const p=G.p;p.hp=G.stats.hp;p.mp=G.stats.mp;for(let i=0;i<3;i++)G.cd[i]=0;
   G.shake=Math.max(G.shake||0,22);G.cflash=Math.max(G.cflash||0,.9);sfx('ultIn');sfx('explode');sfx('rally');vibP([40,30,80,30,200],4);
-  burst(p.x,p.y,'#ffd34d',50,380,5);burst(p.x,p.y,'#ff6a00',40,300,5);G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:300,t:0,dur:.6,color:'#ffb020',w:14});G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:200,t:0,dur:.45,color:'#ffffff',w:6});
-  for(const e of inCircle(p.x,p.y,220)){hit(e,{true:Math.max(atk(),ap())*6,noCrit:true,_awk:1,noFx:1});if(!e.boss){const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy)||1;moveEnt(e,dx/d*60,dy/d*60)}}}
+  burst(p.x,p.y,'#ffd34d',50,380,5);burst(p.x,p.y,'#ff6a00',40,300,5);G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:170,t:0,dur:.6,color:'#ffb020',w:14});G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:130,t:0,dur:.45,color:'#ffffff',w:6});
+  for(const e of inCircle(p.x,p.y,140)){hit(e,{true:Math.max(atk(),ap())*6,noCrit:true,_awk:1,noFx:1});if(!e.boss){const dx=e.x-p.x,dy=e.y-p.y,d=Math.hypot(dx,dy)||1;moveEnt(e,dx/d*60,dy/d*60)}}}
 function updLib(dt){if(G._ally||G._rv)return;if(G.libCd>0&&!libOn())G.libCd-=dt;if(!G.lib)return;G.lib.t-=dt;if(G.lib.t<=0){G.lib=null;toast('해방 종료','#ffd080');return}
   for(let i=0;i<3;i++)if(G.cd[i]>0)G.cd[i]-=dt*2;G.p.mp=Math.min(G.stats.mp,G.p.mp+G.stats.mp*.15*dt);
   if(Math.random()<.5){const p=G.p;G.parts.push({x:p.x+rand(-14,14),y:p.y+rand(-4,10),vx:rand(-20,20),vy:rand(-120,-60),t:0,dur:.45,color:Math.random()<.5?'#ffd34d':'#ff6a00',size:rand(2.5,4.5)})}}
 function libAmp(o){if(!libOn()||o._awk||o.dot)return;const m=libDmg(G.lib.lv);if(o.phys)o.phys*=m;if(o.magic)o.magic*=m}
-function libHit(e,o,d){if(!libOn()||o._awk||o.dot||!d||G._libD)return;G._libD=1;try{if(!G._libT||G.time-G._libT>.08){G._libT=G.time;G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:56,t:0,dur:.18,color:'#ffb020',w:4});let n=0;for(const q of egNear(e.x,e.y,56)){if(q===e||q.dead||q.prop)continue;hit(q,{true:d*.35,noCrit:true,_awk:1,noFx:1});if(++n>=4)break}}if(!e.dead&&Math.random()<.35)addBurn(e,Math.max(atk(),ap())*.25,3)}finally{G._libD=0}}
+function libHit(e,o,d){if(!libOn()||o._awk||o.dot||!d||G._libD)return;G._libD=1;try{if(!G._libT||G.time-G._libT>.08){G._libT=G.time;G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:56,t:0,dur:.18,color:'#ffb020',w:4});let n=0;for(const q of nearIn(e.x,e.y,56)){if(q===e||q.dead||q.prop)continue;hit(q,{true:d*.35,noCrit:true,_awk:1,noFx:1});if(++n>=4)break}}if(!e.dead&&Math.random()<.35)addBurn(e,Math.max(atk(),ap())*.25,3)}finally{G._libD=0}}
 function libDrawWorld(c,t){if(!libOn())return;const p=G.p;c.save();c.globalCompositeOperation='lighter';for(let i=0;i<7;i++){const a=i/7*TAU+t*2.2,r=24+4*Math.sin(t*9+i),h=16+10*Math.abs(Math.sin(t*7+i*1.7));c.globalAlpha=.55;c.fillStyle=i%2?'#ff6a00':'#ffd34d';c.beginPath();const x=p.x+Math.cos(a)*r,y=p.y+4+Math.sin(a)*r*.45;c.moveTo(x-5,y);c.quadraticCurveTo(x,y-h*1.2,x+5,y);c.fill()}c.globalAlpha=.3;c.strokeStyle='#ffd34d';c.lineWidth=3;c.beginPath();c.ellipse(p.x,p.y+6,30,13,0,0,TAU);c.stroke();c.restore()}
 let _libFS=null;function libFlameSpr(){if(_libFS)return _libFS;const cv=document.createElement('canvas');cv.width=64;cv.height=128;const c=cv.getContext('2d');const L=[[1,'rgba(255,40,0,.35)'],[.82,'rgba(255,90,0,.55)'],[.62,'rgba(255,160,20,.75)'],[.42,'rgba(255,220,90,.9)'],[.24,'rgba(255,250,210,1)']];for(const [k,col] of L){const w=30*k,h=124*k;c.fillStyle=col;c.beginPath();c.moveTo(32,128);c.bezierCurveTo(32-w*1.2,128-h*.25,32-w*.55,128-h*.7,32,128-h);c.bezierCurveTo(32+w*.55,128-h*.7,32+w*1.2,128-h*.25,32,128);c.fill()}_libFS=cv;return cv}
 let _libG=null;function libGlowSpr(){if(_libG)return _libG;const W=200,H=100,cv=document.createElement('canvas');cv.width=W;cv.height=H;const c=cv.getContext('2d');const g=c.createRadialGradient(W/2,H/2,H*.28,W/2,H/2,W*.62);g.addColorStop(0,'rgba(255,200,40,0)');g.addColorStop(.55,'rgba(255,170,30,.28)');g.addColorStop(.8,'rgba(255,130,10,.7)');g.addColorStop(1,'rgba(255,215,90,1)');c.fillStyle=g;c.fillRect(0,0,W,H);return _libG=cv}
@@ -5609,6 +5609,7 @@ function libBtnInit(){libBtnEl=$('#btnL');if(!libBtnEl)return;libBtnEl.addEventL
 function libBtnSetup(){if(!libBtnEl)libBtnInit();if(!libBtnEl||!G)return;const lv=libLvOf(G.hero,G.form||0);libBtnEl._k=null;libBtnEl._lv=lv;libBtnEl.hidden=!!G._rv;libBtnEl.innerHTML=`<b class="sg">解</b><span class="nm">${lv?'해방':'잠김'}</span><div class="cd"></div><div class="ct"></div>${lv?`<span class="lvb">${lv}</span>`:''}`;libBtnEl._ct=libBtnEl.querySelector('.ct');libBtnEl.classList.toggle('locked',!lv);if(!lv){libBtnEl.classList.remove('ready','charged','on');libBtnEl._rd=null}}
 function libBtnUpd(){if(!libBtnEl||!G||libBtnEl.hidden)return;const lv=libLvOf(G.hero,G.form||0);if(libBtnEl._lv!==lv)libBtnSetup();if(!lv)return;const on=libOn(),cd=Math.max(0,G.libCd||0),k=on?'on'+Math.ceil(G.lib.t):(cd>0?Math.ceil(cd):'')+'';if(libBtnEl._k!==k){libBtnEl._k=k;libBtnEl.classList.toggle('on',on);libBtnEl.style.setProperty('--cd',on?0:clamp(cd/libCD(lv),0,1));libBtnEl._ct.textContent=on?Math.ceil(G.lib.t):cd>0?Math.ceil(cd):'';const rd=!on&&cd<=0;if(rd&&libBtnEl._rd===false){sfx('ready',.25);libBtnEl.classList.remove('charged');void libBtnEl.offsetWidth;libBtnEl.classList.add('charged')}libBtnEl._rd=rd;libBtnEl.classList.toggle('ready',rd)}}
 
+function nearIn(x,y,R){return egNear(x,y,R).filter(q=>!q.dead&&!q.prop&&(q.x-x)*(q.x-x)+(q.y-y)*(q.y-y)<(R+(q.r||0))*(R+(q.r||0)))}
 // ================= v4.3: 각성 =================
 const AWK_MAX=10,AWK_T=30;
 const awkCD=lv=>60-2*(lv-1),awkK=lv=>1+.1*(lv-1);
@@ -5641,7 +5642,7 @@ const AWKD={
  'warrior:1':['무명검신','#ff2a6a',{sk:0.31,cdk:.6,cr:.1},[['twin',{c:.35,p:0.484}],['echo',{d:.4}]]],
  'warrior:2':['환영 폭주','#ff3a8a',{dmg:0.2,sp:.2,sr:.2},[['orbs',{n:5,m:0.576}],['twin',{c:.25,p:0.48}]]],
  'mage:0':['붉은 마력 폭주','#ff1744',{sk:0.43,sr:.25,cdk:.5},[['meteor',{iv:2.5,m:3.388}],['status',{s:'burn',c:.4}]]],
- 'mage:1':['혹한의 심장','#ff4a7a',{sk:0.28,cdk:.6,dr:.1},[['frost',{r:200,p:0.134}],['status',{s:'freeze',c:.12}]]],
+ 'mage:1':['혹한의 심장','#ff4a7a',{sk:0.28,cdk:.6,dr:.1},[['frost',{r:110,p:0.134}],['status',{s:'freeze',c:.12}]]],
  'mage:2':['룬 과부하','#ff2a4a',{sk:0.25,cdk:.8},[['echo',{d:.35}],['bolt',{iv:1.2,m:1.1}]]],
  'archer:0':['붉은 매의 눈','#ff1744',{as:.5,cr:.12,dmg:0.1},[['missile',{iv:.5,m:0.297}],['critboom',{p:0.212}]]],
  'archer:1':['폭풍 과충전','#ff3a6a',{as:.35,sp:.2,dmg:0.09},[['chain',{n:3,p:0.1}],['bolt',{iv:1.2,m:0.4}]]],
@@ -5651,28 +5652,28 @@ const AWKD={
  'assassin:2':['신기루 붕괴','#ff3a7a',{sp:.35,cr:.12,sk:0.23},[['twin',{c:.45,p:0.488}],['orbs',{n:3,m:0.569}]]],
  'berserker:0':['피의 광란','#ff1744',{dmg:0.45,as:.4,ls:.06},[['rage',{p:1.5}],['vamp',{p:0.02}]]],
  'berserker:1':['혈귀 해방','#ff0040',{dmg:0.38,ls:.12,dr:.1},[['rage',{p:1.639}],['status',{s:'bleed',c:.6}]]],
- 'berserker:2':['용암 심장','#ff3a1a',{dmg:0.28,dr:.15},[['trail',{m:0.995}],['aura',{iv:1,r:140,m:1.12}]]],
- 'paladin:0':['붉은 성전','#ff2a4a',{dr:.25,dmg:0.2},[['shield',{iv:6,p:0.15}],['aura',{iv:1.2,r:150,m:1.418}]]],
+ 'berserker:2':['용암 심장','#ff3a1a',{dmg:0.28,dr:.15},[['trail',{m:0.995}],['aura',{iv:1,r:84,m:1.12}]]],
+ 'paladin:0':['붉은 성전','#ff2a4a',{dr:.25,dmg:0.2},[['shield',{iv:6,p:0.15}],['aura',{iv:1.2,r:90,m:1.418}]]],
  'paladin:1':['심판의 낙인','#ff1744',{sk:0.2,cr:.1,dr:.1},[['mark',{n:3,m:1.285}],['bolt',{iv:1.5,m:0.826}]]],
  'paladin:2':['성수 역류','#ff4a8a',{dr:.2,ls:.06,sk:0.16},[['shield',{iv:5,p:0.062}],['splash',{p:0.216}]]],
  'ranger:0':['사냥 본능','#ff1744',{as:.45,sp:.2,dmg:0.09},[['missile',{iv:.45,m:0.163}],['mark',{n:5,m:0.598}]]],
  'ranger:1':['업화의 시위','#ff3a1a',{as:.3,dmg:0.12},[['status',{s:'burn',c:.6}],['splash',{p:0.114}]]],
- 'ranger:2':['설원의 포효','#ff4a6a',{as:.3,cr:.1,dr:.1},[['frost',{r:180,p:0.45}],['status',{s:'freeze',c:.1}]]],
+ 'ranger:2':['설원의 포효','#ff4a6a',{as:.3,cr:.1,dr:.1},[['frost',{r:108,p:0.45}],['status',{s:'freeze',c:.1}]]],
  'gungsu:0':['신궁 각성','#ff1744',{cr:.2,dmg:0.25},[['critboom',{p:0.5}],['missile',{iv:.6,m:0.6}]]],
  'gungsu:1':['뇌궁 과부하','#ff2a6a',{as:.4,dmg:0.09},[['chain',{n:4,p:0.087}],['status',{s:'para',c:.12}]]],
  'gungsu:2':['붉은 태양','#ff3a1a',{dmg:0.32,sk:0.26},[['meteor',{iv:2.2,m:4.278}],['status',{s:'burn',c:.5}]]],
  'raider:0':['약탈 광란','#ff1744',{as:.35,sp:.25,ls:.05},[['vamp',{p:0.006}],['splash',{p:0.143}]]],
- 'raider:1':['심해의 분노','#ff2a5a',{dmg:0.16,dr:.15},[['gravity',{r:170}],['aura',{iv:1,r:150,m:0.511}]]],
+ 'raider:1':['심해의 분노','#ff2a5a',{dmg:0.16,dr:.15},[['gravity',{r:102}],['aura',{iv:1,r:90,m:0.511}]]],
  'raider:2':['폭풍 선장','#ff4a7a',{sp:.3,as:.3},[['bolt',{iv:1,m:2.252}],['chain',{n:2,p:0.601}]]],
  'reaper:0':['사형 선고','#ff0030',{dmg:0.38,cr:.12},[['exec',{p:.15}],['vamp',{p:0.02}]]],
  'reaper:1':['망령 해방','#ff2a6a',{sk:0.45,ls:.08},[['orbs',{n:6,m:1.65}],['vamp',{p:0.02}]]],
- 'reaper:2':['역병의 왕','#ff3a3a',{dmg:0.25,dr:.1},[['status',{s:'poison',c:.8}],['aura',{iv:1.2,r:160,m:1.101}]]],
- 'bmage:0':['마력 폭주체','#ff1744',{sk:0.44,dr:.15},[['aura',{iv:.9,r:140,m:1.551}],['shield',{iv:6,p:0.15}]]],
+ 'reaper:2':['역병의 왕','#ff3a3a',{dmg:0.25,dr:.1},[['status',{s:'poison',c:.8}],['aura',{iv:1.2,r:96,m:1.101}]]],
+ 'bmage:0':['마력 폭주체','#ff1744',{sk:0.44,dr:.15},[['aura',{iv:.9,r:84,m:1.551}],['shield',{iv:6,p:0.15}]]],
  'bmage:1':['뇌신 강림','#ff2a6a',{sk:0.24,as:.25},[['bolt',{iv:.8,m:0.887}],['chain',{n:3,p:0.222}]]],
- 'bmage:2':['거신 각성','#ff4a3a',{dr:.3,dmg:0.22},[['thorns',{m:3}],['shield',{iv:5,p:0.12}],['aura',{iv:1.2,r:150,m:.9}]]],
+ 'bmage:2':['거신 각성','#ff4a3a',{dr:.3,dmg:0.22},[['thorns',{m:3}],['shield',{iv:5,p:0.12}],['aura',{iv:1.2,r:90,m:.9}]]],
  'archmage:0':['아카식 폭주','#ff1744',{sk:0.29,sr:.2,cdk:.5},[['meteor',{iv:2,m:1.236}],['echo',{d:.5}]]],
  'archmage:1':['시간 가속','#ff3a8a',{cdk:.8,sk:0.16,sp:.2},[['echo',{d:.3}],['twin',{c:.3,p:0.208}]]],
- 'archmage:2':['별의 중력','#ff2a5a',{sk:0.36,sr:.25},[['gravity',{r:200}],['meteor',{iv:2.6,m:2.376}]]],
+ 'archmage:2':['별의 중력','#ff2a5a',{sk:0.36,sr:.25},[['gravity',{r:110}],['meteor',{iv:2.6,m:2.376}]]],
  'samurai:0':['수라','#ff1744',{cr:.18,as:.3,dmg:0.19},[['critboom',{p:0.546}],['status',{s:'bleed',c:.5}]]],
  'samurai:1':['귀신 해방','#ff2a6a',{dmg:0.38,ls:.06},[['twin',{c:.45,p:1.6}],['vamp',{p:0.015}]]],
  'samurai:2':['진공의 경지','#ff4a7a',{sp:.3,as:.35},[['orbs',{n:4,m:0.696}],['splash',{p:0.298}]]],
@@ -5690,19 +5691,19 @@ const AWKD={
  'sniper:2':['전술 과부하','#ff3a3a',{sk:0.18,cdk:.7},[['meteor',{iv:1.8,m:0.501}],['mark',{n:5,m:0.551}]]],
  'fighter:0':['백열 투혼','#ff3a1a',{as:.5,dmg:0.18},[['splash',{p:0.283}],['rage',{p:0.323}]]],
  'fighter:1':['패왕 각성','#ff1744',{dmg:0.31,dr:.15},[['thorns',{m:1.454}],['status',{s:'stun',c:.15}]]],
- 'fighter:2':['기공 폭주','#ff2a6a',{sk:0.29,as:.25},[['aura',{iv:.8,r:130,m:0.768}],['chain',{n:2,p:0.384}]]],
+ 'fighter:2':['기공 폭주','#ff2a6a',{sk:0.29,as:.25},[['aura',{iv:.8,r:78,m:0.768}],['chain',{n:2,p:0.384}]]],
  'axeman:0':['광전 회오리','#ff1744',{as:.35,dmg:0.21},[['orbs',{n:3,m:0.655}],['status',{s:'bleed',c:.5}]]],
  'axeman:1':['발할라의 부름','#ff3a3a',{dr:.2,dmg:0.3,ls:.05},[['rage',{p:1.5}],['thorns',{m:3.0}]]],
  'axeman:2':['처형인의 눈','#ff0030',{dmg:0.32,cr:.1},[['exec',{p:.14}],['status',{s:'bleed',c:.6}]]],
- 'hammer:0':['대지의 분노','#ff3a1a',{dmg:0.33,dr:.15},[['aura',{iv:1.1,r:160,m:1.697}],['status',{s:'stun',c:.12}]]],
+ 'hammer:0':['대지의 분노','#ff3a1a',{dmg:0.33,dr:.15},[['aura',{iv:1.1,r:96,m:1.697}],['status',{s:'stun',c:.12}]]],
  'hammer:1':['용광로 심장','#ff2a1a',{dmg:0.3,dr:.2},[['trail',{m:2.4}],['shield',{iv:6,p:0.15}]]],
  'hammer:2':['뇌신의 진노','#ff2a6a',{dmg:0.3,as:.3},[['bolt',{iv:.9,m:3.615}],['status',{s:'para',c:.12}]]],
  'onmyoji:0':['백귀 해방','#ff1744',{sk:0.36,sr:.2},[['orbs',{n:6,m:0.715}],['missile',{iv:.7,m:1.001}]]],
  'onmyoji:1':['구미호 각성','#ff3a8a',{sk:0.43,sp:.25,ls:.05},[['status',{s:'burn',c:.5}],['twin',{c:.35,p:1.254}]]],
- 'onmyoji:2':['결계 폭주','#ff2a5a',{dr:.25,sk:0.38},[['gravity',{r:180}],['shield',{iv:5,p:0.1}],['aura',{iv:1.2,r:180,m:.9}]]],
- 'bard:0':['열광의 무대','#ff1744',{as:.3,sp:.2,dr:.1},[['aura',{iv:1,r:170,m:0.884}],['shield',{iv:6,p:0.101}]]],
+ 'onmyoji:2':['결계 폭주','#ff2a5a',{dr:.25,sk:0.38},[['gravity',{r:108}],['shield',{iv:5,p:0.1}],['aura',{iv:1.2,r:108,m:.9}]]],
+ 'bard:0':['열광의 무대','#ff1744',{as:.3,sp:.2,dr:.1},[['aura',{iv:1,r:102,m:0.884}],['shield',{iv:6,p:0.101}]]],
  'bard:1':['데스메탈 폭주','#ff2a6a',{dmg:0.21,as:.35},[['chain',{n:3,p:0.277}],['status',{s:'stun',c:.1}]]],
- 'bard:2':['서사시의 절정','#ff3a7a',{sk:0.31,ls:.06},[['frost',{r:190,p:0.155}],['echo',{d:.45}]]]};
+ 'bard:2':['서사시의 절정','#ff3a7a',{sk:0.31,ls:.06},[['frost',{r:110,p:0.155}],['echo',{d:.45}]]]};
 function awkDef(cls,pi){return AWKD[cls+':'+pi]||null}
 function awkLvOf(h,pi){plvInit(h);return Math.min(AWK_MAX,(h.xl[pi]&&h.xl[pi].awk)||0)}
 function awkDesc(D,lv){const k=awkK(Math.max(1,lv)),st=D[2];return Object.keys(st).map(s=>`${AST_KR[s]} +${Math.round(st[s]*k*(s==='cdk'?100:100))}%`).join(' · ')+' · '+D[3].map(([f,o])=>AFX[f](o,k)).join(' · ')}
@@ -5725,9 +5726,9 @@ updAwaken=function(dt){if(G.glitch>0)G.glitch-=dt;if(G.supFx){G.supFx.t+=dt;if(G
   if(A.def.st.cdk){for(let i=0;i<3;i++)if(G.cd[i]>0)G.cd[i]-=dt*A.def.st.cdk}
   const tick=(k,iv,fn)=>{A.tk[k]=(A.tk[k]||0)-dt;if(A.tk[k]<=0){A.tk[k]=iv;fn()}};
   if(F.aura)tick('aura',F.aura.iv,()=>{const o=F.aura;G.fx.push({k:'ring',x:p.x,y:p.y,r0:10,r1:o.r,t:0,dur:.35,color:col,w:4});for(const e of inCircle(p.x,p.y,o.r))awkTrue(e,B*o.m)});
-  if(F.missile)tick('mis',F.missile.iv,()=>{const e=nearestEnemy(p.x,p.y,380);if(!e)return;const a=Math.atan2(e.y-p.y,e.x-p.x);proj({x:p.x,y:p.y,vx:Math.cos(a)*700,vy:Math.sin(a)*700,r:6,life:.8,kind:'orb',color:col,home:e,onHit:o=>awkTrue(o,B*F.missile.m,col)})});
-  if(F.meteor)tick('met',F.meteor.iv,()=>{const N=inCircle(p.x,p.y,360);if(!N.length)return;const e=N[(Math.random()*N.length)|0],x=e.x,y=e.y;G.fx.push({k:'bolt',x:x+60,y:y-300,x2:x,y2:y,t:0,dur:.2,color:col});sAfter(.15,()=>{G.fx.push({k:'ring',x,y,r0:8,r1:90,t:0,dur:.3,color:col,w:6});burst(x,y,col,14,200,3);burst(x,y,'#39ff14',4,160,2);G.shake=Math.max(G.shake,5);for(const o of inCircle(x,y,90))awkTrue(o,B*F.meteor.m)})});
-  if(F.bolt)tick('bolt',F.bolt.iv,()=>{const N=inCircle(p.x,p.y,340);if(!N.length)return;const e=N[(Math.random()*N.length)|0];G.fx.push({k:'bolt',x:e.x,y:e.y-360,x2:e.x,y2:e.y,t:0,dur:.15,color:Math.random()<.5?col:'#39ff14'});for(const o of inCircle(e.x,e.y,50))awkTrue(o,B*F.bolt.m,col)});
+  if(F.missile)tick('mis',F.missile.iv,()=>{const e=nearestEnemy(p.x,p.y,200,q=>q.awake);if(!e)return;const a=Math.atan2(e.y-p.y,e.x-p.x);proj({x:p.x,y:p.y,vx:Math.cos(a)*700,vy:Math.sin(a)*700,r:6,life:.8,kind:'orb',color:col,home:e,onHit:o=>awkTrue(o,B*F.missile.m,col)})});
+  if(F.meteor)tick('met',F.meteor.iv,()=>{const N=inCircle(p.x,p.y,190).filter(q=>q.awake);if(!N.length)return;const e=N[(Math.random()*N.length)|0],x=e.x,y=e.y;G.fx.push({k:'bolt',x:x+60,y:y-300,x2:x,y2:y,t:0,dur:.2,color:col});sAfter(.15,()=>{G.fx.push({k:'ring',x,y,r0:8,r1:90,t:0,dur:.3,color:col,w:6});burst(x,y,col,14,200,3);burst(x,y,'#39ff14',4,160,2);G.shake=Math.max(G.shake,5);for(const o of inCircle(x,y,90))awkTrue(o,B*F.meteor.m)})});
+  if(F.bolt)tick('bolt',F.bolt.iv,()=>{const N=inCircle(p.x,p.y,180).filter(q=>q.awake);if(!N.length)return;const e=N[(Math.random()*N.length)|0];G.fx.push({k:'bolt',x:e.x,y:e.y-360,x2:e.x,y2:e.y,t:0,dur:.15,color:Math.random()<.5?col:'#39ff14'});for(const o of inCircle(e.x,e.y,50))awkTrue(o,B*F.bolt.m,col)});
   if(F.shield)tick('sh',F.shield.iv,()=>awkShield(F.shield));
   if(F.orbs){A.ob+=dt*4;const n=F.orbs.n;for(let i=0;i<n;i++){const a=A.ob+i*TAU/n,x=p.x+Math.cos(a)*70,y=p.y+Math.sin(a)*70;for(const e of inCircle(x,y,22)){const k2='o'+i,last=A.hits.get(e);if(!last||G.time-last>.35){A.hits.set(e,G.time);awkTrue(e,B*F.orbs.m,col)}}}}
   if(F.trail)tick('tr',.15,()=>{(A.trl||(A.trl=[])).push({x:p.x,y:p.y,t:G.time});if(A.trl.length>24)A.trl.shift();for(const q of A.trl){if(G.time-q.t>2)continue;for(const e of inCircle(q.x,q.y,32))if(!e._awt||G.time-e._awt>.5){e._awt=G.time;awkTrue(e,B*F.trail.m*.5)}}});
@@ -5739,8 +5740,8 @@ function awkHit0(e,o,d,crit){const F=G.awk.fx,col='#ff1744';
   if(F.frost&&e._awf>G.time&&!e.dead)hit(e,{true:d*F.frost.p,noCrit:true,_awk:1,noFx:1});
   if(F.status&&Math.random()<F.status.c&&!e.dead){const a=awkBase(),s=F.status.s;if(s==='burn')addBurn(e,a*.2,3);else if(s==='poison')addPoison(e,a*.25);else if(s==='bleed')addBleed(e,a*.3);else if(s==='freeze'){stunE(e,.8,'freeze');e.st.frost=1}else if(s==='para')stunE(e,.5,'para');else if(s==='stun')stunE(e,.5,'stun');else slowE(e,.4,1.2)}
   if(F.exec&&!e.dead&&!e.boss&&e.hp<e.maxHp*F.exec.p){hit(e,{true:e.hp+1,noCrit:true,_awk:1,noFx:1});addText(e.x,e.y-e.r-8,'처형','#ff1744')}
-  if(F.chain&&Math.random()<.5){let n=0;for(const q of egNear(e.x,e.y,170)){if(q===e||q.dead||q.prop)continue;G.fx.push({k:'bolt',x:e.x,y:e.y,x2:q.x,y2:q.y,t:0,dur:.12,color:n%2?'#39ff14':col});hit(q,{true:d*F.chain.p,noCrit:true,_awk:1,noFx:1});if(++n>=(F.chain.n||2))break}}
-  if(F.splash){let n=0;for(const q of egNear(e.x,e.y,70)){if(q===e||q.dead||q.prop)continue;hit(q,{true:d*F.splash.p,noCrit:true,_awk:1,noFx:1});if(++n>=4)break}}
+  if(F.chain&&Math.random()<.5){let n=0;for(const q of nearIn(e.x,e.y,170)){if(q===e||q.dead||q.prop)continue;G.fx.push({k:'bolt',x:e.x,y:e.y,x2:q.x,y2:q.y,t:0,dur:.12,color:n%2?'#39ff14':col});hit(q,{true:d*F.chain.p,noCrit:true,_awk:1,noFx:1});if(++n>=(F.chain.n||2))break}}
+  if(F.splash){let n=0;for(const q of nearIn(e.x,e.y,70)){if(q===e||q.dead||q.prop)continue;hit(q,{true:d*F.splash.p,noCrit:true,_awk:1,noFx:1});if(++n>=4)break}}
   if(F.twin&&(!e._twT||G.time-e._twT>.2)&&Math.random()<F.twin.c){e._twT=G.time;sAfter(.12,()=>{if(!e.dead){G._awkD=1;try{hit(e,{true:d*F.twin.p,noCrit:true,_awk:1,noFx:1})}finally{G._awkD=0}burst(e.x,e.y,col,5,120,2)}})}
   if(F.critboom&&crit){for(const q of inCircle(e.x,e.y,60))if(q!==e)hit(q,{true:d*F.critboom.p,noCrit:true,_awk:1,noFx:1});G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:60,t:0,dur:.2,color:col,w:3})}
   if(F.mark&&!e.dead){e._awm=(e._awm||0)+1;if(e._awm>=F.mark.n){e._awm=0;G.fx.push({k:'ring',x:e.x,y:e.y,r0:6,r1:70,t:0,dur:.25,color:col,w:5});burst(e.x,e.y,col,10,180,3);for(const q of inCircle(e.x,e.y,70))hit(q,{true:awkBase()*F.mark.m,noCrit:true,_awk:1,noFx:1})}}}
