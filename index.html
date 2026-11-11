@@ -773,6 +773,14 @@ body.layedit #joyZone{pointer-events:none}
 .ascp{border:1px solid color-mix(in srgb,var(--a1) 55%,transparent)!important;background:radial-gradient(120% 140% at 0% 0%,color-mix(in srgb,var(--a1) 16%,transparent),transparent 60%),rgba(10,6,8,.5)!important}
 .ascp .ascn{margin:2px 0 6px;font-family:var(--display);font-weight:900;font-size:calc(var(--u)*16)}
 @media (prefers-reduced-motion:reduce){.zjt,.zjh,[style^="color:#ff6ad6"]{animation:none}}
+/* v5.2 */
+@keyframes hyp{0%,100%{text-shadow:0 0 2px #ff2050,0 0 7px #c0103a,0 0 14px #6a00ff}50%{text-shadow:0 0 3px #ff4070,0 0 11px #e01848,0 0 22px #8a10ff}}
+.hyt,.hyh,[style^="color:#1b0010"],[style*=";color:#1b0010"]{color:#140008!important;-webkit-text-fill-color:#140008;animation:hyp 1.6s ease-in-out infinite;font-weight:900}
+.hyb{border:1px solid #c0103a!important;background:radial-gradient(120% 120% at 50% 0%,rgba(120,0,30,.35),rgba(6,0,6,.96) 70%)!important;box-shadow:0 0 0 1px rgba(122,0,255,.35) inset,0 0 10px rgba(192,16,58,.45)}
+.hyb small{color:#d8b0c0!important}
+.pevo2{display:flex;align-items:center;gap:calc(var(--u)*8);margin:0 0 calc(var(--u)*6);padding:calc(var(--u)*7) calc(var(--u)*9);border-radius:calc(var(--u)*8);border:1px solid color-mix(in srgb,var(--pe) 50%,transparent);background:color-mix(in srgb,var(--pe) 9%,rgba(0,0,0,.25))}
+.pevo2>div{flex:1;min-width:0}.pevo2 b{display:block;font-family:var(--display)}.pevo2 small{color:var(--muted);font-size:calc(var(--u)*9.5)}.pevo2.on{box-shadow:0 0 calc(var(--u)*10) color-mix(in srgb,var(--pe) 40%,transparent)}
+@media (prefers-reduced-motion:reduce){.hyt,.hyh,[style^="color:#1b0010"]{animation:none;text-shadow:0 0 3px #ff2050,0 0 8px #c0103a}}
 </style>
 </head>
 <body>
@@ -874,7 +882,7 @@ body.layedit #joyZone{pointer-events:none}
 
 <script>
 'use strict';
-const VERSION='5.1.0';
+const VERSION='5.2.0';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -1110,13 +1118,13 @@ const SETNAME={bmage:'뇌전',archmage:'성좌',raider:'해적왕',reaper:'명�
 const UNIQ_SLOTS=[['head','투구'],['arm','건틀릿'],['shoe','장화'],['acc','인장'],['weapon',''],['leg','각반']];
 const UNIQ_ORDER=[4,0,1,5,2,3];
 const UNIQ_WNOUN={warrior:'검',mage:'지팡이',archer:'활',assassin:'단검',berserker:'톱날대검',paladin:'성검',ranger:'석궁',gungsu:'각궁',raider:'쌍검',reaper:'대낫',bmage:'철퇴',archmage:'마도서',samurai:'카타나',gunblade:'총검',gunner:'쌍권총',lancer:'창',sniper:'저격총'};
-const ZJ_COLOR='#ff6ad6',TR_COLOR='#ff2a3a',TR_RECIPE={gold:150000,mats:{crown:8,crystal:25,feather:20}};
+const HY_COLOR='#1b0010',ZJ_COLOR='#ff6ad6',TR_COLOR='#ff2a3a',TR_RECIPE={gold:150000,mats:{crown:8,crystal:25,feather:20}};
 const UNIQ_BONUS={bmage:{def:4,cdr:.04},archmage:{magicPen:.05,cdr:.04},raider:{atkSpd:.06,spd:8},reaper:{armorPen:.05,crit:.03},warrior:{cdr:.04,crit:.03},mage:{cdr:.06,magicPen:.03},archer:{atkSpd:.06,crit:.03},assassin:{crit:.05,armorPen:.03},
   berserker:{atkSpd:.06,ls:.01},paladin:{def:6,mr:6},ranger:{spd:8,cdr:.03},gungsu:{armorPen:.04,crit:.03}};
 const U_RECIPE={gold:3000,mats:{crystal:6,crown:1}};
 const UNIQ_COLOR='#ff9a3d';
 function uniqStats(cls,i){const[slot]=UNIQ_SLOTS[i];let st;if(slot==='weapon'){st=weaponStats(cls,9,2);for(const k in st)st[k]=Math.round(st[k]*1.2*1000)/1000}else st=itemStats(slot,3,2);const b=UNIQ_BONUS[cls];for(const k in b)st[k]=Math.round(((st[k]||0)+b[k])*1000)/1000;return st}
-function uniqName(cls,i,tr){const[slot,noun]=UNIQ_SLOTS[i];return `${tr==='zj'?'지존 ':tr==='my'?'신화 ':tr?'초월 ':''}${SETNAME[cls]}의 ${slot==='weapon'?UNIQ_WNOUN[cls]:noun}`}
+function uniqName(cls,i,tr){const[slot,noun]=UNIQ_SLOTS[i];return `${tr==='hy'?'흉악 ':tr==='zj'?'지존 ':tr==='my'?'신화 ':tr?'초월 ':''}${SETNAME[cls]}의 ${slot==='weapon'?UNIQ_WNOUN[cls]:noun}`}
 function makeUnique(cls,i){const[slot]=UNIQ_SLOTS[i];const o={id:save.nextId++,slot,cls,uniq:i,tier:4,rar:2,name:uniqName(cls,i),stats:uniqStats(cls,i)};if(slot==='weapon')o.w=9;return o}
 function transStats(cls,i){const st=uniqStats(cls,i),b=UNIQ_BONUS[cls],o={};for(const k in st){const soft=k==='crit'||k==='armorPen'||k==='magicPen'||k==='cdr'||k==='ls'||k==='atkSpd'||k==='spd';o[k]=Math.round(st[k]*(soft?1.8:3.2)*1000)/1000}for(const k in b)o[k]=Math.round(((o[k]||0)+b[k]*2)*1000)/1000;o.hp=Math.round((o.hp||0)+400);return o}
 function makeTrans(cls,i){const[slot]=UNIQ_SLOTS[i];const o={id:save.nextId++,slot,cls,uniq:i,tr:true,tier:4,rar:2,name:uniqName(cls,i,true),stats:transStats(cls,i)};if(slot==='weapon')o.w=9;return o}
@@ -1127,10 +1135,10 @@ const POTION={price:60,heal:.4,cd:4,max:20};
 function makeItem(slot,tier,rar){return{id:save.nextId++,slot,tier,rar,stats:itemStats(slot,tier,rar)}}
 const itemName=it=>(it.up?`+${it.up} `:'')+itemBase(it);
 const itemBase=it=>it.name?(it.el?'['+EL[it.el][0]+'] ':'')+it.name:it.slot==='weapon'?`${it.el?'['+EL[it.el][0]+'] ':''}${WEAPONS[it.cls][it.w]}`:it.name?it.name:`${TIERS[it.tier].name} ${SLOTS[it.slot].noun}`;
-const itemColor=it=>it.zj?ZJ_COLOR:it.tr?TR_COLOR:it.my?MY_COLOR:it.uniq!=null?UNIQ_COLOR:RARITY[it.rar].color;
-const itemGrade=it=>it.zj?'지존':it.tr?'★':it.my?'신화':it.uniq!=null?'전설':RARITY[it.rar].name;
+const itemColor=it=>it.hy?HY_COLOR:it.zj?ZJ_COLOR:it.tr?TR_COLOR:it.my?MY_COLOR:it.uniq!=null?UNIQ_COLOR:RARITY[it.rar].color;
+const itemGrade=it=>it.hy?'흉악':it.zj?'지존':it.tr?'★':it.my?'신화':it.uniq!=null?'전설':RARITY[it.rar].name;
 const clsTag=it=>it.cls?` · ${CLASSES[it.cls].name} 전용`:'';
-const itemValue=it=>it.zj?80000:it.tr?30000:it.my?12000:it.uniq!=null?4000:it.slot==='weapon'?Math.round((150+it.w*it.w*220)*RARITY[it.rar].mult):it.uniq!=null?3000:Math.round([80,280,700,1800,4500,1200,2200,3500,5500,5500,5500,5500,9000][it.tier]*RARITY[it.rar].mult);
+const itemValue=it=>it.hy?200000:it.zj?80000:it.tr?30000:it.my?12000:it.uniq!=null?4000:it.slot==='weapon'?Math.round((150+it.w*it.w*220)*RARITY[it.rar].mult):it.uniq!=null?3000:Math.round([80,280,700,1800,4500,1200,2200,3500,5500,5500,5500,5500,9000][it.tier]*RARITY[it.rar].mult);
 const statLine=st=>Object.keys(st).map(k=>`${STAT_KR[k]} ${fmtStatShort(k,st[k])}`).join(' · ');
 function rollRarity(){const r=Math.random();return r<.06?2:r<.3?1:0}
 
@@ -1463,7 +1471,7 @@ const petItemName=it=>it.g?PG_NAME[it.g]:`${TIERS[it.tier].name} 펫 목걸이`;
 const petItemColor=it=>it.g==='tr'?TR_COLOR:it.g==='my'?MY_COLOR:it.g==='u'?'#ff9a3a':RARITY[it.rar].color;
 const petItemGrade=it=>it.g==='tr'?'초월':it.g==='my'?'신화':it.g==='u'?'전설':RARITY[it.rar].name;
 const petItemPP=it=>it?it.pp*(1+.06*(it.up||0)):0;
-const petEnhCost=it=>Math.round(400*Math.pow((it.up||0)+1,1.65)*(1+(it.tier||0)*.25)*(it.g==='zj'?5:it.g==='tr'?3:it.g==='my'?2:it.g==='u'?1.5:1));
+const petEnhCost=it=>Math.round(400*Math.pow((it.up||0)+1,1.65)*(1+(it.tier||0)*.25)*(it.g==='hy'?8:it.g==='zj'?5:it.g==='tr'?3:it.g==='my'?2:it.g==='u'?1.5:1));
 const petItemValue=it=>it.g?5000:Math.round(60*(1+it.tier)*(1+it.rar));
 function petHeroBonus(){return null;const P=save.pets.list[save.pets.active];return P&&P.gear&&P.gear.hb?P.gear.hb:null}
 function petPower(stats){const S=petSave(),k=S.active,P=S.list[k];if(!P)return 0;const base=Math.max(stats.atk||0,stats.ap||0);return base*(.18+.62*P.lv/100)*(1+petItemPP(P.gear))*petEvoMul(k)}
@@ -1674,10 +1682,10 @@ RECS.push(['rush','보스 러시 최고 단계',v=>v+'단계'],['duel','결투�
 
 // ---------- 세트 ----------
 const SETC=new WeakMap();
-function setGrade(it){return it.zj?4:it.tr?3:it.my?2:1}
+function setGrade(it){return it.hy?5:it.zj?4:it.tr?3:it.my?2:1}
 function heroSet(h,cls){if(!h||!h.equip)return null;const ids=GEAR_SLOTS.map(sl=>h.equip[sl]?h.equip[sl].id:0).join(',');const c0=SETC.get(h);if(c0&&c0[0]===ids)return c0[1];
   const L=GEAR_SLOTS.map(sl=>h.equip[sl]);let r=null;
-  if(L.every(it=>it&&it.uniq!=null)){const g=Math.min(...L.map(setGrade)),nm=SETNAME[cls||it0cls(L)]||'영웅';r=g===4?{g:4,n:`지존 ${nm} 세트`,col:ZJ_COLOR,dm:.36,hp:.24}:g===3?{g:3,n:`초월 ${nm} 세트`,col:TR_COLOR,dm:.18,hp:.12}:g===2?{g:2,n:`신화 ${nm} 세트`,col:MY_COLOR,dm:.12,hp:.08}:{g:1,n:`${nm} 전설 세트`,col:UNIQ_COLOR,dm:.08,hp:.06}}
+  if(L.every(it=>it&&it.uniq!=null)){const g=Math.min(...L.map(setGrade)),nm=SETNAME[cls||it0cls(L)]||'영웅';r=g===5?{g:5,n:`흉악 ${nm} 세트`,col:HY_COLOR,dm:.72,hp:.48}:g===4?{g:4,n:`지존 ${nm} 세트`,col:ZJ_COLOR,dm:.36,hp:.24}:g===3?{g:3,n:`초월 ${nm} 세트`,col:TR_COLOR,dm:.18,hp:.12}:g===2?{g:2,n:`신화 ${nm} 세트`,col:MY_COLOR,dm:.12,hp:.08}:{g:1,n:`${nm} 전설 세트`,col:UNIQ_COLOR,dm:.08,hp:.06}}
   else if(L.every(it=>it&&it.uniq==null&&it.tier>=2&&it.tier===L[0].tier)){const t=L[0].tier;r={g:0,n:`${TIERS[t].name} 세트`,col:TIERS[t].color,dm:.03+.003*t,hp:.04}}
   SETC.set(h,[ids,r]);return r}
 function it0cls(L){const x=L.find(it=>it&&it.cls);return x?x.cls:null}
@@ -1769,7 +1777,7 @@ const cdxTypes=()=>Object.keys(ETYPES).filter(k=>k!=='rival'&&ETYPES[k].name&&ET
 const cdxNeed=k=>ETYPES[k].boss?1:30;
 function cdxPct(){const L=cdxTypes();return save.codex?save.codex.cm/L.length:0}
 function cdxKill(type){if(type==='rival'||!ETYPES[type])return;const X=cdx(),n=(X.m[type]||0)+1;X.m[type]=n;if(n===cdxNeed(type)){X.cm++;if(G)toast(`도감 완성 · ${ETYPES[type].name}`,'#9ff07a')}}
-function cdxKey(it){if(!it)return null;if(it.pet)return 'p:'+(it.g||'r'+it.rar);if(it.uniq!=null)return `${it.zj?'zj':it.tr?'tr':it.my?'my':'u'}:${it.cls}:${it.uniq}`;if(it.slot==='weapon')return `w:${it.cls}:${it.w}`;return `t${it.tier}:${it.slot}`}
+function cdxKey(it){if(!it)return null;if(it.pet)return 'p:'+(it.g||'r'+it.rar);if(it.uniq!=null)return `${it.hy?'hy':it.zj?'zj':it.tr?'tr':it.my?'my':'u'}:${it.cls}:${it.uniq}`;if(it.slot==='weapon')return `w:${it.cls}:${it.w}`;return `t${it.tier}:${it.slot}`}
 function cdxItem(it){const k=cdxKey(it);if(!k)return;const X=cdx();if(!X.i[k]){X.i[k]=1;X.ic++}}
 function cdxScan(){for(const it of save.stash||[])cdxItem(it);for(const k in save.heroes||{}){const h=save.heroes[k];for(const sl of SLOT_ORDER)if(h.equip&&h.equip[sl])cdxItem(h.equip[sl])}for(const it of save.petStash||[])cdxItem(it);if(save.pets)for(const k in save.pets.list){const g=save.pets.list[k].gear;if(g)cdxItem(g)}}
 const CDX_GRP=[['슬라임 동굴',D=>!(D.skel||D.zom||D.hum||D.dem||D.ang||D.gob||D.ogr||D.elf||D.sea||D.cos)],['해골 요새',D=>D.skel],['좀비 묘지',D=>D.zom],['제국의 요새',D=>D.hum],['악마의 성',D=>D.dem],['신의 탑',D=>D.ang],['고블린 도적단',D=>D.gob],['오우거 토벌대',D=>D.ogr],['엘프의 성소',D=>D.elf],['심해의 용궁',D=>D.sea],['우주적 코스모스',D=>D.cos]];
@@ -3424,7 +3432,7 @@ const MENU_TABS={
         <p>거대한 투기장 하나. 웨이브마다 수십~수백 마리가 사방에서 몰려와요. 5웨이브마다 군단장이 나타나고, 갈수록 강해져요. 쓰러져도 전리품은 모두 챙겨요.</p><dl><dt>적</dt><dd>3웨이브마다 모든 던전의 군세가 차례로 등장</dd><dt>난이도</dt><dd>영웅 레벨에 맞춰 시작</dd><dt>보상</dt><dd>웨이브 섬멸 상자 · 보스의 영혼 · 경험치</dd></dl></button>${modeCards26(cur,h)}${cards29(cur,cls)}</div>${cur==='duel'?duelPick26(cls):''}`;
   },
   equip(cls,h,C){
-    const mine=it=>!it.cls||it.cls===cls;const srt=save.stashSort||'type',flt=save.stashFilter||'all',onlyMine=!!save.stashMine,rank=it=>it.zj?6:it.tr?5:it.my?4:it.uniq!=null?3:it.rar;
+    const mine=it=>!it.cls||it.cls===cls;const srt=save.stashSort||'type',flt=save.stashFilter||'all',onlyMine=!!save.stashMine,rank=it=>it.hy?7:it.zj?6:it.tr?5:it.my?4:it.uniq!=null?3:it.rar;
     const sel=SLOT_ORDER.includes(save.eqSlot)?save.eqSlot:'weapon',P=heroPower(cls,h);
     const doll=SLOT_ORDER.map(sl=>{const it=h.equip[sl];return `<button data-act="slotsel" data-k="${sl}" aria-pressed="${sl===sel}" class="${it?'':'empty'}"><span class="sh">${svgI('sl_'+sl)}${SLOTS[sl].name}</span><b style="${it?`color:${itemColor(it)};${trGlow(it)}`:''}">${it?itemLabel(it):'비어 있음'}</b></button>`}).join('');
     const cur=h.equip[sel];const cand=save.stash.filter(it=>it.slot===sel&&mine(it)).length;
@@ -3459,7 +3467,7 @@ const MENU_TABS={
     const elem=`<h3>속성 무기</h3><p class="note" style="margin:0 0 6px">장착 중인 무기에 속성을 부여해요. 속성이 없는 공격이 그 속성으로 바뀌어 상성이 적용되고 부가효과가 붙어요. 비용: ${cost(ER)}</p>`+(ew?`<p class="note" style="margin:0 0 6px">대상: <b style="color:${itemColor(ew)}">${itemName(ew)}</b></p><div class="forge">${Object.keys(EL).map(k=>`<button data-act="elem" data-k="${k}" ${canAfford(ER)&&ew.el!==k?'':'disabled'}><b style="color:${EL[k][1]}">${EL[k][0]} 속성</b><small>${ELFX[k]}</small></button>`).join('')}</div>`:`<p class="note">먼저 장비 탭에서 무기를 장착하세요.</p>`);
     const uq=`<h3>${C.name} 전설 장비</h3><p class="note" style="margin:0 0 6px">${C.name}만 쓸 수 있는 전설 장비 6종(모든 부위)이에요. 보스가 가끔 떨어뜨리기도 해요. 비용: ${cost(U_RECIPE)}</p><div class="forge">${UNIQ_ORDER.map(i=>{const st=uniqStats(cls,i);return `<button data-act="craftu" data-k="${i}" ${canAfford(U_RECIPE)?'':'disabled'}><b style="color:${UNIQ_COLOR}">${uniqName(cls,i)}</b><small>${SLOTS[UNIQ_SLOTS[i][0]].name}<br>${statLine(st).replace(/ · /g,'<br>')}</small></button>`}).join('')}</div>`
       +`<h3 style="color:${MY_COLOR}">${C.name} 신화 장비</h3><p class="note" style="margin:0 0 6px">전설 장비를 신화 등급으로 각성시켜요. 능력치가 약 2배가 되고 강화 수치는 이어져요. 확장 던전 · 신의 탑 보스가 가끔 떨어뜨려요. 비용: 전설 장비 + ${cost(MY_RECIPE)}</p><div class="forge">${UNIQ_ORDER.map(i=>{const st=mythStats(cls,i),src=mySource(cls,h,i),ok=src&&canAfford(MY_RECIPE);return `<button data-act="craftmy" data-k="${i}" ${ok?'':'disabled'} style="border-color:rgba(255,225,74,.45)"><b style="color:${MY_COLOR};text-shadow:0 0 6px rgba(255,225,74,.7)">${uniqName(cls,i,'my')}</b><small>${src?'재료 보유':'재료: '+uniqName(cls,i)}<br>${statLine(st).replace(/ · /g,'<br>')}</small></button>`}).join('')}</div>`
-      +`<h3 style="color:${TR_COLOR}">${C.name} 초월 장비</h3><p class="note" style="margin:0 0 6px">신화를 넘어선 붉은 장비예요. 같은 부위의 신화 장비를 재료로 초월시켜요(강화 수치는 이어져요). 신의 탑 · 악마의 성 · 확장 던전 보스가 아주 드물게 떨어뜨려요. 비용: 전설 장비 + ${cost(TR_RECIPE)}</p><div class="forge">${UNIQ_ORDER.map(i=>{const st=transStats(cls,i),src=trSource(cls,h,i),ok=src&&canAfford(TR_RECIPE);return `<button data-act="crafttr" data-k="${i}" ${ok?'':'disabled'} style="border-color:rgba(255,42,58,.45)"><b style="color:${TR_COLOR};text-shadow:0 0 6px rgba(255,42,58,.8)">${uniqName(cls,i,true)}</b><small>${src?'재료 보유':'재료: '+uniqName(cls,i,'my')}<br>${statLine(st).replace(/ · /g,'<br>')}</small></button>`}).join('')}</div>`+zjCraft(cls,h);
+      +`<h3 style="color:${TR_COLOR}">${C.name} 초월 장비</h3><p class="note" style="margin:0 0 6px">신화를 넘어선 붉은 장비예요. 같은 부위의 신화 장비를 재료로 초월시켜요(강화 수치는 이어져요). 신의 탑 · 악마의 성 · 확장 던전 보스가 아주 드물게 떨어뜨려요. 비용: 전설 장비 + ${cost(TR_RECIPE)}</p><div class="forge">${UNIQ_ORDER.map(i=>{const st=transStats(cls,i),src=trSource(cls,h,i),ok=src&&canAfford(TR_RECIPE);return `<button data-act="crafttr" data-k="${i}" ${ok?'':'disabled'} style="border-color:rgba(255,42,58,.45)"><b style="color:${TR_COLOR};text-shadow:0 0 6px rgba(255,42,58,.8)">${uniqName(cls,i,true)}</b><small>${src?'재료 보유':'재료: '+uniqName(cls,i,'my')}<br>${statLine(st).replace(/ · /g,'<br>')}</small></button>`}).join('')}</div>`+zjCraft(cls,h)+hyCraft(cls,h);
     const SK=WSKIN[cls];const skinSec=`<h3 style="color:${SK[1]}">무기 강화 스킨</h3><div class="skinbox" style="--sk:${SK[1]}"><canvas data-heroprev="${cls}" data-skin="1" width="240" height="200"></canvas><div><b style="color:${SK[1]}">${SK[0]}</b><p class="note" style="margin:4px 0 8px">${C.name}의 무기가 이 모습으로 바뀌고, <b style="color:#fff">장착한 무기의 성능이 2배</b>로 증폭돼요. 무기를 바꿔도 스킨은 계속 적용돼요. 스킨은 프리셋마다 따로 만들어야 해요. 재료인 보스의 영혼은 층 보스와 최종 보스만 떨어뜨려요.</p>${h.wskin?`<button class="btn ${h.wskinOn?'':'gold'}" data-act="skintoggle">${h.wskinOn?'스킨 해제':'스킨 적용'}</button> <span class="sub">${h.wskinOn?'적용 중 · 무기 성능 ×2':'보유 중'}</span>`:`<button class="btn gold" data-act="craftskin" ${canAfford(SKIN_RECIPE)?'':'disabled'}>제작 · ${cost(SKIN_RECIPE)}</button> <span class="sub">보유 영혼 ${save.mats.soul||0}</span>`}</div></div>`;
     return forgeSub3({skin:skinSec,enh:enhSection(cls,h),craft:wpn,elem,uq},cls,h,C);
     `<h3>일반 장비</h3><p class="note" style="margin:0 0 6px">제작한 장비는 일반 60%, 고급 30%, 희귀 10% 확률로 나와요.</p>`+[2,3,4].map(t=>{const R=RECIPES[t];const ok=canAfford(R);const cost=`${fmt(R.gold)} G · `+Object.keys(R.mats).map(m=>`${MATS[m][0]} ${R.mats[m]}`).join(' · ');
@@ -3679,8 +3687,8 @@ function makePet2(slot,tier,rar,g){const o={id:save.nextId++,slot,pet:true,tier:
 function pet2Base(it){const g=it.g?PG2[it.g].m:null,M=g||(RARITY[it.rar].mult*(1+.25*it.tier)*.3);return M}
 function pet2St(it){if(!it)return{};const M=pet2Base(it)*(1+.06*(it.up||0)),o={};
   if(it.slot==='pcollar'){o.pp=Math.round(M*.4*100)/100}
-  else if(it.slot==='pbell'){o.pcd=Math.min(it.g==='zj'?.5:.35,Math.round(M*.16*100)/100);o.pp=Math.round(M*.12*100)/100}
-  else if(it.slot==='pcharm'){o.hb={hp:Math.round(M*260),crit:Math.round(M*.03*1000)/1000};if(it.g==='my'||it.g==='tr'||it.g==='zj')o.hb.atkSpd=it.g==='zj'?.2:it.g==='tr'?.1:.05;if(it.g==='tr')o.hb.ls=.02;if(it.g==='zj')o.hb.ls=.04}return o}
+  else if(it.slot==='pbell'){o.pcd=Math.min(it.g==='hy'?.6:it.g==='zj'?.5:.35,Math.round(M*.16*100)/100);o.pp=Math.round(M*.12*100)/100}
+  else if(it.slot==='pcharm'){o.hb={hp:Math.round(M*260),crit:Math.round(M*.03*1000)/1000};if(it.g==='my'||it.g==='tr'||it.g==='zj'||it.g==='hy')o.hb.atkSpd=it.g==='hy'?.4:it.g==='zj'?.2:it.g==='tr'?.1:.05;if(it.g==='tr')o.hb.ls=.02;if(it.g==='zj')o.hb.ls=.04;if(it.g==='hy')o.hb.ls=.08}return o}
 function pet2Name(it){return it.g?PG2_NAME[it.slot][it.g]:`${TIERS[it.tier].name} 펫 ${PSLOTS[it.slot][0]}`}
 function pet2Grade(it){return it.g?PG2[it.g].n:RARITY[it.rar].name}
 function pet2Color(it){return it.g?PG2[it.g].c:RARITY[it.rar].color}
@@ -3741,7 +3749,7 @@ function updPet(dt){const P=G.pet;if(!P)return;if(G.dying||G.over){P.moving=fals
     if(P.cd[2]<=0&&(p.hp<G.stats.hp*.5||N.length>=8)){P.cd[2]=D.ul[1]*sk.ucd;G.petWall=5;G.shake+=10;sfx('boom');txt(D.ul[0]+'!','#7ac08a',true);G.fx.push({k:'ring',x:P.x,y:P.y,r0:10,r1:210,t:0,dur:.5,color:'#b08a5a',w:12});burst(P.x,P.y,'#b08a5a',30,280,4);for(const o of inCircle(P.x,P.y,210)){hit(o,{phys:pp*3,el:'earth',pet:1});if(!o.dead&&!o.boss)stunE(o,1)}}}}
 // ---- 메뉴 ----
 function petGearBox(k){const P=petSave().list[k];return PSLOT_ORDER.map(sl=>{const it=P.g2[sl];return `<div class="pgs"><span class="sub">${PSLOTS[sl][0]} · ${PSLOTS[sl][1]}</span>${it?`<b style="color:${pet2Color(it)}">${pet2Grade(it)} ${pet2Name(it)}${it.up?` +${it.up}`:''}</b><small>${pet2Line(it)}</small><div class="acts">${(it.up||0)>=20?'<button class="btn" disabled>최대 +20</button>':`<button class="btn" data-act="p2enh" data-k="${sl}">강화 ${fmt(petEnhCost(it))}G</button>`}<button class="btn" data-act="p2un" data-k="${sl}">해제</button></div>`:'<b style="color:var(--muted)">비어 있음</b><small>아래 보관함에서 골라 끼워요</small>'}
-    <div class="acts">${['u','my','tr','zj'].map(g=>`<button class="btn" data-act="p2craft" data-k="${sl}:${g}" ${canAfford(PG2_RECIPE[g])?'':'disabled'} style="color:${PG2[g].c}">${PG2[g].n} 제작</button>`).join('')}</div></div>`}).join('')}
+    <div class="acts">${['u','my','tr','zj','hy'].map(g=>`<button class="btn" data-act="p2craft" data-k="${sl}:${g}" ${canAfford(PG2_RECIPE[g])?'':'disabled'} style="color:${PG2[g].c}">${PG2[g].n} 제작</button>`).join('')}</div></div>`}).join('')}
 function petStashBox(k){const L=petSave()&&save.petStash.slice().sort((a,b)=>pet2Score(b)-pet2Score(a));if(!L.length)return '<p class="note">펫 장비가 없어요. 정예 · 층 보스 · 보스가 떨어뜨리고, 위에서 전설 이상을 만들 수 있어요.</p>';
   return L.map(it=>`<div class="row"><div class="grow"><div class="nm" style="color:${pet2Color(it)}">${pet2Grade(it)} ${pet2Name(it)}${it.up?` +${it.up}`:''} <span class="sub">· ${PSLOTS[it.slot][0]}</span></div><div class="st">${pet2Line(it)}</div></div><button class="btn gold" data-act="p2eq" data-k="${it.id}">장착</button><button class="btn" data-act="p2sell" data-k="${it.id}">판매 ${fmt(petItemValue(it))}G</button></div>`).join('')}
 function petSkinBox(k){const P=petSave().list[k];return `<div class="pskins">${PET_SKIN[k].map((s,i)=>{const own=P.skins.includes(i),on=(P.skin||0)===i;return `<div class="psk ${on?'on':''}" style="--sc:${s.col}"><canvas data-petprev="${k}" data-skin="${i}" width="120" height="96"></canvas><b style="color:${s.col}">${s.n}</b><small>${i?`펫 공격력 ×${s.mul} · 궁극기 쿨타임 -${Math.round((1-s.ucd)*100)}%`:'성장에 따라 진화하는 모습'}</small>${on?'<span class="tag3">적용 중</span>':own?`<button class="btn gold" data-act="p2skin" data-k="${k}:${i}">적용</button>`:`<small>${Math.round(s.cost.gold/10000)}만G · 영혼 ${s.cost.mats.soul}${s.cost.mats.crown?` · 왕관 ${s.cost.mats.crown}`:''} · 결정 ${s.cost.mats.crystal}</small><button class="btn" data-act="p2skinbuy" data-k="${k}:${i}" ${canAfford(s.cost)?'':'disabled'}>구매</button>`}</div>`}).join('')}</div>`}
@@ -3777,7 +3785,7 @@ function petGainXp(n){const S=petSave(),k=S.active,P=S.list[k];if(!S.on||!P||P.l
 function petDraw(c,k,x,y,face,t,o){const f=petFilter(k);if(f){c.save();c.filter=f}drawPet(c,k,x,y,face,t,o);if(f)c.restore()}
 
 function ach26(sub){const n=ACH.filter(a=>achDone(a)&&!achClaimed(a)).length,D=dailyState();return seg3('achsub',sub,[['ach','출석 · 업적',n>0||!D.claimed],['title','칭호'],['codex','도감'],['rec','기록실']])}
-function forgeSub3(P,cls,h,C){const sub=save.fsub||'enh';const bar=seg3('fsub',sub,[['enh','강화'],['craft','던전 장비'],['uq','전설 · 신화 · 초월 · 지존'],['elem','속성 부여'],['skin','무기 스킨'],['shop','상점']]);
+function forgeSub3(P,cls,h,C){const sub=save.fsub||'enh';const bar=seg3('fsub',sub,[['enh','강화'],['craft','던전 장비'],['uq','전설 ~ 흉악'],['elem','속성 부여'],['skin','무기 스킨'],['shop','상점']]);
   return bar+(sub==='craft'?P.craft:sub==='uq'?P.uq:sub==='elem'?P.elem:sub==='skin'?P.skin:sub==='shop'?MENU_TABS.shop(cls,h,C).replace('<h2>상점</h2>',''):P.enh)}
 function act3(act,k,h,cls){
   if(act==='hsub'){save.hsub=k;return true}
@@ -4228,7 +4236,7 @@ function ist(it){const u=it.up||0;if(!u)return it.stats;const m=enhMul(u,it.slot
 function istAt(it,u){const o=it.up;it.up=u;const r=ist(it);it.up=o;return r}
 function enhCost(it){const u=it.up||0,base=Math.max(60,itemValue(it)*.12);return Math.round(base*(1+u*.4)*(1+u*u*.02)/10)*10}
 function enhRate(it){const u=it.up||0;return u>=ENH_MAX?0:Math.min(1,ENH_RATE[u]+(it.fail||0)*.05)}
-const trGlow=it=>it.zj?'text-shadow:0 0 8px rgba(255,106,214,.7),0 0 16px rgba(120,200,255,.45);':it.tr?'text-shadow:0 0 6px rgba(255,42,58,.85),0 0 14px rgba(255,42,58,.45);':it.my?'text-shadow:0 0 6px rgba(255,225,74,.8),0 0 14px rgba(255,200,40,.4);':'';
+const trGlow=it=>it.hy?'':it.zj?'text-shadow:0 0 8px rgba(255,106,214,.7),0 0 16px rgba(120,200,255,.45);':it.tr?'text-shadow:0 0 6px rgba(255,42,58,.85),0 0 14px rgba(255,42,58,.45);':it.my?'text-shadow:0 0 6px rgba(255,225,74,.8),0 0 14px rgba(255,200,40,.4);':'';
 const upBadge=it=>it.up?`<span class="upb ${it.up>=20?'u20':it.up>=15?'u15':it.up>=10?'u10':''}">+${it.up}</span>`:'';
 const itemLabel=it=>upBadge(it)+itemBase(it);
 const sellValue=it=>Math.round(itemValue(it)*.3+(it.spent||0)*.4);
@@ -5990,7 +5998,7 @@ const HTL_COL=['#c9b48a','#9fe0ff','#8affc8','#b4ff6a','#ffe36a','#ffb04a','#ff7
 function htlKey(cls,hero){return cls+':'+((hero&&hero.preset)||0)}
 function htlOf(cls,hero){if(typeof save==='undefined')return 0;const key=htlKey(cls,hero);if(key===save.stashOwner)return save.htl||0;const S=save.slots&&save.slots[key];return (S&&S.htl)||0}
 function htlMul(L){return 1+.005*L+.15*Math.floor(L/100)}
-function htlCost(L){const n=L+1,o={gold:Math.round(20000*Math.pow(n,1.35)/100)*100,mats:{soul:1+Math.floor(L/40),crystal:3+Math.floor(L/20)}};if(n%100===0)o.mats.crown=3*n/100;return o}
+function htlCost(L){const n=L+1,o={gold:Math.round(3000*Math.pow(n,1.35)/100)*100,mats:{soul:1+Math.floor(L/40),crystal:3+Math.floor(L/20)}};if(n%100===0)o.mats.crown=3*n/100;return o}
 function htlCan(c){if(save.gold<c.gold)return false;for(const m in c.mats)if((save.mats[m]||0)<c.mats[m])return false;return true}
 function htlPay(c){save.gold-=c.gold;for(const m in c.mats)save.mats[m]-=c.mats[m]}
 function htlStats(s,cls,hero){if(!hero||hero.level<100)return;const L=htlOf(cls,hero);if(!L)return;const m=htlMul(L);for(const k of ['hp','atk','ap'])if(s[k])s[k]*=m;for(const k of ['def','mr'])if(s[k])s[k]*=1+(m-1)*.3;if(s.mp)s.mp*=1+(m-1)*.4;s.crit=(s.crit||0)+.0001*L}
@@ -6345,9 +6353,9 @@ function ascDraw(c,x,y,sc,A,t,layer,lite){c.save();c.globalCompositeOperation='l
       if(A.sh==='orb'){c.beginPath();c.arc(ox,oy,2.6*sc,0,TAU);c.fill()}else if(A.sh==='blade'){c.save();c.translate(ox,oy);c.rotate(a+Math.PI/2);c.beginPath();c.moveTo(0,-6*sc);c.lineTo(1.6*sc,0);c.lineTo(0,6*sc);c.lineTo(-1.6*sc,0);c.closePath();c.fill();c.restore()}
       else if(A.sh==='star'){c.lineWidth=1.4*sc;c.beginPath();c.moveTo(ox-4*sc,oy);c.lineTo(ox+4*sc,oy);c.moveTo(ox,oy-4*sc);c.lineTo(ox,oy+4*sc);c.stroke()}else{c.save();c.translate(ox,oy);c.rotate(a);c.beginPath();c.ellipse(0,0,4.5*sc,1.6*sc,0,0,TAU);c.fill();c.restore()}}}
   }c.restore()}
-function ascWorld(c,p,t,layer,HS){if(!ascOn())return;const lite=(G.PS||1)>=3||OPT.fx==='low';ascDraw(c,p.x,p.y,(HS||1)*1.05,G._ascA,t,layer,lite);
+function ascWorld(c,p,t,layer,HS){hyWorld(c,p,t,layer,HS);if(!ascOn())return;const lite=(G.PS||1)>=3||OPT.fx==='low';ascDraw(c,p.x,p.y,(HS||1)*1.05,G._ascA,t,layer,lite);
   if(layer===1&&!lite&&Math.random()<.3){const A=G._ascA;G.parts.push({x:p.x+rand(-14,14),y:p.y+rand(-10,8),vx:rand(-15,15),vy:rand(-70,-35),t:0,dur:.6,color:Math.random()<.5?A.c1:A.c2,size:rand(1.6,3)})}}
-function ascPrev(c,t,layer){if(typeof save==='undefined'||(save.htl||0)<ASC_LV)return;const h=save.heroes[save.selected];if(!h||h.level<100)return;ascDraw(c,0,0,1,ascInfo(save.selected,h.preset||0),t,layer,false)}
+function ascPrev(c,t,layer){hyPrev(c,t,layer);if(typeof save==='undefined'||(save.htl||0)<ASC_LV)return;const h=save.heroes[save.selected];if(!h||h.level<100)return;ascDraw(c,0,0,1,ascInfo(save.selected,h.preset||0),t,layer,false)}
 {const _hp=htlPanel;htlPanel=function(cls,h,C){const pi=h.preset||0,A=ascInfo(cls,pi),L=htlOf(cls,h),ok=L>=ASC_LV;
   return `<div class="p3 ascp" style="--a1:${A.c1};--a2:${A.c2}"><div class="hd"><b style="color:${A.c1}">해탈 ${ASC_LV} · 강림</b><span>${ok?'강림했어요':`해탈 ${ASC_LV}단계에서 열려요 · 지금 ${L}단계`}</span></div><p class="ascn" style="color:${A.c2}">「${ascFull(A)}」</p><ul class="help"><li>이 영웅-프리셋만의 전용 외형 (장식 · 오라 · 색)</li><li><b>모든 피해 ×${ASC_DM}</b> · 적중마다 주변 적 5명에게 파동 (피해의 50%)</li><li>12번째 적중마다 <b>천붕</b> · 주변 150 안의 적에게 공격력·주문력의 600% 폭발</li></ul></div>`+_hp(cls,h,C)}}
 function ascGuide(){if(typeof save==='undefined'||(save.htl||0)<ASC_LV||!save.stashOwner)return;const seen=lsGet('dungeon-slayer-guide',{}),key='asc:'+save.stashOwner;if(seen[key])return;seen[key]=1;lsSet('dungeon-slayer-guide',seen);
@@ -6368,6 +6376,54 @@ function zjAct(act,k,h,cls){if(act!=='craftzj')return false;const i=+k,src=zjSou
 // ---------- 3. 지존 장비 (펫) ----------
 PG2.zj={n:'지존',m:4.4,c:ZJ_COLOR};PG2_NAME.pcollar.zj='지존의 목걸이';PG2_NAME.pbell.zj='태초의 방울';PG2_NAME.pcharm.zj='지존 부적';PG2_RECIPE.zj={gold:500000,mats:{crown:16,crystal:50,feather:40,soul:20}};
 PATCH['5.1.0']=['해탈 100단계: 66개 영웅-프리셋마다 전용 외형으로 강림 · 모든 피해 ×2 · 적중 파동 · 12번째 적중마다 천붕 대폭발','지존 장비: 초월보다 효과 2배인 무지개빛 최상위 장비 (대장간 → 제작, 초월 장비를 재료로)','지존 세트: 지존 6부위를 모두 끼면 피해 +36% · 체력 +24%','펫 지존 장비: 목걸이 · 방울 · 부적에 지존 등급 추가','던전에서 떨어지는 골드 1.5배'];
+
+// ================= v5.2: 흉악 장비 · 펫 흉악 장비 · 펫 2차 진화 · 해탈 비용 인하 =================
+// ---------- 1. 흉악 장비 (영웅) ----------
+const HY_RECIPE={gold:1500000,mats:{crown:40,soul:60,crystal:120,feather:80}};
+function hyStats(cls,i){const st=zjStats(cls,i),o={};for(const k in st)o[k]=Math.round(st[k]*2*1000)/1000;return o}
+function makeHy(cls,i){const[slot]=UNIQ_SLOTS[i];const o={id:save.nextId++,slot,cls,uniq:i,tr:true,zj:true,hy:true,tier:4,rar:2,name:uniqName(cls,i,'hy'),stats:hyStats(cls,i)};if(slot==='weapon')o.w=9;return o}
+function hySource(cls,h,i){const st=save.stash.find(x=>x.cls===cls&&x.uniq===i&&x.zj&&!x.hy);if(st)return st;const sl=UNIQ_SLOTS[i][0],e=h.equip[sl];return e&&e.cls===cls&&e.uniq===i&&e.zj&&!e.hy?e:null}
+function hyCraft(cls,h){return `<h3 class="hyh">흉악 장비</h3><p class="note" style="margin:0 0 6px">지존마저 삼켜 버린 검은 장비예요. 효과가 지존의 2배(초월의 4배)이고, 끼는 부위가 많을수록 영웅 몸에서 검은 아우라가 더 거세게 뿜어져 나와요. 같은 부위의 지존 장비를 재료로 만들어요(강화 수치는 이어져요). 비용: 지존 장비 + ${rwText(HY_RECIPE)}</p><div class="forge">${UNIQ_ORDER.map(i=>{const st=hyStats(cls,i),src=hySource(cls,h,i),ok=src&&canAfford(HY_RECIPE);return `<button class="hyb" data-act="crafthy" data-k="${i}" ${ok?'':'disabled'}><b class="hyt">${uniqName(cls,i,'hy')}</b><small>${src?'재료 보유':'재료: '+uniqName(cls,i,'zj')}<br>${statLine(st).replace(/ · /g,'<br>')}</small></button>`}).join('')}</div>`}
+function hyAct(act,k,h,cls){if(act!=='crafthy')return false;const i=+k,src=hySource(cls,h,i);if(!src){toastMenu('재료가 될 지존 장비가 없어요');return true}if(!canAfford(HY_RECIPE)){toastMenu('재료가 모자라요');return true}
+  save.gold-=HY_RECIPE.gold;for(const m in HY_RECIPE.mats)save.mats[m]-=HY_RECIPE.mats[m];const it=makeHy(cls,i);it.up=src.up||0;it.spent=src.spent||0;it.el=src.el;it.gem=src.gem||null;it.lock=src.lock;
+  const si=save.stash.indexOf(src);if(si>=0){save.stash.splice(si,1);save.stash.push(it)}else h.equip[src.slot]=it;sfx('levelup');try{cdxItem(it)}catch(_){}toastMenu(`흉악 각성! ${itemName(it)}`);return true}
+// 검은 아우라
+function hyN(h){if(!h||!h.equip)return 0;let n=0;for(const sl in h.equip){const it=h.equip[sl];if(it&&it.hy)n++}return n}
+function hyDraw(c,x,y,sc,n,t,layer,lite){if(!n)return;c.save();
+  if(layer===0){const m=lite?4+n:6+n*2,R=(13+n*1.6)*sc;
+    for(let i=0;i<m;i++){const a=t*.7+i*TAU/m,ph=((t*.9+i*.37)%1),rise=ph*(22+n*3)*sc,r0=(6+n*.7)*sc*(1-ph*.55),bx=x+Math.cos(a)*R*(1-ph*.35),by=y+4*sc+Math.sin(a)*R*.42-rise;
+      c.globalAlpha=.62*(1-ph);c.fillStyle='#060006';c.beginPath();c.arc(bx,by,r0,0,TAU);c.fill()}
+    c.globalCompositeOperation='lighter';c.globalAlpha=.35+.12*Math.sin(t*5);c.strokeStyle='#c0103a';c.lineWidth=2*sc;c.beginPath();c.ellipse(x,y+7*sc,(18+n*2)*sc,(6.5+n*.7)*sc,0,0,TAU);c.stroke();
+    c.globalAlpha=.25;c.strokeStyle='#7a00ff';c.lineWidth=1.2*sc;c.beginPath();c.ellipse(x,y+7*sc,(22+n*2.4)*sc,(8+n*.8)*sc,0,0,TAU);c.stroke()}
+  else{const k=lite?3:3+Math.ceil(n/2);c.lineCap='round';for(let i=0;i<k;i++){const a=i/k*TAU+t*1.3,px=x+Math.cos(a)*(11+n)*sc,py=y-2*sc+Math.sin(a)*(5+n*.4)*sc,h=(12+n*2+5*Math.sin(t*7+i*2))*sc;
+      c.globalAlpha=.8;c.fillStyle='#0a0008';c.beginPath();c.moveTo(px-3.5*sc,py);c.quadraticCurveTo(px+Math.sin(t*5+i)*3*sc,py-h,px+3.5*sc,py);c.fill();c.globalAlpha=.55;c.strokeStyle='#e01848';c.lineWidth=1*sc;c.stroke()}}
+  c.restore()}
+function hyWorld(c,p,t,layer,HS){if(!G||G._ally||G._rv)return;if(G._hyN===undefined)G._hyN=hyN(G.hero);if(!G._hyN)return;const lite=(G.PS||1)>=3||OPT.fx==='low';hyDraw(c,p.x,p.y,(HS||1)*1.05,G._hyN,t,layer,lite)}
+function hyPrev(c,t,layer){if(typeof save==='undefined')return;const h=save.heroes[save.selected];hyDraw(c,0,0,1,hyN(h),t,layer,false)}
+{const _a=act26;act26=function(act,k,h,cls){if(hyAct(act,k,h,cls))return true;if(act==='pevo2')return pEvo2Act(k);return _a(act,k,h,cls)}}
+
+// ---------- 2. 흉악 장비 (펫) ----------
+PG2.hy={n:'흉악',m:8.8,c:HY_COLOR};PG2_NAME.pcollar.hy='흉악의 목걸이';PG2_NAME.pbell.hy='멸망의 방울';PG2_NAME.pcharm.hy='흉악 부적';PG2_RECIPE.hy={gold:1500000,mats:{crown:32,crystal:100,feather:80,soul:40}};
+
+// ---------- 3. 펫 2차 진화 ----------
+PET_EVO.fox.push(['멸천구미 루비','#ff3ad0']);PET_EVO.bunny.push(['창월신녀 모찌','#7af0ff']);PET_EVO.turtle.push(['태고신수 현무','#5affa0']);
+const PEVO2={lv:100,r:{gold:2000000,mats:{soul:60,crown:30,crystal:120}},mul:1.6,ucd:.8};
+function pEvo2(k){if(typeof save==='undefined'||!save.heroes)return false;const P=petSave().list[k];return !!(P&&P.evo2)}
+{const _pe=petEvo;petEvo=function(k){return pEvo2(k)?3:_pe(k)}}
+{const _pm=petMul;petMul=function(k){return _pm(k)*(pEvo2(k)?PEVO2.mul:1)}}
+{const _pu=petUcd;petUcd=function(k){return _pu(k)*(pEvo2(k)?PEVO2.ucd:1)}}
+{const _pn=petName2;petName2=function(k){return pEvo2(k)?PET_EVO[k][2][0]:_pn(k)}}
+{const _pd=petEvoDraw;petEvoDraw=function(c,k,E,t,front){_pd(c,k,Math.min(E,3),t,front);if(E<3)return;const col=PET_EVO[k][2][1];c.save();c.globalCompositeOperation='lighter';
+  if(!front){c.globalAlpha=.75;c.strokeStyle=col;c.lineWidth=1.6;c.beginPath();c.ellipse(0,6,24,8,0,0,TAU);c.stroke();c.globalAlpha=.4;c.lineWidth=4;c.stroke();
+    for(let i=0;i<5;i++){const a=t*1.8+i*TAU/5;c.globalAlpha=.9;c.fillStyle=i%2?'#ffffff':col;c.beginPath();c.arc(Math.cos(a)*22,Math.sin(a)*7.5+2,1.8,0,TAU);c.fill()}}
+  else{c.globalAlpha=.95;c.fillStyle=col;const y0=-22;c.beginPath();c.moveTo(-6,y0+4);c.lineTo(-4,y0-3);c.lineTo(-1.5,y0+1);c.lineTo(1,y0-6);c.lineTo(3.5,y0+1);c.lineTo(6,y0-3);c.lineTo(8,y0+4);c.closePath();c.fill();c.fillStyle='#ffffff';c.beginPath();c.arc(1,y0-1,1.1,0,TAU);c.fill()}
+  c.restore()}}
+function pEvo2Box(k){const P=petSave().list[k];if(!P)return '';const E=PET_EVO[k][2],done=!!P.evo2,ok=!done&&P.lv>=PEVO2.lv&&canAfford(PEVO2.r);
+  return `<div class="pevo2${done?' on':''}" style="--pe:${E[1]}"><div><b style="color:${E[1]}">2차 진화 · ${E[0]}</b><small>${done?'진화 완료 · ':''}펫 공격력 ×${PEVO2.mul} · 궁극기·스킬 쿨타임 -20% · 몸집이 커지고 새 왕관과 고리가 생겨요${done?'':` · 조건: Lv ${PEVO2.lv} · ${rwText(PEVO2.r)}`}</small></div>${done?'':`<button class="btn gold" data-act="pevo2" data-k="${k}" ${ok?'':'disabled'}>${P.lv<PEVO2.lv?`Lv ${PEVO2.lv} 필요`:'2차 진화'}</button>`}</div>`}
+function pEvo2Act(k){const P=petSave().list[k];if(!P||P.evo2)return true;if(P.lv<PEVO2.lv){toastMenu(`Lv ${PEVO2.lv}에 2차 진화할 수 있어요`);return true}if(!canAfford(PEVO2.r)){toastMenu('재료가 모자라요');return true}
+  save.gold-=PEVO2.r.gold;for(const m in PEVO2.r.mats)save.mats[m]-=PEVO2.r.mats[m];P.evo2=1;sfx('levelup');try{sprClear&&sprClear()}catch(_){}toastMenu(`2차 진화! ${PET_EVO[k][2][0]}`);return true}
+{const _mp=MENU3.pet;MENU3.pet=function(cls,h,C){let html=_mp.call(this,cls,h,C);try{const S=petSave(),sel=PETS[S.sel]?S.sel:S.active;html=html.replace('<dl class="pdl">',pEvo2Box(sel)+'<dl class="pdl">')}catch(_){}return html}}
+PATCH['5.2.0']=['해탈 골드 비용 대폭 인하: 해탈 100까지 약 4억 3천만 → 약 6,500만 골드','흉악 장비: 지존을 넘어선 검은 장비 · 효과는 지존의 2배 · 끼는 부위만큼 검은 아우라가 뿜어져 나와요','흉악 세트: 6부위 모두 끼면 피해 +72% · 체력 +48%','펫 흉악 장비: 목걸이 · 방울 · 부적','펫 2차 진화 (Lv 100): 멸천구미 루비 · 창월신녀 모찌 · 태고신수 현무 · 펫 공격력 ×1.6 · 쿨타임 -20%'];
 
 shadowGuard();renderAudioBtns();music('menu');
 $('#verTag').textContent='v'+VERSION;$('#verPause').textContent='v'+VERSION;
