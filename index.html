@@ -882,7 +882,7 @@ body.layedit #joyZone{pointer-events:none}
 
 <script>
 'use strict';
-const VERSION='5.3.0';
+const VERSION='5.4.0';
 // ================= UTIL =================
 const $=s=>document.querySelector(s);
 const rand=(a,b)=>a+Math.random()*(b-a);
@@ -3612,7 +3612,7 @@ const NAVN=Object.fromEntries(NAV3.map(x=>[x[0],x[1]]));
 const PRE_N=['기본','프리셋 1','프리셋 2'];
 function seg3(act,cur,items){return `<div class="seg3" role="tablist">${items.map(([k,n,d])=>`<button data-act="${act}" data-k="${k}" aria-pressed="${k===cur}">${n}${d?'<i class="d"></i>':''}</button>`).join('')}</div>`}
 function curDg(){return DUNGEONS[save.dg]?save.dg:'slime'}
-function dgTag(k){const D=DUNGEONS[k],i=DG_ORDER.indexOf(k);return D.xd?'심연 너머':D.elemd?'원소의 심연':D.rush?'도전':D.duel?'결투':D.raid?'레이드':D.endless?'엔드리스':D.trial?'시련':D.endmaze?'최종 던전':D.exp?'확장 '+D.exp:'던전 '+(i+1)}
+function dgTag(k){const D=DUNGEONS[k],i=DG_ORDER.indexOf(k);return D.x2?'고대의 경계':D.xd?'심연 너머':D.elemd?'원소의 심연':D.rush?'도전':D.duel?'결투':D.raid?'레이드':D.endless?'엔드리스':D.trial?'시련':D.endmaze?'최종 던전':D.exp?'확장 '+D.exp:'던전 '+(i+1)}
 function dgLine(k){const D=DUNGEONS[k],B=save.bests||{},cb=save.clearsBy||{};
   if(D.rush)return `최고 ${save.rushBest||0}단계`;if(D.duel)return `${duelSt().rank+1}등급`;if(D.endless)return save.endlessBest?`최고 ${save.endlessBest}웨이브`:'기록 없음';
   if(D.raid){const RS=raidState();return `${raidName(RS.i)}`}
@@ -3643,7 +3643,7 @@ const MENU3={
       det=`<span class="tag3">${tag?tag.textContent:dgTag(cur)}</span><h3>${DUNGEONS[cur].name}</h3>${meta?`<div class="meta">${meta.innerHTML}</div>`:''}${p?`<p>${p.innerHTML}</p>`:''}${dl?`<dl>${dl.innerHTML}</dl>`:''}`}
     else det=`<h3>${DUNGEONS[cur].name}</h3><p>${DUNGEONS[cur].desc||''}</p>`;
     const D=DUNGEONS[cur],low=D.floors>1&&!D.rush&&!D.duel&&!D.endless&&effLv(h)<D.rec;
-    return `<div class="dg3"><div class="dl3" data-sk="dgl"><h5>던전</h5>${DG_ORDER.filter(k=>!DUNGEONS[k].exp).map(row).join('')}<h5>확장 던전</h5>${DG_ORDER.filter(k=>DUNGEONS[k].exp).map(row).join('')}<h5 style="color:#c9a8ff">원소의 심연 · 초고난도</h5>${ELD_ORDER.map(k=>row('el_'+k)).join('')}<h5 style="color:#ff6a6a">심연 너머 · 극악</h5>${XDG_ORDER.map(k=>row('xd_'+k)).join('')}<h5>도전 · 특수</h5>${special.map(row).join('')}</div>
+    return `<div class="dg3"><div class="dl3" data-sk="dgl"><h5>던전</h5>${DG_ORDER.filter(k=>!DUNGEONS[k].exp).map(row).join('')}<h5>확장 던전</h5>${DG_ORDER.filter(k=>DUNGEONS[k].exp).map(row).join('')}<h5 style="color:#c9a8ff">원소의 심연 · 초고난도</h5>${ELD_ORDER.map(k=>row('el_'+k)).join('')}<h5 style="color:#ffb06a">고대의 경계 · 초고난도</h5>${X2_ORDER.map(k=>row('xd_'+k)).join('')}<h5 style="color:#ff6a6a">심연 너머 · 극악</h5>${XDG_ORDER.map(k=>row('xd_'+k)).join('')}<h5>도전 · 특수</h5>${special.map(row).join('')}</div>
       <div data-sk="dgd"><div class="p3 dd3" style="border-left:3px solid rgba(${DG_TINT[cur]||'220,174,82'},.85)">${det}${medalOk(cur)?medalBox(cur):''}${low?`<span class="tag3 warn">권장 레벨보다 ${D.rec-effLv(h)} 낮아요 · 그래도 들어갈 수 있어요</span>`:''}${cur==='duel'?duelPick26(cls):''}<button class="go big" data-go="1"><b>${D.name} 입장</b></button></div></div></div>`},
   hero(cls,h,C){const sub=save.hsub||'pick',s=calcStats(cls,h);
     const bar=seg3('hsub',sub,[['pick','영웅 선택'],['stat','능력치'],['grow','성장 기록'],['htl','해탈']]);
@@ -4214,7 +4214,7 @@ function elTick(dt){const X=G.elx;if(!X||X.dt<=0||G.over||G.dying)return;X.dt-=d
   if(p.hp<=0){p.hp=0;burst(p.x,p.y,'#d8574b',24,160,4);const g=G;setTimeout(()=>{if(G===g&&!g.over)endRun(false)},900);G.dying=true}}
 function elDeath(e){if(XDG[G.dg.elemd])return xDeath(e);if(G.dg.elemd!=='fire'||e.boss)return;const B=G.elb||(G.elb=[]);if(B.length>=40)return;B.push({x:e.x,y:e.y,t:1,r:78,atk:e.atk})}
 function elBombs(dt){if(XDG[G.dg.elemd])xTick(dt);const B=G.elb;if(!B||!B.length)return;for(let i=B.length-1;i>=0;i--){const b=B[i];b.t-=dt;if(b.t<=0){B.splice(i,1);const bc=b.col||'#ff7a3d';G.fx.push({k:'ring',x:b.x,y:b.y,r0:10,r1:b.r,t:0,dur:.3,color:bc,w:6});burst(b.x,b.y,bc,10,180,3);if(b.strike)G.shake=Math.min(8,G.shake+2);if(Math.hypot(G.p.x-b.x,G.p.y-b.y)<b.r+G.p.r)hurtP(b.atk*(b.m||1.3),b.ty||'magic',b.el===undefined?'fire':b.el)}}}
-function elDrawW(c,t){const B=G.elb;if(B&&B.length){c.save();for(const b of B){const k=1-b.t/(b.strike?1.4:b.col==='#c9a06a'?.9:1);c.globalAlpha=.18+.22*k;c.fillStyle=b.col||'#ff5a2a';c.beginPath();c.arc(b.x,b.y,b.r,0,TAU);c.fill();c.globalAlpha=.85;c.strokeStyle=b.hi||'#ffb070';c.lineWidth=2;c.beginPath();c.arc(b.x,b.y,b.r*k,0,TAU);c.stroke()}c.restore()}}
+function elDrawW(c,t){const B=G.elb;if(B&&B.length){c.save();for(const b of B){const k=Math.max(0,1-b.t/(b.t0||(b.strike?1.4:b.col==='#c9a06a'?.9:1)));c.globalAlpha=.18+.22*k;c.fillStyle=b.col||'#ff5a2a';c.beginPath();c.arc(b.x,b.y,b.r,0,TAU);c.fill();c.globalAlpha=.85;c.strokeStyle=b.hi||'#ffb070';c.lineWidth=2;c.beginPath();c.arc(b.x,b.y,b.r*k,0,TAU);c.stroke()}c.restore()}}
 function elAura(c,e,t){const col=elCol(G.dg.elemd),R=e.r*2.6;c.save();c.globalAlpha=.45;c.drawImage(glowSpr(col),e.x-R,e.y-R*.8,R*2,R*1.6);
   if(e.esh>0){c.globalAlpha=.35+.5*(e.esh/e.esm);c.strokeStyle='#fff2a8';c.lineWidth=2;c.beginPath();c.arc(e.x,e.y,e.r+6+Math.sin(t*4)*1.5,0,TAU);c.stroke()}c.restore()}
 function elScreen(c,px,py,S){const k=G.dg.elemd;c.save();c.globalAlpha=.07;c.fillStyle=elCol(k);c.fillRect(0,0,VW,VH);c.globalAlpha=1;if(XDG[k])xScreen(c,px,py,S,k);
@@ -6425,6 +6425,171 @@ function pEvo2Act(k){const P=petSave().list[k];if(!P||P.evo2)return true;if(P.lv
   save.gold-=PEVO2.r.gold;for(const m in PEVO2.r.mats)save.mats[m]-=PEVO2.r.mats[m];P.evo2=1;sfx('levelup');try{sprClear&&sprClear()}catch(_){}toastMenu(`2차 진화! ${PET_EVO[k][2][0]}`);return true}
 {const _mp=MENU3.pet;MENU3.pet=function(cls,h,C){let html=_mp.call(this,cls,h,C);try{const S=petSave(),sel=PETS[S.sel]?S.sel:S.active;html=html.replace('<dl class="pdl">',pEvo2Box(sel)+'<dl class="pdl">')}catch(_){}return html}}
 PATCH['5.3.0']=['탱킹 강화: 어려운 던전일수록 방어력·마법 저항이 더 크게 작용해요 (150+ 던전에서 약 2.5배)','피흡 회복 한도: 초당 최대 체력의 60% → 10%','66개 영웅-프리셋 황금 밸런스 재조정'];PATCH['5.2.0']=['해탈 골드 비용 대폭 인하: 해탈 100까지 약 4억 3천만 → 약 6,500만 골드','흉악 장비: 지존을 넘어선 검은 장비 · 효과는 지존의 2배 · 끼는 부위만큼 검은 아우라가 뿜어져 나와요','흉악 세트: 6부위 모두 끼면 피해 +72% · 체력 +48%','펫 흉악 장비: 목걸이 · 방울 · 부적','펫 2차 진화 (Lv 100): 멸천구미 루비 · 창월신녀 모찌 · 태고신수 현무 · 펫 공격력 ×1.6 · 쿨타임 -20%'];
+
+// ================= v5.4: 130+ 던전 3종 (15층) · 층마다 다른 층 보스 =================
+const X2_ORDER=['dragon','alien','zodiac'];
+Object.assign(XDG,{
+ dragon:{n:'고룡들의 협곡',rec:130,tiles:'ogre',music:'hell',boss:'drBaham',bn:'태고의 용황 바하무트',room:'용황의 둥지',col:'#ff8a3a',tag:'고룡 · 화염',hp:520,atk:440,mat:'sulfur',x2:1,
+  pool:['drYoung','drYoung','drWyvern','drKnight','drPriest','drSala','drBone'],
+  mech:'모든 용족은 비늘이 단단해요(방어 +30%) · 와이번은 일직선 화염 숨결을 뿜어요 · 쓰러진 용족은 잠시 뒤 용암으로 터져요 · 층마다 다른 고룡이 지켜요'},
+ alien:{n:'외계인 비행체',rec:130,tiles:'cosmos',music:'cosmos',boss:'alOver',bn:'모선 오버마인드',room:'모선 중추 격실',col:'#5affc8',tag:'외계 · 기계',hp:520,atk:440,mat:'stardust',x2:1,
+  pool:['alGrey','alGrey','alDrone','alHound','alBrain','alTrooper','alLarva'],
+  mech:'외계인은 에너지 방어막을 둘러요(체력 25%, 4초 동안 안 맞으면 회복) · 7초마다 납치 광선이 내리꽂혀요(초록 원) · 쓰러진 외계 기계는 지뢰를 남겨요'},
+ zodiac:{n:'십이지신 명계천',rec:130,tiles:'grave',music:'graveyard',boss:'zKing',bn:'명계천주 염라대왕',room:'명부의 대전',col:'#c08aff',tag:'명계 · 십이지',hp:520,atk:440,mat:'soul',x2:1,
+  pool:['zGhost','zGhost','zReaper','zWisp','zBoneW','zHound','zKarma'],
+  mech:'1~12층은 십이지신이 차례로 길을 막아요 · 맞을 때마다 업보가 쌓여 5번째에 저승 낙인(최대 체력 7%)이 찍혀요 · 쓰러진 망자는 20% 확률로 다시 일어나요'}});
+// 아트: a=그림 종류, c=[주색, 보조색, 눈/강조색], o=추가 옵션
+const X2T={};
+function x2Def(o){for(const k in o){o[k].xf=true;X2T[k]=o[k]}Object.assign(ETYPES,o)}
+x2Def({
+ // 고룡 일반
+ drYoung:{name:'새끼 고룡',el:'fire',hp:300,atk:32,def:24,mr:18,spd:95,r:15,ai:'walk',xp:34,gold:[18,24],a:'dragon',c:['#c8442a','#f0a060','#ffe14a'],o:{h:1}},
+ drWyvern:{name:'와이번',el:'fire',hp:260,atk:34,def:16,mr:18,spd:80,r:16,ai:'shoot',xp:36,gold:[18,24],a:'dragon',c:['#7a5a3a','#c09a6a','#ff6a3a'],o:{h:0,br:1}},
+ drKnight:{name:'용기병',el:null,hp:420,atk:36,def:40,mr:20,spd:82,r:15,ai:'charge',walk:true,xp:40,gold:[20,28],a:'knight',c:['#8a2a1a','#d8b060','#ffb04a']},
+ drPriest:{name:'용 사제',el:'fire',hp:240,atk:38,def:14,mr:36,spd:55,r:14,ai:'shoot',xp:36,gold:[18,24],a:'robe',c:['#6a1a1a','#e0a040','#ff8a3a'],o:{hd:'dragon'}},
+ drSala:{name:'마그마 도롱뇽',el:'fire',hp:360,atk:34,def:30,mr:20,spd:70,r:16,ai:'walk',xp:36,gold:[18,24],a:'wyrm',c:['#2a1a1a','#ff5a1a','#ffe14a'],o:{n:4}},
+ drBone:{name:'해골 비룡',el:'dark',hp:340,atk:36,def:26,mr:26,spd:105,r:16,ai:'walk',xp:38,gold:[18,24],a:'dragon',c:['#d8d0c0','#6a6a7a','#7ae0ff'],o:{h:2,bone:1}},
+ // 외계 일반
+ alGrey:{name:'그레이 정찰병',el:null,hp:200,atk:32,def:14,mr:26,spd:80,r:13,ai:'shoot',xp:28,gold:[14,20],a:'grey',c:['#9ab0a8','#1a1a22','#5affc8']},
+ alDrone:{name:'경비 원반',el:'elec',hp:160,atk:30,def:20,mr:20,spd:120,r:14,ai:'shoot',xp:26,gold:[14,20],a:'saucer',c:['#b8c4d0','#5affc8','#ff4a6a']},
+ alHound:{name:'제노 사냥개',el:'poison',hp:260,atk:36,def:18,mr:14,spd:150,r:14,ai:'walk',xp:30,gold:[16,22],a:'xeno',c:['#2a3a3a','#7aff6a','#ff4a8a']},
+ alBrain:{name:'뇌수 덩어리',el:'dark',hp:300,atk:38,def:12,mr:40,spd:45,r:16,ai:'shoot',xp:36,gold:[18,24],a:'brain',c:['#e88aa8','#ffd0e0','#5affc8']},
+ alTrooper:{name:'안드로이드 돌격병',el:null,hp:440,atk:36,def:44,mr:20,spd:85,r:15,ai:'charge',walk:true,xp:40,gold:[20,28],a:'mech',c:['#c8ccd4','#3a4048','#5affc8']},
+ alLarva:{name:'기생 유충',el:'poison',hp:80,atk:22,def:4,mr:4,spd:140,r:10,ai:'walk',xp:8,gold:[4,6],a:'blob',c:['#8aff5a','#3a8a2a','#ff4a8a']},
+ // 명계 일반
+ zGhost:{name:'명계 망령',el:'dark',hp:220,atk:32,def:10,mr:30,spd:100,r:14,ai:'walk',xp:30,gold:[14,20],a:'ghost',c:['#c8d0ff','#6a5aa8','#3a2a6a']},
+ zReaper:{name:'저승사자',el:'dark',hp:380,atk:40,def:24,mr:30,spd:95,r:15,ai:'charge',walk:true,xp:42,gold:[20,28],a:'reaper',c:['#1a1a22','#f0e8dc','#c08aff']},
+ zWisp:{name:'도깨비불',el:'fire',hp:160,atk:34,def:8,mr:30,spd:70,r:12,ai:'shoot',xp:26,gold:[12,18],a:'wisp',c:['#7ab0ff','#e0f0ff','#4a6aff']},
+ zBoneW:{name:'해골 무사',el:null,hp:360,atk:36,def:34,mr:16,spd:80,r:15,ai:'walk',xp:36,gold:[18,24],a:'knight',c:['#d8d0c0','#5a3a7a','#c08aff'],o:{skull:1}},
+ zHound:{name:'지옥견',el:'fire',hp:240,atk:36,def:16,mr:14,spd:155,r:14,ai:'walk',xp:30,gold:[16,22],a:'xeno',c:['#2a1a1a','#ff5a2a','#ffe14a'],o:{dog:1}},
+ zKarma:{name:'업보 덩어리',el:'dark',hp:640,atk:40,def:30,mr:30,spd:40,r:20,ai:'walk',xp:56,gold:[26,34],a:'blob',c:['#4a2a6a','#c08aff','#ff4a6a'],o:{faces:1}}});
+// 층 보스: gm=특수 기믹 · 이름 그대로 표시
+const X2B={
+ dragon:[['적룡 이그니르','fire','dragon',['#d8301a','#ffb060','#ffe14a'],['breath','meteor'],{h:2}],['청옥룡 사파이라','water','dragon',['#2a6ad8','#8ad0ff','#ffffff'],['nova','pull'],{h:1}],['뇌익룡 볼테온','elec','dragon',['#e0c020','#fff8a0','#4a8aff'],['charge','spiral'],{h:3}],['빙결룡 글라시아','ice','dragon',['#bfe8ff','#ffffff','#4ab0ff'],['frost','nova'],{h:2}],['독아룡 베노스','poison','wyrm',['#3a8a2a','#b8ff5a','#ff4a8a'],['poison','summon'],{n:6}],
+  ['암흑룡 니드호그','dark','dragon',['#2a1a3a','#8a4aff','#ff2a5a'],['blink','meteor'],{h:3}],['백광룡 루미엘','light','dragon',['#fff4d0','#ffd34d','#ffffff'],['shield','nova'],{h:1,halo:1}],['대지룡 테라곤','earth','dragon',['#7a5a32','#c8a060','#7aff6a'],['quake','charge'],{h:2,spike:1}],['폭풍룡 템페스타','wind','dragon',['#3ac8b0','#c8fff0','#ffffff'],['spiral','pull'],{h:1}],['해룡 레비아탄','water','wyrm',['#1a3a8a','#4ac8ff','#ffe14a'],['breath','summon'],{n:7}],
+  ['화산룡 볼카누스','fire','dragon',['#2a1a1a','#ff4a1a','#ffb04a'],['meteor','quake'],{h:3,spike:1}],['수정룡 크리스탈리아','light','dragon',['#ff8ad8','#ffe0f8','#8affff'],['clone','nova'],{h:2}],['시간룡 크로노스','dark','dragon',['#6a3ac8','#d0b0ff','#ffe14a'],['blink','spiral','heal'],{h:2,halo:1}],['쌍두룡 오로보스','fire','dragon',['#c82a2a','#2a6ad8','#ffe14a'],['breath','charge','summon'],{h:2,twin:1}]],
+ alien:[['정찰선 함장 그렐','',  'grey',['#8aa8a0','#101018','#5affc8'],['nova','summon'],{}],['방어 포탑 코어','elec','mech',['#7a8494','#2a3038','#ff4a4a'],['spiral','meteor'],{turret:1}],['제노 여왕','poison','xeno',['#2a3a2a','#7aff6a','#ff4a8a'],['charge','summon'],{queen:1}],['거대 뇌수 오블리비온','dark','brain',['#d86a98','#ffc0d8','#5affc8'],['pull','nova'],{}],['중력 기술자 그라브','dark','grey',['#6a6aa8','#101018','#c08aff'],['pull','quake'],{}],
+  ['강습 메크 타이탄','','mech',['#5a6470','#20262c','#ffb04a'],['charge','meteor'],{}],['복제체 프로토타입','','mech',['#e8ecf0','#4a5058','#5affc8'],['clone','blink'],{}],['플라스마 원반','elec','saucer',['#c8d0e0','#ff6aff','#5affc8'],['spiral','breath'],{}],['생체 실험체 X-9','poison','blob',['#8aff5a','#3a6a2a','#ff4a4a'],['poison','heal'],{faces:1}],['차원 도약병','dark','grey',['#4a3a6a','#101018','#ff6aff'],['blink','nova'],{}],
+  ['납치 광선 비행정','','saucer',['#9aa4b0','#8affc8','#ffe14a'],['pull','meteor'],{beam:1}],['나노 군체','','blob',['#c8ccd4','#6a7078','#5affc8'],['clone','summon'],{}],['정신 지배자 사이오','dark','brain',['#a86ad8','#e8c0ff','#ffe14a'],['frost','spiral'],{}],['함교 수호 기갑','','mech',['#d8b040','#5a4a20','#5affc8'],['shield','charge','nova'],{}]],
+ zodiac:[['자(子) · 쥐의 신장 구무','dark','zgod',['#6a6a78','#d8c8a8','#ff4a4a'],['summon','blink'],{an:'rat'}],['축(丑) · 소의 신장 우강','earth','zgod',['#5a3a2a','#c8a070','#ffe14a'],['charge','quake'],{an:'ox'}],['인(寅) · 범의 신장 호열','fire','zgod',['#e08a2a','#2a1a1a','#ffe14a'],['charge','nova'],{an:'tiger'}],['묘(卯) · 토끼의 신장 월토','light','zgod',['#f0eef8','#ffc0d8','#ff4a6a'],['blink','spiral'],{an:'rabbit'}],
+  ['진(辰) · 용의 신장 청진','water','zgod',['#2a8a6a','#8affd0','#ffe14a'],['breath','meteor'],{an:'dragon'}],['사(巳) · 뱀의 신장 사혼','poison','zgod',['#4a7a2a','#c8ff8a','#ff4a4a'],['poison','pull'],{an:'snake'}],['오(午) · 말의 신장 천마','wind','zgod',['#8a4a2a','#2a1a1a','#ffffff'],['charge','spiral'],{an:'horse'}],['미(未) · 양의 신장 운미','light','zgod',['#f0ead8','#c8a070','#7ab0ff'],['heal','frost'],{an:'sheep'}],
+  ['신(申) · 원숭이의 신장 대성','fire','zgod',['#a86a3a','#f0c8a0','#ffe14a'],['clone','blink'],{an:'monkey'}],['유(酉) · 닭의 신장 금계','fire','zgod',['#f0e8d8','#ff3a2a','#ffb04a'],['nova','meteor'],{an:'rooster'}],['술(戌) · 개의 신장 흑술','dark','zgod',['#3a2a22','#a87a5a','#ff4a4a'],['summon','charge'],{an:'dog'}],['해(亥) · 돼지의 신장 저팔','earth','zgod',['#e8a8a8','#a86a6a','#2a1a1a'],['quake','shield'],{an:'pig'}],
+  ['명부 판관 최판관','dark','zgod',['#2a2a3a','#e8dcc8','#c08aff'],['spiral','frost','meteor'],{an:'judge'}],['명계 수문장 우두마면','earth','zgod',['#4a2a2a','#c8a070','#ff4a4a'],['charge','quake','summon'],{an:'oxhorse'}]]};
+const X2FG={};
+for(const k of X2_ORDER){X2FG[k]=X2B[k].map((b,i)=>{const id=`x2b_${k}_${i}`,[n,el,a,c,gm,o]=b,bulk=a==='wyrm'||a==='xeno'||a==='blob'||a==='brain';
+  ETYPES[id]={name:n,el:el||null,hp:560+i*18,atk:36+i*.6,def:26,mr:26,spd:a==='saucer'?95:72,r:bulk?18:17,ai:'walk',xp:60,gold:[30,40],xf:true,a,c,o,gm,fb:1};X2T[id]=ETYPES[id];return id})}
+x2Def({
+ drBaham:{name:'태고의 용황 바하무트',el:'fire',hp:5000,atk:46,def:40,mr:36,spd:80,r:46,ai:'boss4',xp:5200,gold:[2800,3500],boss:true,a:'dragon',c:['#1a1a2a','#ffd34d','#ff4a1a'],o:{h:3,spike:1,halo:1},gm:['breath','meteor','summon']},
+ alOver:{name:'모선 오버마인드',el:'dark',hp:5000,atk:46,def:36,mr:40,spd:70,r:46,ai:'boss5',xp:5200,gold:[2800,3500],boss:true,a:'brain',c:['#b86ae8','#f0d0ff','#5affc8'],o:{crown:1},gm:['pull','spiral','summon']},
+ zKing:{name:'명계천주 염라대왕',el:'dark',hp:5000,atk:46,def:40,mr:40,spd:78,r:44,ai:'boss3',xp:5200,gold:[2800,3500],boss:true,a:'zgod',c:['#6a1a2a','#ffd34d','#ff4a4a'],o:{an:'king'},gm:['meteor','spiral','blink']}});
+Object.assign(PSTYLE,{drWyvern:['orb','#ff7a3a'],drPriest:['orb','#ffb04a'],alGrey:['shard','#5affc8'],alDrone:['orb','#ff4a6a'],alBrain:['orb','#ff8ad8'],zWisp:['orb','#7ab0ff']});
+for(const k of X2_ORDER){const X=XDG[k];ELD[k]=X;DUNGEONS['xd_'+k]={name:X.n,rec:X.rec,floors:15,boss:X.boss,bossName:X.bn,bossRoom:X.room,music:X.music,hpMul:X.hp,atkMul:X.atk,xpMul:90,goldMul:80,crystal:.45,tierUp:9,tiles:X.tiles,elemd:k,xd:true,x2:true,desc:X.tag,fg:X2FG[k]};DMAT['xd_'+k]=X.mat;DG_TINT['xd_'+k]=hexRgb(X.col)}
+
+// ---------- 층 보스 지정 ----------
+{const _gt=guardType;guardType=function(){if(G.dg.fg)return G.dg.fg[Math.min(G.dg.fg.length,G.floor)-1];return _gt()}}
+{const _sg=spawnGuard;spawnGuard=function(x,y){const e=_sg(x,y);if(G.dg.fg){const D=ETYPES[e.type];e.gname=D.name;e.gm=D.gm;e.gmT=2.5;e.gmI=0}return e}}
+
+// ---------- 기믹 엔진 ----------
+const X2GM_N={breath:'숨결',meteor:'낙성',nova:'방사',pull:'끌어당김',charge:'돌진',spiral:'나선탄',frost:'한기',poison:'독무',summon:'소환',blink:'순간이동',shield:'방어막',quake:'지진',clone:'분열',heal:'재생'};
+function x2Bomb(x,y,r,t,atk,m,col,hi,ty,el){const B=G.elb||(G.elb=[]);if(B.length<60)B.push({x,y,t,t0:t,r,atk,m,ty:ty||'magic',el:el===undefined?null:el,col,hi})}
+function x2Proj(e,a,sp,col,m){G.projs.push({x:e.x,y:e.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:7,life:2.4,t:0,hostile:true,dmg:e.atk*(m||1),kind:'orb',color:col,hitSet:new Set()})}
+function x2Gm(e,dt){const p=G.p,D=ETYPES[e.type],col=D.c[0],hi=D.c[2]||'#ffffff',dx=p.x-e.x,dy=p.y-e.y,d=Math.hypot(dx,dy),a=Math.atan2(dy,dx),en=(e.hp<e.maxHp*.5?1.35:1);
+  if(e.gch){const C=e.gch;C.t-=dt;if(C.t<=0){const st=Math.min(C.L,900*dt),bl=moveEnt(e,Math.cos(C.a)*st,Math.sin(C.a)*st);C.L-=st;burst(e.x,e.y,col,2,60,2);if(!C.hit&&Math.hypot(p.x-e.x,p.y-e.y)<e.r+p.r+6){C.hit=1;hurtP(e.atk*2.2,'phys')}if(C.L<=0||bl)e.gch=null}return}
+  if(e.gpl&&e.gpl>0){e.gpl-=dt;if(d>e.r+20)moveEnt(p,-dx/d*160*dt,-dy/d*160*dt)}
+  if(D.gm.includes('frost')&&d<220){p.slowT=Math.max(p.slowT||0,.4);p.slowAmt=Math.max(p.slowAmt||0,.3)}
+  if(D.gm.includes('heal')&&G.time-(e.hitT||0)>2&&e.hp<e.maxHp)e.hp=Math.min(e.maxHp,e.hp+e.maxHp*.02*dt);
+  if(D.gm.includes('clone')&&!e.gcl&&e.hp<e.maxHp*.5&&!e.ph){e.gcl=1;for(const s of[-1,1])xQ(e.type,e.x+s*e.r,e.y,'ph');addText(e.x,e.y-e.r-12,'분열!',hi)}
+  e.gmT-=dt*en;if(e.gmT>0||d>560||!e.awake)return;const L=D.gm.filter(g=>!['frost','heal','clone'].includes(g));if(!L.length){e.gmT=9;return}
+  const g=L[(e.gmI++)%L.length];e.gmT=e.boss?4.2:5.2;addText(e.x,e.y-e.r-14,X2GM_N[g]+'!',hi);
+  if(g==='breath'){for(let i=1;i<=6;i++){const r=i*44;x2Bomb(e.x+Math.cos(a)*r,e.y+Math.sin(a)*r,40,.55+i*.09,e.atk,1.5,col,hi,'magic',e.el)}sfx('ultIn',.2)}
+  else if(g==='meteor'){for(let i=0;i<7;i++){const q=rand(0,TAU),r=i?rand(40,180):0;x2Bomb(p.x+Math.cos(q)*r,p.y+Math.sin(q)*r,58,1.1+i*.08,e.atk,1.5,col,hi,'magic',e.el)}sfx('summon',.15)}
+  else if(g==='nova'){const n=e.boss?22:16;for(let i=0;i<n;i++)x2Proj(e,i*TAU/n,250,hi,1);sfx('eshot',.1)}
+  else if(g==='spiral'){for(let w=0;w<4;w++)G.timers.push({t:w*.28,fn:()=>{if(e.dead)return;for(let i=0;i<6;i++)x2Proj(e,i*TAU/6+w*.35+G.time,230,hi,.9)}})}
+  else if(g==='pull'){e.gpl=1.6;x2Bomb(e.x,e.y,e.r+90,1.7,e.atk,1.6,col,hi,'magic',e.el);G.fx.push({k:'ring',x:e.x,y:e.y,r0:e.r,r1:300,t:0,dur:1.5,color:hi,w:4})}
+  else if(g==='charge'){e.gch={a,L:Math.min(520,d+120),t:.55};G.fx.push({k:'ring',x:e.x,y:e.y,r0:e.r,r1:e.r+30,t:0,dur:.5,color:hi,w:5})}
+  else if(g==='poison'){for(let i=0;i<3;i++){const q=rand(0,TAU),r=i?rand(30,120):0;G.zones.push({x:p.x+Math.cos(q)*r,y:p.y+Math.sin(q)*r,r:56,t:0,dur:5,kind:'poison',hostile:true,tick:.4,tt:0,dmg:e.atk*.55})}}
+  else if(g==='summon'){const P=ELD[G.dg.elemd].pool;for(let i=0;i<(e.boss?4:3);i++){const q=i*TAU/3;xQ(pick(P),e.x+Math.cos(q)*(e.r+30),e.y+Math.sin(q)*(e.r+30),'')}burst(e.x,e.y,hi,16,200,3)}
+  else if(g==='blink'){const q=a+Math.PI+rand(-.6,.6),nx=p.x+Math.cos(q)*-90,ny=p.y+Math.sin(q)*-90;if(!hitsWall(nx,ny,e.r)){burst(e.x,e.y,hi,12,180,3);e.x=nx;e.y=ny;burst(nx,ny,hi,14,200,3);x2Bomb(nx,ny,e.r+70,.7,e.atk,1.3,col,hi,'phys',e.el)}}
+  else if(g==='shield'){e.esm=Math.max(e.esm||0,e.maxHp*.2);e.esh=e.esm;G.fx.push({k:'ring',x:e.x,y:e.y,r0:e.r,r1:e.r+26,t:0,dur:.6,color:'#a6e8ff',w:6})}
+  else if(g==='quake'){for(let i=0;i<3;i++)x2Bomb(e.x,e.y,e.r+70+i*60,.7+i*.35,e.atk,1.25,'#c9a06a','#ffe0a0','phys',null);G.shake=Math.min(10,G.shake+4)}}
+
+// ---------- 던전 규칙 (기존 심연 너머 함수에 덧붙임) ----------
+const isX2=k=>!!(XDG[k]&&XDG[k].x2);
+{const _s=xSpawn;xSpawn=function(e,k){if(!isX2(k))return _s(e,k);e.hitT=-9;e.flk=rand(0,TAU);if(!e.boss&&!e.ph)G.xAtk=Math.max(G.xAtk||0,e.atk);
+  if(k==='dragon'){e.def*=1.3;e.mr*=1.15;e.brT=rand(2,5)}else if(k==='alien'){e.esm=e.esh=e.maxHp*.25}else if(k==='zodiac'){e.wob=rand(0,TAU)}
+  const D=ETYPES[e.type];if(D&&D.gm&&D.boss){e.gm=D.gm;e.gmT=4;e.gmI=0}}}
+{const _e=xE;xE=function(e,dt,k){if(!isX2(k))return _e(e,dt,k);const p=G.p;
+  if(e.gm&&!e.ph)x2Gm(e,dt);
+  if(k==='dragon'&&e.type==='drWyvern'&&e.awake){e.brT-=dt;const d=Math.hypot(p.x-e.x,p.y-e.y);if(e.brT<=0&&d<300){e.brT=rand(5,7);const a=Math.atan2(p.y-e.y,p.x-e.x);for(let i=1;i<=4;i++)x2Bomb(e.x+Math.cos(a)*i*40,e.y+Math.sin(a)*i*40,34,.6+i*.08,e.atk,1.1,'#ff5a1a','#ffd080','magic','fire')}}
+  else if(k==='alien'&&e.esm&&e.esh<e.esm&&G.time-(e.hitT||0)>4)e.esh=e.esm}}
+{const _h=xHurt;xHurt=function(d,k){if(!isX2(k))return _h(d,k);const X=elX(),p=G.p;
+  if(k==='zodiac'){X.kb=(G.time-(X.kbT||-9)<5?X.kb||0:0)+1;X.kbT=G.time;if(X.kb>=5){X.kb=0;const v=Math.round(G.stats.hp*.07);p.hp=Math.max(1,p.hp-v);addText(p.x,p.y-34,'저승 낙인 -'+v,'#c08aff');G.fx.push({k:'ring',x:p.x,y:p.y,r0:8,r1:44,t:0,dur:.4,color:'#c08aff',w:5})}}
+  else if(k==='dragon'){X.dps=Math.min(G.stats.hp*.02,(X.dt>0?X.dps:0)+G.stats.hp*.003);X.dt=2;X.col='#ff5a1a'}}}
+{const _d=xDeath;xDeath=function(e){const k=G.dg.elemd;if(!isX2(k))return _d(e);if(e.boss||e.guard)return;
+  if(k==='dragon'&&!e.ph)x2Bomb(e.x,e.y,54,.9,e.atk,1,'#ff5a1a','#ffd080','magic','fire');
+  else if(k==='alien'&&(e.type==='alDrone'||e.type==='alTrooper'||e.type==='alGrey')&&Math.random()<.45)x2Bomb(e.x,e.y,50,1.6,e.atk,1.1,'#5affc8','#c8fff0','magic','elec');
+  else if(k==='zodiac'&&!e.ph&&G.enemies.length<110&&Math.random()<.2)xQ(e.type,e.x,e.y,'ph')}}
+{const _t=xTick;xTick=function(dt){_t(dt);const k=G.dg.elemd;if(k!=='alien'||G.over||G.dying||!G.enemies.some(e=>!e.dead&&e.awake))return;G.x2s=(G.x2s==null?5:G.x2s)-dt;if(G.x2s<=0){G.x2s=7;const p=G.p;x2Bomb(p.x,p.y,76,1.3,(G.xAtk||100)*.9,1.3,'#5affc8','#e0fff6','magic','elec');G.fx.push({k:'ring',x:p.x,y:p.y,r0:20,r1:76,t:0,dur:1.2,color:'#5affc8',w:3});sfx('summon',.15)}}}
+{const _dp=xDrawPre;xDrawPre=function(c,e,t){const k=G.dg.elemd;if(!isX2(k))return _dp(c,e,t);if(e.ph){c.save();c.globalAlpha*=.5;return true}
+  if(k==='zodiac'&&(e.type==='zGhost'||e.type==='zWisp')){c.save();c.globalAlpha*=.6+.35*Math.sin(t*2.4+(e.flk||0));return true}return false}}
+{const _sc=xScreen;xScreen=function(c,px,py,S,k){if(!isX2(k))return _sc(c,px,py,S,k);
+  if(k==='dragon'){c.globalAlpha=.06+.03*Math.sin(G.time*1.7);c.fillStyle='#ff5a1a';c.fillRect(0,0,VW,VH)}
+  else if(k==='alien'){c.globalAlpha=.05;c.fillStyle='#5affc8';c.fillRect(0,0,VW,VH);c.globalAlpha=.035;c.fillStyle='#000';const o=(G.time*40)%6;for(let y=-6+o;y<VH;y+=6)c.fillRect(0,y,VW,2)}
+  else{const g=c.createRadialGradient(px,py,90*S,px,py,300*S);g.addColorStop(0,'rgba(20,0,30,0)');g.addColorStop(1,'rgba(20,0,30,.75)');c.globalAlpha=1;c.fillStyle=g;c.fillRect(0,0,VW,VH)}}}
+{const _cx=cardsXD;cardsXD=function(cur){const bests=save.bests||{},cb=save.clearsBy||{},C=save.elClr||{};
+  return `<h3 style="color:#ffb06a">고대의 경계 · Lv 130+ 초고난도</h3><p class="note" style="margin:0 0 8px">15층짜리 긴 원정이에요. 층마다 서로 다른 층 보스가 저마다의 기술로 막아서요. 체감 난이도는 Lv 150+ 던전과 거의 같아요.</p><div class="dgcards">${X2_ORDER.map(k=>{const X=XDG[k],dk='xd_'+k,best=bests[dk],clr=cb[dk];
+    return `<button class="dgc" data-act="dgsel" data-k="${dk}" aria-pressed="${dk===cur}" style="--tc:${hexRgb(X.col)}">${dk===cur?'<span class="sel">선택됨</span>':''}<span class="tag" style="color:${X.col}">고대의 경계 · ${X.tag}</span><h4>${X.n}</h4>
+      <div class="meta"><span class="rec">권장 Lv ${X.rec}+</span><span>15층</span>${best?`<span>최고 ${best}층</span>`:''}${clr?`<span>정복 ${clr}회</span>`:''}</div>
+      <p>${X.mech}</p><dl><dt>층 보스</dt><dd>${X2B[k].slice(0,3).map(b=>b[0]).join(' · ')} 외 ${X2B[k].length-3}종</dd><dt>최종 보스</dt><dd>${X.bn}</dd><dt>첫 정복</dt><dd style="color:${C[k]?'var(--muted)':X.col}">초월 장비 2개 · 왕관 조각 20 · 속성 결정 80 · 영혼 100${C[k]?' · 받음':''}</dd><dt>보상</dt><dd>초월 장비 · 막대한 골드와 해탈 재료</dd></dl></button>`}).join('')}</div>`+_cx(cur)}}
+
+// ---------- 그림 ----------
+function x2Shade(h,f){const n=parseInt(h.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;r=Math.max(0,Math.min(255,Math.round(r*f)));g=Math.max(0,Math.min(255,Math.round(g*f)));b=Math.max(0,Math.min(255,Math.round(b*f)));return '#'+((1<<24)|(r<<16)|(g<<8)|b).toString(16).slice(1)}
+function drawX2(c,e,t,o){const D=X2T[e.type],r=e.r,k=r/13,f=o.face||0,mv=o.moving?Math.sin(t*10+e.x*.07):0,[c1,c2,c3]=D.c,O=D.o||{},A=D.a;
+  c.save();c.translate(e.x,e.y);c.fillStyle='rgba(0,0,0,.4)';ell(c,0,r*.55,r*1.05,r*.38);c.fill();c.translate(0,-r*.25);
+  const E=(x,y,rx,ry,col)=>{c.fillStyle=col;ell(c,x,y,rx,ry);c.fill()},L=(pts,col,w)=>{c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)c.lineTo(pts[i],pts[i+1]);c.stroke()},P=(pts,col)=>{c.fillStyle=col;c.beginPath();c.moveTo(pts[0],pts[1]);for(let i=2;i<pts.length;i+=2)c.lineTo(pts[i],pts[i+1]);c.closePath();c.fill()};
+  const dk=x2Shade(c1,.7),lt=x2Shade(c1,1.25);
+  if(A==='dragon'){const fl=Math.sin(t*(O.bone?6:4)+e.x*.01);c.rotate(f);c.scale(k,k);
+    if(O.halo){c.strokeStyle=c3;c.globalAlpha=.6;c.lineWidth=1.4;c.beginPath();c.arc(-2,0,17,0,TAU);c.stroke();c.globalAlpha=1}
+    for(const s of[-1,1]){const w=10+fl*3;P([-2,s*3,-10,s*(15+w*.3),-1,s*(13+w),6,s*5],O.bone?'rgba(200,200,220,.35)':c2);L([-2,s*3,-10,s*(15+w*.3),-1,s*(13+w),6,s*5],dk,1.1)}
+    L([-10,0,-17,mv*3,-23,-mv*2],c1,4);P([-23,-mv*2,-28,-3,-27,2],c1);
+    E(-1,0,11,7,c1);E(-1,0,7,4.2,O.bone?'#8a8a9a':c2);if(O.spike)for(let i=-2;i<=2;i++)P([i*4-1,-6,i*4+1,-10,i*4+3,-6],c3);
+    const heads=O.twin?[-4,4]:[0];for(const hy of heads){const hc=O.twin&&hy>0?c2:c1;L([8,hy*.5,14,hy],hc,5);E(17,hy,5.5,4.2,hc);E(21,hy,3.5,2.6,x2Shade(hc,.85));E(18,hy-1.8,1.3,1.1,c3);E(18,hy+1.8,1.3,1.1,c3);
+      for(let h=0;h<(O.h||0);h++){const s=h%2?1:-1,j=1+Math.floor(h/2);L([15,hy+s*3,10-j*3,hy+s*(6+j*2)],O.bone?'#f0ead8':'#f0e0c0',1.6)}}
+    if(D.gm&&!O.bone&&Math.sin(t*3)>.6){c.globalAlpha=.5;E(25,0,3+Math.sin(t*20),2,c3);c.globalAlpha=1}}
+  else if(A==='wyrm'){c.scale(k,k);const n=O.n||5;for(let i=n-1;i>=0;i--){const x=-i*5.5,y=Math.sin(t*5-i*.9)*3.5;E(x,y,7-i*.6,6.2-i*.5,i%2?c1:dk);E(x,y-2,3-i*.25,2,c2)}const hy=Math.sin(t*5)*3.5;E(6,hy,7,5.8,c1);E(9,hy+1,4,3,x2Shade(c1,.85));E(7,hy-2.5,1.4,1.4,c3);E(10,hy-2.5,1.4,1.4,c3);L([12,hy+2,16,hy+4,15,hy+1],'#ff4a6a',1)}
+  else if(A==='knight'){c.rotate(f);c.scale(k,k);E(-2+mv*3,5.5,3,2.2,'#222');E(-2-mv*3,-5.5,3,2.2,'#222');E(0,0,9,8,c1);E(0,0,6,5.5,x2Shade(c1,1.2));c.strokeStyle=c2;c.lineWidth=2.2;c.beginPath();c.moveTo(4,6);c.lineTo(20,9);c.stroke();P([20,6.5,26,9,20,11.5],'#e8e8f0');
+    E(2,0,5.5,5,O.skull?'#e8e0d0':dk);if(O.skull){E(4,-1.6,1.3,1.3,c3);E(4,1.6,1.3,1.3,c3)}else{P([0,-5,-6,-9,-2,-4],c2);P([0,5,-6,9,-2,4],c2);E(5,0,2,3.4,c3)}P([-6,-5,-2,-9,-2,9,-6,5],x2Shade(c1,.6))}
+  else if(A==='robe'||A==='zgod'||A==='reaper'){c.scale(k,k);const big=A==='zgod',bw=big?11:9,sw=Math.sin(t*2)*1;
+    P([-bw,12,-bw*.7,-2,bw*.7,-2,bw,12],c1);P([-bw*.5,12,-bw*.3,0,bw*.3,0,bw*.5,12],x2Shade(c1,1.25));if(big){E(-bw*.85,-2,4.5,3.5,c2);E(bw*.85,-2,4.5,3.5,c2);L([-2,2,2,8],c3,1.2);L([2,2,-2,8],c3,1.2)}
+    const an=O.an||(A==='reaper'?'gat':O.hd||''),hy=-8+sw*.3;
+    if(an==='gat'){E(0,hy,5,5,'#f0e8dc');E(-1.8,hy,1,1.2,'#111');E(1.8,hy,1,1.2,'#111');E(0,hy-5,11,2.2,'#111');P([-4.5,hy-5,-3.5,hy-11,3.5,hy-11,4.5,hy-5],'#111');L([-6,hy-4,-5,hy+4],'#6a5a4a',.8)}
+    else if(an==='dragon'){E(0,hy,6,5.5,c2);E(0,hy+3,4,2.4,x2Shade(c2,.85));E(-2,hy-1,1.2,1.2,c3);E(2,hy-1,1.2,1.2,c3);L([-3,hy-4,-7,hy-10,-5,hy-12],'#f0e0c0',1.4);L([3,hy-4,7,hy-10,5,hy-12],'#f0e0c0',1.4);L([-4,hy+3,-10,hy+5],c3,.8);L([4,hy+3,10,hy+5],c3,.8)}
+    else{const H=c2,F=an==='tiger'||an==='monkey'||an==='rooster'?x2Shade(c2,1):c2,hc=['rat','ox','rabbit','sheep','pig','judge','king','dog','horse','snake','oxhorse'].includes(an)?c1:c2;
+      if(an==='rabbit'){E(-2.6,hy-9,1.8,6,hc);E(2.6,hy-9,1.8,6,hc);E(-2.6,hy-9,.8,4.5,'#ffc0d8');E(2.6,hy-9,.8,4.5,'#ffc0d8')}
+      if(an==='rat'){E(-5,hy-4,3.4,3.4,hc);E(5,hy-4,3.4,3.4,hc);E(-5,hy-4,2,2,'#e8b0b0');E(5,hy-4,2,2,'#e8b0b0')}
+      if(an==='ox'||an==='oxhorse'){L([-4,hy-3,-9,hy-5,-10,hy-10],'#f0ead8',2);L([4,hy-3,9,hy-5,10,hy-10],'#f0ead8',2)}
+      if(an==='sheep'){c.strokeStyle='#c8a070';c.lineWidth=2;c.beginPath();c.arc(-5.5,hy-2,3.2,0,TAU*.8);c.stroke();c.beginPath();c.arc(5.5,hy-2,3.2,Math.PI*.2,TAU);c.stroke()}
+      if(an==='tiger'){E(-4.5,hy-4.5,2.4,2.4,c1);E(4.5,hy-4.5,2.4,2.4,c1)}if(an==='dog'){E(-5.5,hy,2.2,4.5,x2Shade(c1,.7));E(5.5,hy,2.2,4.5,x2Shade(c1,.7))}
+      if(an==='horse'){P([-2,hy-6,0,hy-11,2,hy-6],c2);for(let i=0;i<4;i++)E(-4.5,hy-3+i*3,1.8,2.2,c2)}if(an==='snake'){P([-8,hy+3,0,hy-9,8,hy+3],x2Shade(c1,.8))}
+      if(an==='king'||an==='judge'){E(0,hy,5.5,5.5,'#e8d8c0');E(-1.8,hy-.5,1,1,'#111');E(1.8,hy-.5,1,1,'#111');L([-2,hy+3,2,hy+3],'#6a2a2a',.8);if(an==='king'){P([-6,hy-4,-6,hy-10,-3,hy-7,0,hy-11,3,hy-7,6,hy-10,6,hy-4],c2);E(0,hy-8,1.2,1.2,c3);E(0,hy+5,3.5,3,'#2a1a1a')}else{E(0,hy-5,7.5,1.6,'#111');c.fillStyle='#111';c.fillRect(-4,hy-10,8,5);L([-8,hy-6,-11,hy-8],'#111',1);L([8,hy-6,11,hy-8],'#111',1)}}
+      else if(an!=='snake'){E(0,hy,an==='pig'?6.2:5.4,5.2,hc);E(-1.9,hy-.6,1.1,1.1,c3);E(1.9,hy-.6,1.1,1.1,c3);
+        if(an==='pig')E(0,hy+2,2.6,1.8,'#d88a8a');if(an==='rat')E(0,hy+3,1.6,1.4,'#e8a0a0');if(an==='horse'||an==='oxhorse')E(0,hy+3.5,3.2,2.6,x2Shade(hc,.85));if(an==='dog')E(0,hy+3,2.4,2,'#2a1a1a');
+        if(an==='tiger'){L([-4,hy-2,-2,hy-1],'#2a1a1a',.9);L([4,hy-2,2,hy-1],'#2a1a1a',.9);L([0,hy-5,0,hy-3],'#2a1a1a',.9)}if(an==='monkey'){E(0,hy+1,3.5,3,'#f0c8a0')}if(an==='rooster'){P([-2,hy-5,-1,hy-9,1,hy-6,2,hy-9,3,hy-5],'#ff3a2a');P([0,hy+1,5,hy+2,0,hy+3],'#ffb04a')}}
+      else{E(0,hy,4.5,5,c1);E(-1.6,hy-1,1,1.2,c3);E(1.6,hy-1,1,1.2,c3);L([0,hy+4,0,hy+6,-1,hy+7],'#ff4a4a',.8)}}
+    if(A==='reaper'){c.strokeStyle='#5a4a3a';c.lineWidth=1.4;c.beginPath();c.moveTo(9,-6);c.lineTo(9,12);c.stroke()}
+    if(big&&D.fb){c.globalAlpha=.4+.2*Math.sin(t*3);c.strokeStyle=c3;c.lineWidth=1;c.beginPath();c.arc(0,hy,9,0,TAU);c.stroke();c.globalAlpha=1}}
+  else if(A==='grey'){c.scale(k,k);E(0,8,4,6,c1);L([-3,6,-8,11+mv*2],c1,1.6);L([3,6,8,11-mv*2],c1,1.6);E(0,-3,8,9,c1);E(0,-6,7,5,x2Shade(c1,1.15));c.save();c.translate(-3,-2);c.rotate(.5);E(0,0,2.2,3.6,c2);c.restore();c.save();c.translate(3,-2);c.rotate(-.5);E(0,0,2.2,3.6,c2);c.restore();E(-3.4,-3,.7,.9,c3);E(2.6,-3,.7,.9,c3);if(D.fb){c.globalAlpha=.5;c.strokeStyle=c3;c.beginPath();c.arc(0,-3,12+Math.sin(t*3),0,TAU);c.stroke();c.globalAlpha=1}}
+  else if(A==='saucer'){c.scale(k,k);const b=Math.sin(t*3)*1.2;if(O.beam){c.globalAlpha=.25;P([-6,4+b,6,4+b,12,18,-12,18],c2);c.globalAlpha=1}E(0,2+b,15,5,c1);E(0,1+b,15,3,x2Shade(c1,1.15));E(0,-2+b,7,5,c2);c.globalAlpha=.5;E(-2,-4+b,3,2,'#ffffff');c.globalAlpha=1;for(let i=0;i<6;i++){const a=t*3+i*TAU/6,x=Math.cos(a)*12;if(Math.sin(a)>-.2)E(x,3+b,1.4,1.2,i%2?c3:c2)}}
+  else if(A==='xeno'){c.rotate(f);c.scale(k,k);for(const s of[-1,1])for(let i=0;i<2;i++)L([i*6-3,s*4,i*6-1+mv*s*2,s*10],c1,1.8);E(-2,0,11,6.5,c1);E(-4,0,7,4,c2);for(let i=-1;i<=1;i++)P([-8+i*5,-4,-6+i*5,-8,-4+i*5,-4],x2Shade(c1,1.3));E(10,0,6,4.6,c1);P([12,-3,19,-1,13,0],'#f0f0e0');P([12,3,19,1,13,0],'#f0f0e0');E(11,-2.4,1.2,1,c3);E(11,2.4,1.2,1,c3);if(O.dog){P([7,-4,8,-9,10,-4],c1);P([7,4,8,9,10,4],c1)}if(O.queen){P([4,-6,6,-12,8,-6],c3);P([0,-6,2,-13,4,-6],c3);P([8,-5,10,-11,11,-5],c3)}}
+  else if(A==='brain'){c.scale(k,k);const p1=1+Math.sin(t*2.6)*.05;c.save();c.scale(p1,p1);E(0,0,13,11,c1);E(-3,-3,8,6,c2);c.strokeStyle=x2Shade(c1,.7);c.lineWidth=1.1;for(let i=-2;i<=2;i++){c.beginPath();c.moveTo(i*4,-9);c.quadraticCurveTo(i*4+3,-2,i*4,5);c.stroke()}c.restore();for(let i=0;i<4;i++){const a=t*1.5+i*1.6;L([Math.cos(a)*8,8,Math.cos(a)*10,14+Math.sin(t*4+i)*2],x2Shade(c1,.8),1.6)}E(0,2,3,3,'#111');E(0,2,1.6,1.6,c3);if(O.crown){P([-8,-10,-8,-16,-4,-12,0,-17,4,-12,8,-16,8,-10],'#ffd34d')}}
+  else if(A==='mech'){c.rotate(f);c.scale(k,k);E(-3+mv*3,5,3.4,2.4,'#222');E(-3-mv*3,-5,3.4,2.4,'#222');c.fillStyle=c2;c.fillRect(2,-10.5,13,3);c.fillRect(2,7.5,13,3);if(O.turret){c.fillRect(4,-1.5,16,3)}E(-1,0,8,8.5,c1);E(-1.5,0,5,6,c2);E(0,-8.5,4.2,3.6,lt);E(0,8.5,4.2,3.6,lt);E(4,0,4,3.4,c1);c.fillStyle=c3;c.globalAlpha=.6+.3*Math.sin(t*6);c.fillRect(5.5,-2,2.2,4);c.globalAlpha=1}
+  else if(A==='blob'){c.scale(k,k);const s=1+Math.sin(t*4+e.x*.02)*.08;E(0,2,12*s,10/s,c1);E(-3,-1,6,4,c2);if(O.faces){for(const [x,y] of[[-5,2],[4,-1],[1,5]]){E(x,y,2.4,2.4,x2Shade(c1,.6));E(x-.8,y-.5,.5,.5,c3);E(x+.8,y-.5,.5,.5,c3)}}else{E(-3,0,1.6,1.6,c3);E(3,0,1.6,1.6,c3)}}
+  else if(A==='ghost'){c.scale(k,k);const w=Math.sin(t*3);P([-8,0,-8+w,12,-4,9,0,13,4,9,8+w,12,8,0],c2);E(0,-2,8,8,c1);E(-2.6,-2,1.6,2.2,c3);E(2.6,-2,1.6,2.2,c3);E(0,3,1.8,1.2,c3)}
+  else if(A==='wisp'){c.scale(k,k);const g=1+Math.sin(t*8)*.12;c.globalCompositeOperation='lighter';E(0,0,10*g,10*g,x2Shade(c1,.7));E(0,-2,6,8,c1);E(0,-1,3.6,5,c2);c.globalCompositeOperation='source-over';E(-2,-1,1,1.4,c3);E(2,-1,1,1.4,c3)}
+  c.restore();
+  if(D.fb&&e.guard){c.save();c.globalCompositeOperation='lighter';c.globalAlpha=.25+.15*Math.sin(t*4);c.strokeStyle=c3;c.lineWidth=3;c.beginPath();c.ellipse(e.x,e.y+r*.5,r*1.2,r*.45,0,0,TAU);c.stroke();c.restore()}}
+{const _dx=drawXF;drawXF=function(c,e,t,o){if(X2T[e.type])return drawX2(c,e,t,o);return _dx(c,e,t,o)}}
+PATCH['5.4.0']=['새 던전 3종 · Lv 130+ (체감은 150+급) · 각 15층','고룡들의 협곡 · 외계인 비행체 · 십이지신 명계천','새 일반 몬스터 18종 · 층마다 전부 다른 층 보스 42종 · 최종 보스 3종','층 보스마다 고유 기술 (숨결 · 낙성 · 방사 · 나선탄 · 끌어당김 · 돌진 · 순간이동 · 분열 · 방어막 · 지진 · 독무 · 한기 · 재생 · 소환)'];
 
 shadowGuard();renderAudioBtns();music('menu');
 $('#verTag').textContent='v'+VERSION;$('#verPause').textContent='v'+VERSION;
